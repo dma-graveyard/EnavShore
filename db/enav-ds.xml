@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<datasources>
+  <local-tx-datasource>
+    <jndi-name>enavDS</jndi-name>
+    <connection-url>jdbc:mysql://localhost:3306/enav_p</connection-url>
+    <driver-class>com.mysql.jdbc.Driver</driver-class>
+    <user-name>enav_p_user</user-name>
+    <password>aditus</password>
+    <min-pool-size>5</min-pool-size>
+    <max-pool-size>20</max-pool-size>    
+    <exception-sorter-class-name>org.jboss.resource.adapter.jdbc.vendor.MySQLExceptionSorter</exception-sorter-class-name>
+    <metadata>
+       <type-mapping>mySQL</type-mapping>
+    </metadata>
+    <autoReconnect>true</autoReconnect>
+    <failOverReadOnly>false</failOverReadOnly>
+    <initialTimeout>10</initialTimeout>
+    <check-valid-connection-sql>select count(*) from dual</check-valid-connection-sql>
+  </local-tx-datasource>
+</datasources>
+

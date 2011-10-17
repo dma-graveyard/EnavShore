@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="enavshore-ear" default="install">
+
+    <property file="${user.home}/.ant.properties" />
+    <property file="${basedir}/../.ant.properties" />
+
+    <property name="lib" value="${basedir}/../lib" />
+	<property name="extlib" value="${basedir}/../extlib" />
+
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="build.ear.dir" value="${build.dir}/ear" />
+    <property name="build.final.name" value="enavshore.ear" />
+
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="src.main.dir" value="${src.dir}/main" />
+    <property name="src.main.resources.dir" value="${src.main.dir}/resources" />
+
+    <target name="init">
+        <mkdir dir="${build.ear.dir}" />
+    	<mkdir dir="${build.ear.dir}/META-INF" />
+        <mkdir dir="${build.ear.dir}/lib" />
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="compile" depends="init">        
+        <copy file="${lib}/enavshore-core.jar" todir="${build.ear.dir}" />
+    	<copy file="${lib}/enavshore-common.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${lib}/enavshore-api.war" todir="${build.ear.dir}" />
+    	<copy file="${extlib}/commons-lang-2.5.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${extlib}/commons-httpclient.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${extlib}/commons-codec.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${extlib}/aislib-1.1.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${extlib}/gson-1.7.1.jar" todir="${build.ear.dir}/lib" />
+    	<copy file="${src.main.resources.dir}/jboss-app.xml" todir="${build.ear.dir}/META-INF" />
+    </target>
+
+    <target name="ear" depends="compile">
+        <ear file="${build.dir}/${build.final.name}" appxml="${src.main.resources.dir}/application.xml" basedir="${build.ear.dir}" />
+    </target>
+
+    <target name="install" depends="ear">
+        <mkdir dir="${lib}" />
+        <copy file="${build.dir}/${build.final.name}" todir="${lib}" />
+    </target>
+
+</project>

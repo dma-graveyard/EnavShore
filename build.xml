@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="enavshore-ALL" default="install">
+
+	<property file="${user.home}/.ant.properties" />
+	<property file="${basedir}/.ant.properties" />
+	<property name="lib" value="${basedir}/lib" />
+
+	<target name="clean">
+		<ant dir="${basedir}/common" target="clean" />
+		<ant dir="${basedir}/core" target="clean" />
+		<ant dir="${basedir}/api" target="clean" />
+		<ant dir="${basedir}/ear" target="clean" />
+		<delete dir="${basedir}/javadoc" />
+		<delete dir="${basedir}/pdf-javadoc" />
+		<delete dir="${lib}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${lib}" />
+	</target>
+
+	<target name="install" depends="init">
+		<ant dir="${basedir}/common" target="install" />
+		<ant dir="${basedir}/core" target="install" />
+		<ant dir="${basedir}/api" target="install" />
+		<ant dir="${basedir}/ear" target="install" />
+	</target>
+
+	<target name="deploy_dev" depends="install">
+		<copy overwrite="true" file="${lib}/enavshore.ear" todir="${enavshore.dev_deploy}" />
+	</target>
+
+	<target name="undeploy_dev" depends="clean">		
+		<delete file="${enavshore.dev_deploy}/enavshore.ear" />
+	</target>
+
+	<path id="classpath">
+		<fileset dir="${enavshore.jboss.home}/client" >
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="javadoc" description="Create Javadocs">
+		<mkdir dir="${basedir}/javadoc/" />
+		<javadoc destdir="${basedir}/javadoc/" additionalparam="-J-Dorg.apache.commons.attributes.javadoc.CATaglet.sources=${basedir}" classpathref="classpath" Windowtitle="eNav Shore Services">
+			<taglet name="org.apache.commons.attributes.javadoc.CATaglet" path="${ant.home}/lib/commons-attributes-compiler-2.2.jar" />
+			<fileset dir="${basedir}/" includes="**/*.java" />
+			<doctitle>
+				<![CDATA[<h1>eNav Shore Services JavaDoc</h1>]]></doctitle>
+		    <bottom>
+			    <![CDATA[<i>Copyright &copy; 2009 DaMSA, All Rights Reserved.</i>]]></bottom>
+        </javadoc>
+    </target>
+
+    <target name="pdf-javadoc">
+        <mkdir dir="${basedir}/pdf-javadoc" />
+        <javadoc doclet="com.tarsec.javadoc.pdfdoclet.PDFDoclet" docletpath="${enavshore.jboss.home}/pdfdoclet-1.0.2-all.jar" additionalparam="-pdf ${basedir}/pdf-javadoc/javadoc.pdf -debug -config ${basedir}/pdf-javadoc.properties" private="no">
+	        <fileset dir="${basedir}/" includes="**/*.java" />
+        </javadoc>
+    </target>
+
+</project>

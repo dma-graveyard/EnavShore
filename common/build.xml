@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="enavshore-common" default="install">
+    
+    <property file="${basedir}/../.ant.properties" />
+	<property file="${user.home}/.ant.properties" />
+
+    <property name="lib" value="${basedir}/../lib" />
+	<property name="extlib" value="${basedir}/../extlib" />
+
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="build.final.name" value="${ant.project.name}.jar" />
+
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="src.main.dir" value="${src.dir}/main" />
+    <property name="src.main.java.dir" value="${src.main.dir}/java" />
+	<property name="src.main.resources.dir" value="${src.main.dir}/resources" />
+
+    <path id="compile.class.path">
+        <fileset dir="${enavshore.jboss.home}/client" >
+            <include name="**/*.jar"/>
+        </fileset>
+    	<fileset dir="${extlib}" >
+    		<include name="**/*.jar"/>
+		</fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${build.classes.dir}" />
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    	<delete dir="${src.main.resources.dir}/ais/rotatedshipicons" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac destdir="${build.classes.dir}" debug="on" encoding="UTF-8" includeantruntime="false">
+            <compilerarg value="-Xlint:all,-path,-serial" />
+            <classpath refid="compile.class.path" />
+            <src path="${src.main.java.dir}" />
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar file="${build.dir}/${build.final.name}">
+            <fileset dir="${build.classes.dir}" />
+        </jar>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${lib}" />
+        <copy file="${build.dir}/${build.final.name}" todir="${lib}" />
+    </target>
+	
+	<target name="rotate" depends="compile">
+		<mkdir dir="${src.main.resources.dir}/ais/rotatedshipicons" />
+		<java classname="dk.frv.enav.common.util.ImageRotator" fork="true">
+			<arg value="${src.main.resources.dir}/ais/rotatedshipicons" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_blue.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_gray.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_green.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_orange.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_purple.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_red.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_turquoise.png" />
+			<arg value="${src.main.resources.dir}/ais/shipicons/ship_yellow.png" />
+			<classpath>
+				<path refid="compile.class.path" />
+				<pathelement path="${basedir}" />
+				<pathelement path="${build.classes.dir}" />
+			</classpath>
+		</java>
+	</target>
+
+</project>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="enavshore-core" default="install">
+
+	<property file="${basedir}/../.ant.properties" />
+    <property file="${user.home}/.ant.properties" />
+
+    <property name="lib" value="${basedir}/../lib" />
+	<property name="extlib" value="${basedir}/../extlib" />
+
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="build.resources.dir" value="${build.dir}/resources" />
+    <property name="build.final.name" value="${ant.project.name}.jar" />
+
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="src.main.dir" value="${src.dir}/main" />
+    <property name="src.main.java.dir" value="${src.main.dir}/java" />
+    <property name="src.main.resources.dir" value="${src.main.dir}/resources" />
+
+    <path id="compile.class.path">
+        <pathelement location="${lib}/enavshore-common.jar" />
+        <fileset dir="${enavshore.jboss.home}/client" >
+            <include name="**/*.jar"/>
+        </fileset>
+    	<fileset dir="${extlib}" >
+			<include name="**/*.jar"/>
+		</fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${build.classes.dir}" />
+        <mkdir dir="${build.resources.dir}" />
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac destdir="${build.classes.dir}" debug="on" encoding="UTF-8" includeantruntime="false">
+            <compilerarg value="-Xlint:all,-path,-serial" />
+            <classpath refid="compile.class.path" />
+            <src path="${src.main.java.dir}" />
+        </javac>
+    </target>
+
+    <target name="setup-resources">
+        <copy todir="${build.resources.dir}">
+            <fileset dir="${src.main.resources.dir}" />
+        </copy>
+    </target>
+
+    <target name="jar" depends="compile,setup-resources">
+        <jar file="${build.dir}/${build.final.name}">
+            <fileset dir="${build.classes.dir}" />
+            <fileset dir="${build.resources.dir}" />
+        </jar>
+    </target>
+
+    <target name="install" depends="jar">
+        <mkdir dir="${lib}" />
+        <copy file="${build.dir}/${build.final.name}" todir="${lib}" />
+    </target>
+
+</project>

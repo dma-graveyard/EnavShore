@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="enavshore-api" default="install">
+
+    <property file="${user.home}/.ant.properties" />
+    <property file="${basedir}/../.ant.properties" />
+
+    <property name="lib" value="${basedir}/../lib" />
+    <property name="extlib" value="${basedir}/../extlib" />
+
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="build.classes.dir" value="${build.dir}/classes" />
+    <property name="build.final.name" value="${ant.project.name}.war" />
+
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="src.main.dir" value="${src.dir}/main" />
+    <property name="src.main.java.dir" value="${src.main.dir}/java" />
+    <property name="src.main.webapp.dir" value="${src.main.dir}/webapp" />
+
+    <path id="compile.class.path">
+        <pathelement location="${lib}/enavshore-core.jar" />
+        <pathelement location="${lib}/enavshore-common.jar" />
+        <fileset dir="${enavshore.jboss.home}/client" >
+            <include name="**/*.jar"/>
+        </fileset>
+    	<fileset dir="${extlib}" >
+			<include name="**/*.jar"/>
+		</fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${build.classes.dir}" />
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="compile" depends="init">
+        <javac destdir="${build.classes.dir}" debug="on" encoding="UTF-8" includeantruntime="false">
+            <compilerarg value="-Xlint:all,-serial,-path" />
+            <classpath refid="compile.class.path" />
+            <src path="${src.main.java.dir}" />
+        </javac>
+    </target>
+
+    <target name="war" depends="compile">
+        <war file="${build.dir}/${build.final.name}" webxml="${src.main.webapp.dir}/WEB-INF/web.xml">
+            <classes dir="${build.classes.dir}" />
+            <webinf dir="${src.main.webapp.dir}/WEB-INF" excludes="web.xml" />
+            <fileset dir="${src.main.webapp.dir}" excludes="WEB-INF/" />
+        </war>
+    </target>
+
+    <target name="install" depends="war">
+        <mkdir dir="${lib}" />
+        <copy file="${build.dir}/${build.final.name}" todir="${lib}" />
+    </target>
+
+</project>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="api/src/main/java"/>
+	<classpathentry kind="src" path="common/src/main/java"/>
+	<classpathentry kind="src" path="core/src/main/java"/>
+	<classpathentry kind="lib" path="extlib/commons-codec.jar"/>
+	<classpathentry kind="lib" path="extlib/commons-httpclient.jar"/>
+	<classpathentry kind="lib" path="extlib/commons-lang-2.5.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.ejb.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.enterprise.deploy.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.jms.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.management.j2ee.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.persistence.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.resource.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.security.auth.message.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.security.jacc.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.servlet.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.servlet.jsp.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.servlet.jsp.jstl.jar"/>
+	<classpathentry kind="lib" path="extlib/javax.transaction.jar"/>
+	<classpathentry kind="lib" path="extlib/jbossws-spi.jar"/>
+	<classpathentry kind="lib" path="extlib/log4j.jar"/>
+	<classpathentry kind="lib" path="extlib/mysql-connector-java-5.1.12-bin.jar"/>
+	<classpathentry kind="lib" path="extlib/msiedit-core.jar"/>
+	<classpathentry kind="lib" path="extlib/gson-1.7.1.jar"/>
+	<classpathentry kind="lib" path="extlib/aislib-1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=".build"/>
+</classpath>

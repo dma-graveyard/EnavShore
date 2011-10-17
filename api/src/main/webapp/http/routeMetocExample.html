@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Route Metoc HTTP API example</title>
+	<script type="text/javascript" src="formatdate.js"></script>
+
+	<style type="text/css">
+	body {
+		margin: 30px;
+		color: black;
+		font-family: verdana, geneva, arial, sans-serif;
+		font-size: 0.7em;
+	}
+	
+	.greenbar {
+		color: #FFFFFF;
+		background: #66CC66;
+		padding: 10px;
+	}
+	
+	a:link {
+		color: #339933;
+	}
+	
+	a:visited {
+		color: red;
+	}
+	
+	a:active {
+		color: #FF0000;
+	}
+	
+	a:hover {
+		color: #FFFFFF;
+	}
+	
+	.data {
+	    font-family: Courier New;
+	    font-size: 11px;
+	} 
+	</style>
+
+</head>
+<body>
+<h1 class="greenbar">Route Metoc Example</h1>
+<form name="routeMetoc" method="post" action="/api/http/routeMetoc" onsubmit="return setMethod();">
+<table>
+	<tr>
+		<td>MMSI</td>
+		<td><input type="text" name="MMSI" value="000000000" size="9" class="data"/></td>
+	</tr>
+	<tr>
+		<td>startTime</td>
+		<td><input type="text" name="startTime" value="" size="20" class="data"/></td>
+	</tr>
+	<tr>
+		<td>data</td>
+		<td><input type="text" name="data"
+			value="WI,CU,WA,SE" size="50" class="data"/></td>
+	</tr>
+	<tr>
+		<td>routeData</td>
+		<td><textarea name="routeData" cols="120" rows="25" class="data">
+// WP No.,Lat, , ,Lon, , ,Prt[nm],Stb[nm],Arr Rad[nm],Speed[nm],Sail(RL/GC),ROT[deg/min],Turn Rad[nm],Time Zone, ,Name
+000,56,01.794,N,12,39.702,E,***,***,***,***,***,***,***,***
+001,56,00.408,N,12,40.284,E,0.20,0.20,0.50,16.00,RL,10.00,1.53,00:00,E,
+002,55,57.642,N,12,41.682,E,0.20,0.20,0.50,16.00,RL,10.00,1.53,00:00,E,
+003,55,54.780,N,12,43.992,E,0.20,0.20,0.50,16.00,RL,10.00,1.53,00:00,E,
+004,55,53.394,N,12,44.484,E,0.20,0.20,0.50,12.00,RL,10.00,1.53,00:00,E,
+005,55,50.574,N,12,44.316,E,0.20,0.20,0.50,10.00,RL,10.00,1.53,00:00,E,
+006,55,43.536,N,12,40.860,E,0.20,0.20,0.50,10.00,RL,10.00,1.53,00:00,E,
+007,55,40.470,N,12,41.268,E,0.20,0.20,0.50,12.00,RL,10.00,1.53,00:00,E,
+008,55,33.258,N,12,42.258,E,0.20,0.20,0.50,14.00,RL,10.00,1.53,00:00,E,
+009,55,31.998,N,12,42.174,E,0.20,0.20,0.50,14.00,RL,10.00,1.53,00:00,E,
+010,55,27.888,N,12,39.786,E,0.20,0.20,0.50,16.00,RL,10.00,1.53,00:00,E,
+011,55,22.044,N,12,37.890,E,0.20,0.20,0.50,16.00,RL,10.00,1.53,00:00,E,
+		</textarea></td>
+	</tr>
+	<tr>
+		<td>json</td>
+		<td><input type="checkbox" name="json" value="true" /></td>
+	</tr>
+	<tr>
+		<td>jsonp</td>
+		<td><input type="text" name="jsonp" value="" /></td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="submit" value="Send" /></td>
+	</tr>
+</table>
+
+</form>
+
+<script type="text/javascript">
+<!--
+var now = new Date();
+if (document.routeMetoc.startTime.value == "") {
+	document.routeMetoc.startTime.value = now.format("isoDateTime"); 
+}
+
+function setMethod() {
+	document.routeMetoc.method = (document.routeMetoc.json.checked || document.routeMetoc.jsonp.value != '') ? 'get' : 'post';
+	return true;
+}
+//-->
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+<jboss-app>
+  <loader-repository>
+    enavshore:archive=enavshore.ear
+  </loader-repository>
+</jboss-app>

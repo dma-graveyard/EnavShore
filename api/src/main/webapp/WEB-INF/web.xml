@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<servlet>
+		<servlet-name>Status</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.http.Status</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Ais</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.http.Ais</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>XmlRouteMetoc</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.xml.RouteMetoc</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>XmlMsi</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.xml.Msi</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>XmlNogo</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.xml.Nogo</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Status</servlet-name>
+		<url-pattern>/http/status</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Ais</servlet-name>
+		<url-pattern>/http/ais</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>XmlRouteMetoc</servlet-name>
+		<url-pattern>/xml/routeMetoc</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>XmlMsi</servlet-name>
+		<url-pattern>/xml/msi</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>XmlNogo</servlet-name>
+		<url-pattern>/xml/nogo</url-pattern>
+	</servlet-mapping>
+</web-app>
