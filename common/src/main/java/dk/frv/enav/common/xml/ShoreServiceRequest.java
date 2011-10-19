@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "shoreServiceRequest", propOrder = { "mmsi", "positionReport" })
+@XmlType(name = "shoreServiceRequest", propOrder = {})
 public abstract class ShoreServiceRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 

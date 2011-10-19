@@ -9,9 +9,7 @@ import dk.frv.enav.common.xml.ShoreServiceResponse;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "nogoResponse", propOrder = {
-    "nogoShape"
-})
+@XmlType(name = "nogoResponse", propOrder = {})
 public class NogoResponse extends ShoreServiceResponse {
 	private static final long serialVersionUID = 1L;
 	

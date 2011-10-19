@@ -7,11 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "metocForecastTriplet", propOrder = {
-    "forecast",
-    "max",
-    "min"
-})
+@XmlType(name = "metocForecastTriplet", propOrder = {})
 public class MetocForecastTriplet implements Serializable {
 
 	private static final long serialVersionUID = 1L;

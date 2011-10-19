@@ -8,17 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "waypoint", propOrder = {
-    "lat",
-    "lon",
-    "turnRad",
-    "rot",
-    "eta",
-    "speed",
-    "heading",
-    "xtdStarboard",
-    "xtdPort"
-})
+@XmlType(name = "waypoint", propOrder = {})
 public class Waypoint implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

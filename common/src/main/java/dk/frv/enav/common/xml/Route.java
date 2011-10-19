@@ -8,10 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "route", propOrder = {
-    "waypoints",
-    "activeWaypoint"
-})
+@XmlType(name = "route", propOrder = {})
 public class Route implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

@@ -14,21 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "metocForecastPoint", propOrder = {
-    "currentDirection",
-    "currentSpeed",
-    "density",
-    "expires",
-    "lat",
-    "lon",    
-    "meanWaveHeight",
-    "meanWavePeriod",
-    "meanWaveDirection",
-    "seaLevel",
-    "time",    
-    "windDirection",
-    "windSpeed"
-})
+@XmlType(name = "metocForecastPoint", propOrder = {})
 public class MetocForecastPoint implements Serializable {
 
 	private static final long serialVersionUID = 1L;

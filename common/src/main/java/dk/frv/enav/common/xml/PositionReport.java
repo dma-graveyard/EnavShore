@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "positionReport", propOrder = { "latitude", "longitude", "sog", "heading", "cog", "rot" })
+@XmlType(name = "positionReport", propOrder = {})
 public class PositionReport implements Serializable {
 	private static final long serialVersionUID = 1L;
 	

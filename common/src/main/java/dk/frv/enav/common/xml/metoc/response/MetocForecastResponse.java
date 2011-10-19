@@ -12,9 +12,7 @@ import dk.frv.enav.common.xml.metoc.MetocForecast;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "metocForecastResponse", propOrder = {
-    "metocForecast"
-})
+@XmlType(name = "metocForecastResponse", propOrder = {})
 public class MetocForecastResponse extends ShoreServiceResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;

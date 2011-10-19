@@ -12,9 +12,7 @@ import dk.frv.enav.common.xml.msi.MsiMessage;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "msiResponse", propOrder = {
-    "messages"
-})
+@XmlType(name = "msiResponse", propOrder = {})
 public class MsiResponse extends ShoreServiceResponse {
 	private static final long serialVersionUID = 1L;
 	

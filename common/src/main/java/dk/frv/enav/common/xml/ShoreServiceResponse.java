@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "shoreServiceResponse", propOrder = { "shoreMmsi", "errorCode", "errorMessage" })
+@XmlType(name = "shoreServiceResponse", propOrder = {})
 public abstract class ShoreServiceResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;

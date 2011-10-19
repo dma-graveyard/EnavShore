@@ -9,9 +9,7 @@ import dk.frv.enav.common.xml.ShoreServiceRequest;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "msiPollRequest", propOrder = {
-    "lastMessage"
-})
+@XmlType(name = "msiPollRequest", propOrder = {})
 public class MsiPollRequest extends ShoreServiceRequest {
 	private static final long serialVersionUID = 1L;
 	

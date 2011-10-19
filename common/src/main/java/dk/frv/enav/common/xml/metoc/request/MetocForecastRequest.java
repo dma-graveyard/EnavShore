@@ -16,13 +16,7 @@ import dk.frv.enav.common.xml.metoc.MetocDataTypes;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "metocForecastRequest", propOrder = {
-    "dataTypes",
-    "dt",
-    "t0",
-    "t1",
-    "waypoints"
-})
+@XmlType(name = "metocForecastRequest", propOrder = {})
 public class MetocForecastRequest extends ShoreServiceRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
