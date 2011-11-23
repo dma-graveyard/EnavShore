@@ -47,6 +47,27 @@ public class AisServiceBean implements AisService {
 		return query.getResultList();
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	public List<AisVesselTarget> getAisTargets(AisRequest aisRequest) {		
+		Query query = entityManager.createQuery("" +
+				"SELECT vt FROM AisVesselTarget vt " +
+				"WHERE vt.aisVesselPosition.lat > :swLat " +
+				"AND vt.aisVesselPosition.lon > :swLon " +
+				"AND vt.aisVesselPosition.lat < :neLat " +
+				"AND vt.aisVesselPosition.lon < :neLon " +
+				"AND vt.aisVesselPosition.received > :newDate");
+
+		query.setParameter("swLat", aisRequest.getSouthWestLat());
+		query.setParameter("swLon", aisRequest.getSouthWestLon());
+		query.setParameter("neLat", aisRequest.getNorthEastLat());
+		query.setParameter("neLon", aisRequest.getNorthEastLon());
+		query.setParameter("newDate", new Date(System.currentTimeMillis()-MAX_TARGET_AGE));
+		
+		return query.getResultList();
+	
+	}
+	
 	public List<PublicAisTarget> getPublicAisTargets(AisRequest aisRequest) {		
 		Query query = entityManager.createQuery("" +
 				"SELECT vt, vt.aisVesselPosition, vt.aisVesselStatic, casp " +
@@ -106,6 +127,7 @@ public class AisServiceBean implements AisService {
 					length,
 					width,
 					sog);
+			
 			publicShips.add(newPublicTarget);	
 		}
 		
