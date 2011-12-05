@@ -4,7 +4,6 @@ import java.util.Date;
 
 public abstract class AisTarget {
 
-	protected long id;
 	protected long lastReceived;
 	protected long currentTime;
 	protected double lat;
