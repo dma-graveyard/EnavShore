@@ -14,7 +14,7 @@ import com.google.gson.Gson;
 import dk.frv.enav.common.net.http.HttpParams;
 import dk.frv.enav.shore.core.services.ais.AisRequest;
 import dk.frv.enav.shore.core.services.ais.AisService;
-import dk.frv.enav.shore.core.services.ais.PublicAisTarget;
+import dk.frv.enav.shore.core.services.ais.OverviewAisTarget;
 
 public class Ais extends HttpApiServlet {
 
@@ -32,19 +32,32 @@ public class Ais extends HttpApiServlet {
 		PrintWriter out = response.getWriter();        
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-        request.setCharacterEncoding("UTF-8");
-        
+        request.setCharacterEncoding("UTF-8");        
         HttpParams params = new HttpParams(request.getParameterMap());
+        String json = "";
         
-        double swLat = new Double(params.getFirst("swLat"));
-        double swLon = new Double(params.getFirst("swLon"));
-        double neLat = new Double(params.getFirst("neLat"));
-        double neLon = new Double(params.getFirst("neLon"));
+        // Determine method
+        String method = (params.containsKey("method") ? params.getFirst("method") : "overview");
         
-        AisRequest aisRequest = new AisRequest(swLat, swLon, neLat, neLon);
-        List<PublicAisTarget> aisTargets = aisService.getPublicAisTargets(aisRequest);
+        if (method.equalsIgnoreCase("overview")) {
+        	double swLat = new Double(params.getFirst("swLat"));
+            double swLon = new Double(params.getFirst("swLon"));
+            double neLat = new Double(params.getFirst("neLat"));
+            double neLon = new Double(params.getFirst("neLon"));
+            
+            AisRequest aisRequest = new AisRequest(swLat, swLon, neLat, neLon);
+            List<OverviewAisTarget> aisTargets = aisService.getAisTargets(aisRequest);
+            
+            json = gson.toJson(aisTargets);
+        }
+        else if (method.equalsIgnoreCase("details")) {
+        	Integer mmsi = Integer.parseInt(params.getFirst("mmsi"));
+        	
+        	System.out.println("Getting details for MMSI " + mmsi);
+        	// TODO
+        }
         
-        String json = gson.toJson(aisTargets);
+        
         out.print(json);
 	}
 }

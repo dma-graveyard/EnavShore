@@ -3,6 +3,8 @@ package dk.frv.enav.shore.core.domain;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import dk.frv.ais.message.ShipTypeCargo;
+
 import java.util.Date;
 
 /**
@@ -14,7 +16,6 @@ import java.util.Date;
 public class AisVesselStatic implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
-	public enum VesselType {PASSENGER_VESSEL, CARGO_VESSEL, TANKER, HSC, TUG, PILOT, YACHT, NAVIGATION_AID, UNSPECIFIED};
 	private int mmsi;
 	private String callsign;
 	private Date created;
@@ -32,29 +33,6 @@ public class AisVesselStatic implements Serializable {
 		
 	}
 
-	@Transient
-	public static VesselType getVesselType(byte shipType) {
-		switch(shipType/10) {
-			case 6: return VesselType.PASSENGER_VESSEL;
-			case 7: return VesselType.CARGO_VESSEL;
-			case 8: return VesselType.TANKER;
-			case 4: return VesselType.HSC;
-			case 5:
-				switch(shipType) {
-					case 52: return VesselType.TUG;
-					case 50: return VesselType.PILOT;
-					default: break;
-				}
-			case 3:
-				switch(shipType) {
-					case 36: return VesselType.YACHT;
-					case 37: return VesselType.YACHT;
-					default: break;
-				}
-			default: return VesselType.UNSPECIFIED;
-		}
-	}
-	
 	@Id
 	@Column(unique = true, nullable = false)
 	public int getMmsi() {
@@ -144,6 +122,12 @@ public class AisVesselStatic implements Serializable {
 
 	public void setShipType(Byte shipType) {
 		this.shipType = shipType;
+	}
+	
+	@Transient
+	public ShipTypeCargo getShipTypeCargo() {
+		Byte shipType = getShipType();
+		return new ShipTypeCargo((shipType == null) ? 0 : shipType);
 	}
 
 	// bi-directional one-to-one association to AisClassAStatic

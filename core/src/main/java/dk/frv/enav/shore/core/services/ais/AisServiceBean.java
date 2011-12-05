@@ -47,7 +47,7 @@ public class AisServiceBean implements AisService {
 		return query.getResultList();
 	}
 	
-	public List<PublicAisTarget> getPublicAisTargets(AisRequest aisRequest) {		
+	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest) {		
 		Query query = entityManager.createQuery("" +
 				"SELECT vt, vt.aisVesselPosition, vt.aisVesselStatic, casp " +
 				"FROM AisVesselTarget vt " +
@@ -68,7 +68,7 @@ public class AisServiceBean implements AisService {
 		@SuppressWarnings("unchecked")
 		List<Object[]> lines = query.getResultList();
 		
-		List<PublicAisTarget> publicShips = new ArrayList<PublicAisTarget>(lines.size());
+		List<OverviewAisTarget> publicShips = new ArrayList<OverviewAisTarget>(lines.size());
 		
 		for (Object[] values : lines) {
 			AisVesselTarget aisVessel = (AisVesselTarget) values[0];
@@ -88,21 +88,19 @@ public class AisServiceBean implements AisService {
 			
 			short length = (short) (aisVesselStatic.getDimBow() + aisVesselStatic.getDimStern());
 			byte width = (byte) (aisVesselStatic.getDimPort() + aisVesselStatic.getDimStarboard());
-			Byte vesselType; 
-			if((vesselType = aisVesselStatic.getShipType()) == null)
-				vesselType = 0;
 			
 			Double sog;
 			if((sog = aisVesselPosition.getSog()) == null)
 				sog = 0d;
 			
-			PublicAisTarget newPublicTarget = new PublicAisTarget(
+			OverviewAisTarget newPublicTarget = new OverviewAisTarget(
 					aisVessel.getLastReceived().getTime(),
 					aisVesselPosition.getLat(), 
 					aisVesselPosition.getLon(), 
 					heading,
 					navStatus,
-					AisVesselStatic.getVesselType(vesselType),
+					aisVesselStatic.getShipTypeCargo().getShipType().name(),
+					aisVesselStatic.getShipTypeCargo().getShipCargo().name(),
 					length,
 					width,
 					sog);

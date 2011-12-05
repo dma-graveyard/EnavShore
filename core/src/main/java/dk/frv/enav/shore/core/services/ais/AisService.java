@@ -9,5 +9,5 @@ public interface AisService {
 	
 	int getVesselCount();
 	
-	public List<PublicAisTarget> getPublicAisTargets(AisRequest aisRequest);
+	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest);
 }
