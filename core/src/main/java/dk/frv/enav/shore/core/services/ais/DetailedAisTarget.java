@@ -9,8 +9,20 @@ import dk.frv.enav.shore.core.domain.AisVesselPosition;
 import dk.frv.enav.shore.core.domain.AisVesselStatic;
 import dk.frv.enav.shore.core.domain.AisVesselTarget;
 
-public class DetailedAisTarget extends AisTarget {
+public class DetailedAisTarget {
 	
+	protected long mmsi;
+	protected String vesselClass;
+	protected long lastReceived;
+	protected long currentTime;
+	protected double lat;
+	protected double lon;
+	protected double cog;
+	protected boolean moored;
+	protected String vesselType;
+	protected short length;
+	protected byte width;
+	protected double sog;
 	protected String name;
 	protected String callsign;
 	protected String imoNo;
@@ -32,8 +44,21 @@ public class DetailedAisTarget extends AisTarget {
 		AisVesselStatic aisVesselStatic = aisVessel.getAisVesselStatic();
 		AisVesselPosition aisVesselPosition = aisVessel.getAisVesselPosition();
 		AisClassAPosition aisClassAPosition = aisVesselPosition.getAisClassAPosition();
-		AisClassAStatic aisClassAStatic = aisVesselStatic.getAisClassAStatic();
-		super.init(aisVessel, aisVesselPosition, aisVesselStatic, aisClassAPosition);
+		AisClassAStatic aisClassAStatic = aisVesselStatic.getAisClassAStatic();		
+		
+		this.length = (short) (aisVesselStatic.getDimBow() + aisVesselStatic.getDimStern());
+		this.width = (byte) (aisVesselStatic.getDimPort() + aisVesselStatic.getDimStarboard());		
+		
+		this.currentTime = System.currentTimeMillis();
+		this.mmsi = aisVessel.getMmsi();
+		this.vesselClass = aisVessel.getVesselClass();
+		this.lastReceived = ((currentTime - aisVessel.getLastReceived().getTime()) / 1000);
+		this.lat = aisVesselPosition.getLat();
+		this.lon = aisVesselPosition.getLon();
+		this.cog = aisVesselPosition.getCog();
+		this.heading = aisVesselPosition.getHeading();
+		this.sog = aisVesselPosition.getSog(); 		
+		this.vesselType = aisVesselStatic.getShipTypeCargo().prettyType();
 		
 		this.name = aisVesselStatic.getName();
 		this.callsign = aisVesselStatic.getCallsign();
@@ -44,13 +69,14 @@ public class DetailedAisTarget extends AisTarget {
 			this.imoNo = Integer.toString(aisClassAStatic.getImo());
 			this.destination = aisClassAStatic.getDestination();
 			this.draught = (double)aisClassAStatic.getDraught();
-			this.eta = aisClassAStatic.getEta();
+			this.eta = aisClassAStatic.getEta();			
 		}		
 		
 		// Class A position
 		if (aisClassAPosition != null) {
 			NavigationalStatus navigationalStatus = new NavigationalStatus(aisClassAPosition.getNavStatus());
 			this.navStatus = navigationalStatus.prettyStatus();
+			this.moored = (aisClassAPosition.getNavStatus() == 1 || aisClassAPosition.getNavStatus() == 5);
 		}
 		
 		// Determine country TODO move to DB
@@ -166,5 +192,102 @@ public class DetailedAisTarget extends AisTarget {
 	public void setPosAcc(byte posAcc) {
 		this.posAcc = posAcc;
 	}
+	
+	public long getMmsi() {
+		return mmsi;
+	}
+	
+	public void setMmsi(long mmsi) {
+		this.mmsi = mmsi;
+	}
+	
+	public String getVesselClass() {
+		return vesselClass;
+	}
+	
+	public void setVesselClass(String vesselClass) {
+		this.vesselClass = vesselClass;
+	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public double getLon() {
+		return lon;
+	}
+
+	public void setLon(double lon) {
+		this.lon = lon;
+	}
+
+	public double getCog() {
+		return cog;
+	}
+
+	public void setCog(double hdg) {
+		this.cog = hdg;
+	}
+
+	public boolean isMoored() {
+		return moored;
+	}
+	
+	public void setMoored(boolean moored) {
+		this.moored = moored;
+	}
+
+	public String getVesselType() {
+		return vesselType;
+	}
+
+	public void setVesselType(String vesselType) {
+		this.vesselType = vesselType;
+	}
+
+	public short getLength() {
+		return length;
+	}
+
+	public void setLength(short length) {
+		this.length = length;
+	}
+
+	public double getSog() {
+		return sog;
+	}
+
+	public void setSog(double sog) {
+		this.sog = sog;
+	}
+
+	public long getCurrentTime() {
+		return currentTime;
+	}
+
+	public void setCurrentTime(long currentTime) {
+		this.currentTime = currentTime;
+	}
+
+	public long getLastReceived() {
+		return lastReceived;
+	}
+
+	public void setLastReceived(long lastReceived) {
+		this.lastReceived = lastReceived;
+	}
+
+	public byte getWidth() {
+		return width;
+	}
+
+	public void setWidth(byte width) {
+		this.width = width;
+	}
+
 	
 }

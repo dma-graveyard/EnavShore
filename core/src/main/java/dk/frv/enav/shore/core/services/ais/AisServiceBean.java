@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import dk.frv.enav.shore.core.domain.AisClassAPosition;
+import dk.frv.ais.message.ShipTypeCargo;
 import dk.frv.enav.shore.core.domain.AisVesselPosition;
 import dk.frv.enav.shore.core.domain.AisVesselStatic;
 import dk.frv.enav.shore.core.domain.AisVesselTarget;
@@ -49,9 +49,8 @@ public class AisServiceBean implements AisService {
 	
 	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest) {		
 		Query query = entityManager.createQuery("" +
-				"SELECT vt, vt.aisVesselPosition, vt.aisVesselStatic, casp " +
+				"SELECT vt.mmsi, vt.vesselClass, vt.aisVesselPosition.cog, vt.aisVesselPosition.lat, vt.aisVesselPosition.lon, vt.aisVesselStatic.shipType " +
 				"FROM AisVesselTarget vt " +
-				"LEFT OUTER JOIN vt.aisVesselPosition.aisClassAPosition as casp " +
 				"WHERE vt.aisVesselPosition.lat > :swLat " +
 					"AND vt.aisVesselPosition.lon > :swLon " +
 					"AND vt.aisVesselPosition.lat < :neLat " +
@@ -71,14 +70,28 @@ public class AisServiceBean implements AisService {
 		List<OverviewAisTarget> vesselTargets = new ArrayList<OverviewAisTarget>(lines.size());
 		
 		for (Object[] values : lines) {
-			AisVesselTarget aisVessel = (AisVesselTarget) values[0];
-			AisVesselPosition aisVesselPosition = (AisVesselPosition) values[1];
-			AisVesselStatic aisVesselStatic = (AisVesselStatic) values[2];
-			AisClassAPosition aisClassAPosition = (AisClassAPosition) values[3];
-			
+			Integer mmsi = (Integer)values[0];
+			String vesselClass = (String)values[1];
+			Double cog = (Double)values[2];
+			Double lat = (Double)values[3];
+			Double lon = (Double)values[4];
+			Byte shipType = (Byte)values[5];
+			if (cog == null) {
+				cog = 0d;
+			}			
+					
 			
 			OverviewAisTarget aisTarget = new OverviewAisTarget();
-			aisTarget.init(aisVessel, aisVesselPosition, aisVesselStatic, aisClassAPosition);
+			
+			aisTarget.setMmsi(mmsi);			
+			aisTarget.setVc(vesselClass);
+			aisTarget.setCog((int)Math.round(cog));
+			aisTarget.setLat(lat);
+			aisTarget.setLon(lon);
+			aisTarget.setVc(vesselClass);
+			ShipTypeCargo shipTypeCargo = new ShipTypeCargo(shipType);			
+			aisTarget.setVt(shipTypeCargo.getShipType().ordinal());
+			
 			vesselTargets.add(aisTarget);	
 		}
 		
