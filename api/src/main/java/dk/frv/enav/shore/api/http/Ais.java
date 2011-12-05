@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import dk.frv.enav.common.net.http.HttpParams;
 import dk.frv.enav.shore.core.services.ais.AisRequest;
 import dk.frv.enav.shore.core.services.ais.AisService;
+import dk.frv.enav.shore.core.services.ais.DetailedAisTarget;
 import dk.frv.enav.shore.core.services.ais.OverviewAisTarget;
 
 public class Ais extends HttpApiServlet {
@@ -52,11 +53,9 @@ public class Ais extends HttpApiServlet {
         }
         else if (method.equalsIgnoreCase("details")) {
         	Integer mmsi = Integer.parseInt(params.getFirst("mmsi"));
-        	
-        	System.out.println("Getting details for MMSI " + mmsi);
-        	// TODO
+        	DetailedAisTarget detailedAisTarget = aisService.getTargetDetails(mmsi);
+        	json = gson.toJson(detailedAisTarget);
         }
-        
         
         out.print(json);
 	}

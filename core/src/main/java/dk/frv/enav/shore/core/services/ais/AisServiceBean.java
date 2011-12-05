@@ -68,7 +68,7 @@ public class AisServiceBean implements AisService {
 		@SuppressWarnings("unchecked")
 		List<Object[]> lines = query.getResultList();
 		
-		List<OverviewAisTarget> publicShips = new ArrayList<OverviewAisTarget>(lines.size());
+		List<OverviewAisTarget> vesselTargets = new ArrayList<OverviewAisTarget>(lines.size());
 		
 		for (Object[] values : lines) {
 			AisVesselTarget aisVessel = (AisVesselTarget) values[0];
@@ -76,37 +76,24 @@ public class AisServiceBean implements AisService {
 			AisVesselStatic aisVesselStatic = (AisVesselStatic) values[2];
 			AisClassAPosition aisClassAPosition = (AisClassAPosition) values[3];
 			
-			Double heading = null;
-			if((heading = aisVesselPosition.getCog()) == null) {
-				if((heading = aisVesselPosition.getHeading()) == null)
-					heading = 0d;
-			}
 			
-			byte navStatus = -1;
-			if(aisClassAPosition != null)
-				navStatus = aisClassAPosition.getNavStatus();
-			
-			short length = (short) (aisVesselStatic.getDimBow() + aisVesselStatic.getDimStern());
-			byte width = (byte) (aisVesselStatic.getDimPort() + aisVesselStatic.getDimStarboard());
-			
-			Double sog;
-			if((sog = aisVesselPosition.getSog()) == null)
-				sog = 0d;
-			
-			OverviewAisTarget newPublicTarget = new OverviewAisTarget(
-					aisVessel.getLastReceived().getTime(),
-					aisVesselPosition.getLat(), 
-					aisVesselPosition.getLon(), 
-					heading,
-					navStatus,
-					aisVesselStatic.getShipTypeCargo().getShipType().name(),
-					aisVesselStatic.getShipTypeCargo().getShipCargo().name(),
-					length,
-					width,
-					sog);
-			publicShips.add(newPublicTarget);	
+			OverviewAisTarget aisTarget = new OverviewAisTarget();
+			aisTarget.init(aisVessel, aisVesselPosition, aisVesselStatic, aisClassAPosition);
+			vesselTargets.add(aisTarget);	
 		}
 		
-		return publicShips;
+		return vesselTargets;
 	}
+	
+	@Override
+	public DetailedAisTarget getTargetDetails(int mmsi) {
+		DetailedAisTarget aisTarget = new DetailedAisTarget();
+		AisVesselTarget vesselTarget = entityManager.find(AisVesselTarget.class, mmsi);
+		if (vesselTarget != null) {
+			aisTarget.init(vesselTarget);
+		}
+		
+		return aisTarget;
+	}
+	
 }

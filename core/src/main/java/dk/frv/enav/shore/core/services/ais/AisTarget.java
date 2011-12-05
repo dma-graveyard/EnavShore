@@ -1,9 +1,15 @@
 package dk.frv.enav.shore.core.services.ais;
 
-import java.util.Date;
+import dk.frv.enav.shore.core.domain.AisClassAPosition;
+import dk.frv.enav.shore.core.domain.AisVesselPosition;
+import dk.frv.enav.shore.core.domain.AisVesselStatic;
+import dk.frv.enav.shore.core.domain.AisVesselTarget;
+
 
 public abstract class AisTarget {
 
+	protected long mmsi;
+	protected String vesselClass;
 	protected long lastReceived;
 	protected long currentTime;
 	protected double lat;
@@ -11,32 +17,62 @@ public abstract class AisTarget {
 	protected double cog;
 	protected boolean moored;
 	protected String vesselType;
-	protected String vesselCargo;
 	protected short length;
 	protected byte width;
 	protected double sog;
 
 	public AisTarget() {
-		currentTime = System.currentTimeMillis();
+		
 	}
-
-	public AisTarget(long lastReceived, double lat, double lon, double cog, byte navStatus, String vesselType, String vesselCargo,
-			short length, byte width, double sog) {
-		this();
-		Date elapsed = new Date(currentTime - lastReceived);
-		this.lastReceived = elapsed.getTime() / 1000;
-		this.lat = lat;
-		this.lon = lon;
-		this.cog = cog;
-		moored = false;
-		if (navStatus == 1 || navStatus == 5) {
-			moored = true;
+	
+	public void init(AisVesselTarget aisVessel, AisVesselPosition aisVesselPosition, AisVesselStatic aisVesselStatic, AisClassAPosition aisClassAPosition) {
+		Double heading = null;
+		if((heading = aisVesselPosition.getCog()) == null) {
+			if((heading = aisVesselPosition.getHeading()) == null)
+				heading = 0d;
 		}
-		this.vesselType = vesselType;
-		this.vesselCargo = vesselCargo;
-		this.length = length;
-		this.width = width;
-		this.sog = sog;
+
+		byte navStatus = -1;
+		if(aisClassAPosition != null) {
+			navStatus = aisClassAPosition.getNavStatus();
+		}
+		
+		
+		short length = (short) (aisVesselStatic.getDimBow() + aisVesselStatic.getDimStern());
+		byte width = (byte) (aisVesselStatic.getDimPort() + aisVesselStatic.getDimStarboard());
+		
+		Double sog;
+		if((sog = aisVesselPosition.getSog()) == null) {
+			sog = 0d;
+		}
+		
+		currentTime = System.currentTimeMillis();
+		setVesselClass(aisVessel.getVesselClass());
+		setLastReceived((currentTime - aisVessel.getLastReceived().getTime()) / 1000);
+		setLat(aisVesselPosition.getLat());
+		setLon(aisVesselPosition.getLon());
+		setCog(heading);
+		setSog(sog);
+		setMoored(navStatus == 1 || navStatus == 5);
+		setVesselType(aisVesselStatic.getShipTypeCargo().prettyType());
+		setWidth(width);
+		setLength(length);
+	}
+	
+	public long getMmsi() {
+		return mmsi;
+	}
+	
+	public void setMmsi(long mmsi) {
+		this.mmsi = mmsi;
+	}
+	
+	public String getVesselClass() {
+		return vesselClass;
+	}
+	
+	public void setVesselClass(String vesselClass) {
+		this.vesselClass = vesselClass;
 	}
 
 	public double getLat() {
@@ -66,6 +102,10 @@ public abstract class AisTarget {
 	public boolean isMoored() {
 		return moored;
 	}
+	
+	public void setMoored(boolean moored) {
+		this.moored = moored;
+	}
 
 	public String getVesselType() {
 		return vesselType;
@@ -73,14 +113,6 @@ public abstract class AisTarget {
 
 	public void setVesselType(String vesselType) {
 		this.vesselType = vesselType;
-	}
-
-	public String getVesselCargo() {
-		return vesselCargo;
-	}
-
-	public void setVesselCargo(String vesselCargo) {
-		this.vesselCargo = vesselCargo;
 	}
 
 	public short getLength() {
