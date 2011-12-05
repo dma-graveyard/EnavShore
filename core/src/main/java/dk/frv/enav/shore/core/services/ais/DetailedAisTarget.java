@@ -2,8 +2,6 @@ package dk.frv.enav.shore.core.services.ais;
 
 import java.util.Date;
 
-import dk.frv.ais.country.CountryMapper;
-import dk.frv.ais.country.MidCountry;
 import dk.frv.ais.message.NavigationalStatus;
 import dk.frv.enav.shore.core.domain.AisClassAPosition;
 import dk.frv.enav.shore.core.domain.AisClassAStatic;
@@ -55,15 +53,15 @@ public class DetailedAisTarget extends AisTarget {
 			this.navStatus = navigationalStatus.prettyStatus();
 		}
 		
-		// Determine country
-		String str = Long.toString(mmsi);
-		if (str.length() > 3) {
-			str = str.substring(0, 3);
-			MidCountry midCountry = CountryMapper.getInstance().getByMid(Integer.parseInt(str)); 
-			if (midCountry != null) {
-				country = midCountry.getName();
-			}
-		}
+		// Determine country TODO move to DB
+//		String str = Long.toString(mmsi);
+//		if (str.length() > 3) {
+//			str = str.substring(0, 3);
+//			MidCountry midCountry = CountryMapper.getInstance().getByMid(Integer.parseInt(str)); 
+//			if (midCountry != null) {
+//				country = midCountry.getName();
+//			}
+//		}
 		
 		if (aisVesselPosition.getHeading() != null) {
 			this.heading = aisVesselPosition.getHeading();

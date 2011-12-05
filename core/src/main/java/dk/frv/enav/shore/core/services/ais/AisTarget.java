@@ -47,6 +47,7 @@ public abstract class AisTarget {
 		}
 		
 		currentTime = System.currentTimeMillis();
+		setMmsi(aisVessel.getMmsi());
 		setVesselClass(aisVessel.getVesselClass());
 		setLastReceived((currentTime - aisVessel.getLastReceived().getTime()) / 1000);
 		setLat(aisVesselPosition.getLat());
