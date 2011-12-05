@@ -11,7 +11,6 @@ import javax.persistence.Query;
 
 import dk.frv.ais.message.ShipTypeCargo;
 import dk.frv.enav.shore.core.domain.AisVesselPosition;
-import dk.frv.enav.shore.core.domain.AisVesselStatic;
 import dk.frv.enav.shore.core.domain.AisVesselTarget;
 
 @Stateless
