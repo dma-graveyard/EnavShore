@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import dk.frv.enav.shore.core.domain.AisVesselTarget;
+
 @Local
 public interface AisService {
 	
@@ -21,10 +23,17 @@ public interface AisService {
 	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest);
 	
 	/**
-	 * Get details for MMSI target
-	 * @param mmsi
+	 * Get vessel target by id
+	 * @param id
 	 * @return
 	 */
-	public DetailedAisTarget getTargetDetails(int mmsi);
+	public AisVesselTarget getById(int id);
+	
+	/**
+	 * Get details for MMSI target
+	 * @param id
+	 * @return
+	 */
+	public DetailedAisTarget getTargetDetails(int id);
 	
 }

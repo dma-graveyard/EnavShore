@@ -16,15 +16,13 @@ import dk.frv.enav.shore.core.domain.AisVesselTarget;
 @Stateless
 public class AisServiceBean implements AisService {
 	
-	private static final long MAX_TARGET_AGE = 6 * 60 * 1000; // 6 min
-
 	@PersistenceContext(unitName = "enav")
     private EntityManager entityManager;
 	
 	@Override
 	public int getVesselCount() {
-		Query query = entityManager.createQuery("SELECT COUNT(*) FROM AisVesselTarget t WHERE t.lastReceived > :newDate");
-		query.setParameter("newDate", new Date(System.currentTimeMillis()-MAX_TARGET_AGE));
+		Query query = entityManager.createQuery("SELECT COUNT(*) FROM AisVesselTarget t WHERE t.validTo >= :now");
+		query.setParameter("now", new Date());
 		Long count = (Long) query.getSingleResult();
 		return count.intValue();
 	}
@@ -37,30 +35,31 @@ public class AisServiceBean implements AisService {
 				"AND wp.lon > :swLon " +
 				"AND wp.lat < :neLat " +
 				"AND wp.lon < :neLon " +
-				"AND wp.received > :newDate");
+				"AND wp.validTo >= :now");
 		query.setParameter("swLat", aisRequest.getSouthWestLat());
 		query.setParameter("swLon", aisRequest.getSouthWestLon());
 		query.setParameter("neLat", aisRequest.getNorthEastLat());
 		query.setParameter("neLon", aisRequest.getNorthEastLon());
-		query.setParameter("newDate", new Date(System.currentTimeMillis()-MAX_TARGET_AGE));
+		query.setParameter("now", new Date());
 		return query.getResultList();
 	}
 	
 	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest) {		
 		Query query = entityManager.createQuery("" +
-				"SELECT vt.mmsi, vt.vesselClass, vt.aisVesselPosition.cog, vt.aisVesselPosition.lat, vt.aisVesselPosition.lon, vt.aisVesselStatic.shipType " +
+				"SELECT vt.id, vt.vesselClass, vt.aisVesselPosition.cog, vt.aisVesselPosition.lat, vt.aisVesselPosition.lon, vt.aisVesselStatic.shipType " +
 				"FROM AisVesselTarget vt " +
 				"WHERE vt.aisVesselPosition.lat > :swLat " +
 					"AND vt.aisVesselPosition.lon > :swLon " +
 					"AND vt.aisVesselPosition.lat < :neLat " +
 					"AND vt.aisVesselPosition.lon < :neLon " +
-					"AND vt.aisVesselPosition.received > :newDate");
+					"AND vt.validTo >= :now " +
+					"AND vt.aisVesselPosition.lat IS NOT NULL AND vt.aisVesselPosition.lon IS NOT NULL");
 
 		query.setParameter("swLat", aisRequest.getSouthWestLat());
 		query.setParameter("swLon", aisRequest.getSouthWestLon());
 		query.setParameter("neLat", aisRequest.getNorthEastLat());
 		query.setParameter("neLon", aisRequest.getNorthEastLon());
-		query.setParameter("newDate", new Date(System.currentTimeMillis()-MAX_TARGET_AGE));
+		query.setParameter("now", new Date());
 		
 		
 		@SuppressWarnings("unchecked")
@@ -69,7 +68,7 @@ public class AisServiceBean implements AisService {
 		List<OverviewAisTarget> vesselTargets = new ArrayList<OverviewAisTarget>(lines.size());
 		
 		for (Object[] values : lines) {
-			Integer mmsi = (Integer)values[0];
+			Integer id = (Integer)values[0];
 			String vesselClass = (String)values[1];
 			Double cog = (Double)values[2];
 			Double lat = (Double)values[3];
@@ -77,12 +76,14 @@ public class AisServiceBean implements AisService {
 			Byte shipType = (Byte)values[5];
 			if (cog == null) {
 				cog = 0d;
-			}			
-					
+			}
+			if (shipType == null) {
+				shipType = 0;
+			}
 			
 			OverviewAisTarget aisTarget = new OverviewAisTarget();
 			
-			aisTarget.setMmsi(mmsi);			
+			aisTarget.setId(id);			
 			aisTarget.setVc(vesselClass);
 			aisTarget.setCog((int)Math.round(cog));
 			aisTarget.setLat(lat);
@@ -97,14 +98,22 @@ public class AisServiceBean implements AisService {
 		return vesselTargets;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public DetailedAisTarget getTargetDetails(int mmsi) {
+	public AisVesselTarget getById(int id) {
+		Query query = entityManager.createNamedQuery("AisVesselTarget:getById");
+		query.setParameter("id", id);
+		List<AisVesselTarget> list = query.getResultList();
+		return (list.size() == 1 ? list.get(0) : null);
+	}
+	
+	@Override
+	public DetailedAisTarget getTargetDetails(int id) {
 		DetailedAisTarget aisTarget = new DetailedAisTarget();
-		AisVesselTarget vesselTarget = entityManager.find(AisVesselTarget.class, mmsi);
-		if (vesselTarget != null) {
-			aisTarget.init(vesselTarget);
+		AisVesselTarget target = getById(id);
+		if (target != null) {
+			aisTarget.init(target);
 		}
-		
 		return aisTarget;
 	}
 	

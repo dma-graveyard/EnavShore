@@ -52,8 +52,8 @@ public class Ais extends HttpApiServlet {
             json = gson.toJson(aisTargets);
         }
         else if (method.equalsIgnoreCase("details")) {
-        	Integer mmsi = Integer.parseInt(params.getFirst("mmsi"));
-        	DetailedAisTarget detailedAisTarget = aisService.getTargetDetails(mmsi);
+        	Integer id = Integer.parseInt(params.getFirst("id"));
+        	DetailedAisTarget detailedAisTarget = aisService.getTargetDetails(id);
         	json = gson.toJson(detailedAisTarget);
         }
         

@@ -11,6 +11,7 @@ import dk.frv.enav.shore.core.domain.AisVesselTarget;
 
 public class DetailedAisTarget {
 	
+	protected long id;
 	protected long mmsi;
 	protected String vesselClass;
 	protected long lastReceived;
@@ -42,7 +43,9 @@ public class DetailedAisTarget {
 
 	public void init(AisVesselTarget aisVessel) {
 		AisVesselStatic aisVesselStatic = aisVessel.getAisVesselStatic();
+		if (aisVesselStatic == null) return;
 		AisVesselPosition aisVesselPosition = aisVessel.getAisVesselPosition();
+		if (aisVesselPosition == null) return;
 		AisClassAPosition aisClassAPosition = aisVesselPosition.getAisClassAPosition();
 		AisClassAStatic aisClassAStatic = aisVesselStatic.getAisClassAStatic();		
 		
@@ -50,6 +53,7 @@ public class DetailedAisTarget {
 		this.width = (byte) (aisVesselStatic.getDimPort() + aisVesselStatic.getDimStarboard());		
 		
 		this.currentTime = System.currentTimeMillis();
+		this.id = aisVessel.getId();
 		this.mmsi = aisVessel.getMmsi();
 		this.vesselClass = aisVessel.getVesselClass();
 		this.lastReceived = ((currentTime - aisVessel.getLastReceived().getTime()) / 1000);

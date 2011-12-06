@@ -2,7 +2,7 @@ package dk.frv.enav.shore.core.services.ais;
 
 public class OverviewAisTarget {
 	
-	private long mmsi;
+	private long id;
 	private int cog;
 	private double lat;
 	private double lon;
@@ -13,12 +13,12 @@ public class OverviewAisTarget {
 		
 	}
 
-	public long getMmsi() {
-		return mmsi;
+	public long getId() {
+		return id;
 	}
-
-	public void setMmsi(long mmsi) {
-		this.mmsi = mmsi;
+	
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public int getCog() {
