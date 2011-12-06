@@ -15,10 +15,10 @@ public interface AisService {
 	
 	/**
 	 * Get list of AIS targets in the form of overview targets
-	 * @param aisRequest
+	 * @param overviewRequest
 	 * @return
 	 */
-	public OverviewResponse getAisTargets(AisRequest aisRequest);
+	public OverviewResponse getOverview(OverviewRequest overviewRequest);
 	
 	/**
 	 * Get vessel target by id

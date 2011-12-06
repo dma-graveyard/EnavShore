@@ -40,7 +40,7 @@ public class OverviewResponse {
 		this.shipCount = shipCount;
 	}
 	
-	public void addShip(int id, String vesselClass, Double cog, Double sog, Double lat, Double lon, Byte shipType, Integer navStatus) {
+	public void addShip(int id, String vesselClass, Double cog, Double sog, Double lat, Double lon, Byte shipType, Byte navStatus) {
 		if (cog == null) {
 			cog = 0d;
 		}
@@ -58,8 +58,9 @@ public class OverviewResponse {
 		list.add(vesselClass);
 		ShipTypeCargo shipTypeCargo = new ShipTypeCargo(shipType);
 		list.add(Integer.toString(shipTypeCargo.getShipType().ordinal()));			
-		// TODO moored should come from nav status			
-		list.add((sog == null || sog < 0.01) ? "1" : "0");
+		
+		list.add((navStatus != null && (navStatus == 1 || navStatus ==5)) ? "1" : "0");
+		
 		ships.put(id, list);	
 		shipCount++;
 	}

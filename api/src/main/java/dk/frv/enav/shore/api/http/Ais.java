@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 import dk.frv.enav.common.net.http.HttpParams;
-import dk.frv.enav.shore.core.services.ais.AisRequest;
 import dk.frv.enav.shore.core.services.ais.AisService;
 import dk.frv.enav.shore.core.services.ais.DetailedAisTarget;
+import dk.frv.enav.shore.core.services.ais.OverviewRequest;
 import dk.frv.enav.shore.core.services.ais.OverviewResponse;
 
 public class Ais extends HttpApiServlet {
@@ -40,13 +40,8 @@ public class Ais extends HttpApiServlet {
         String method = (params.containsKey("method") ? params.getFirst("method") : "overview");
         
         if (method.equalsIgnoreCase("overview")) {
-        	double swLat = new Double(params.getFirst("swLat"));
-            double swLon = new Double(params.getFirst("swLon"));
-            double neLat = new Double(params.getFirst("neLat"));
-            double neLon = new Double(params.getFirst("neLon"));
-            
-            AisRequest aisRequest = new AisRequest(swLat, swLon, neLat, neLon);
-            OverviewResponse overviewResponse = aisService.getAisTargets(aisRequest);
+        	OverviewRequest overviewRequest = new OverviewRequest(params);
+            OverviewResponse overviewResponse = aisService.getOverview(overviewRequest);
             json = gson.toJson(overviewResponse);
         }
         else if (method.equalsIgnoreCase("details")) {
