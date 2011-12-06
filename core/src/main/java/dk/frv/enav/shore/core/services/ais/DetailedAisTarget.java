@@ -36,6 +36,7 @@ public class DetailedAisTarget {
 	protected String navStatus;
 	protected Date eta;
 	protected byte posAcc;
+	protected PastTrack pastTrack;
 
 	public DetailedAisTarget() {
 
@@ -292,6 +293,13 @@ public class DetailedAisTarget {
 	public void setWidth(byte width) {
 		this.width = width;
 	}
-
+	
+	public PastTrack getPastTrack() {
+		return pastTrack;
+	}
+	
+	public void setPastTrack(PastTrack pastTrack) {
+		this.pastTrack = pastTrack;
+	}
 	
 }

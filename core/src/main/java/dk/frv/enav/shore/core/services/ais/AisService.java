@@ -33,5 +33,20 @@ public interface AisService {
 	 * @return
 	 */
 	public DetailedAisTarget getTargetDetails(int id);
+
+	/**
+	 * Get past track for AIS target
+	 * @param mmsi
+	 * @return
+	 */
+	public PastTrack getPastTrack(int mmsi);
+	
+	/**
+	 * Get past track seconds back
+	 * @param mmsi
+	 * @param secondsBack
+	 * @return
+	 */
+	public PastTrack getPastTrack(int mmsi, int secondsBack);
 	
 }
