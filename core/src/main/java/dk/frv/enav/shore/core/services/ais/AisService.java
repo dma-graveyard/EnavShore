@@ -1,7 +1,5 @@
 package dk.frv.enav.shore.core.services.ais;
 
-import java.util.List;
-
 import javax.ejb.Local;
 
 import dk.frv.enav.shore.core.domain.AisVesselTarget;
@@ -20,7 +18,7 @@ public interface AisService {
 	 * @param aisRequest
 	 * @return
 	 */
-	public List<OverviewAisTarget> getAisTargets(AisRequest aisRequest);
+	public OverviewResponse getAisTargets(AisRequest aisRequest);
 	
 	/**
 	 * Get vessel target by id

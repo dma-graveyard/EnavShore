@@ -2,7 +2,6 @@ package dk.frv.enav.shore.api.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -15,7 +14,7 @@ import dk.frv.enav.common.net.http.HttpParams;
 import dk.frv.enav.shore.core.services.ais.AisRequest;
 import dk.frv.enav.shore.core.services.ais.AisService;
 import dk.frv.enav.shore.core.services.ais.DetailedAisTarget;
-import dk.frv.enav.shore.core.services.ais.OverviewAisTarget;
+import dk.frv.enav.shore.core.services.ais.OverviewResponse;
 
 public class Ais extends HttpApiServlet {
 
@@ -47,9 +46,8 @@ public class Ais extends HttpApiServlet {
             double neLon = new Double(params.getFirst("neLon"));
             
             AisRequest aisRequest = new AisRequest(swLat, swLon, neLat, neLon);
-            List<OverviewAisTarget> aisTargets = aisService.getAisTargets(aisRequest);
-            
-            json = gson.toJson(aisTargets);
+            OverviewResponse overviewResponse = aisService.getAisTargets(aisRequest);
+            json = gson.toJson(overviewResponse);
         }
         else if (method.equalsIgnoreCase("details")) {
         	Integer id = Integer.parseInt(params.getFirst("id"));
