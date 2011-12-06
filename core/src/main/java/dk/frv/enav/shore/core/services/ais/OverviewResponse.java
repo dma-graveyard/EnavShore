@@ -52,9 +52,9 @@ public class OverviewResponse {
 		}
 		
 		ArrayList<String> list = new ArrayList<String>();
-		list.add(String.format("%f.1", cog, Locale.US));
-		list.add(String.format("%f.4", lat, Locale.US));
-		list.add(String.format("%f.4", lon, Locale.US));
+		list.add(Long.toString(Math.round(cog)));
+		list.add(String.format(Locale.US, "%.4f", lat));
+		list.add(String.format(Locale.US, "%.4f", lon));
 		list.add(vesselClass);
 		ShipTypeCargo shipTypeCargo = new ShipTypeCargo(shipType);
 		list.add(Integer.toString(shipTypeCargo.getShipType().ordinal()));			
