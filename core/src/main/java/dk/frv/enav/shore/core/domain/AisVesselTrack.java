@@ -9,6 +9,7 @@ import java.util.Date;
  * The persistent class for the ais_vessel_track database table.
  * 
  */
+@NamedQueries({ @NamedQuery(name = "AisVesselTrack:get", query = "SELECT vt FROM AisVesselTrack vt WHERE vt.mmsi = :mmsi AND vt.time > :from ORDER BY vt.id DESC") })
 @Entity
 @Table(name = "ais_vessel_track")
 public class AisVesselTrack implements Serializable {
@@ -111,6 +112,30 @@ public class AisVesselTrack implements Serializable {
 
 	public void setAisVesselTarget(AisVesselTarget aisVesselTarget) {
 		this.aisVesselTarget = aisVesselTarget;
+	}
+
+	@Transient
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AisVesselTrack [id=");
+		builder.append(id);
+		builder.append(", mmsi=");
+		builder.append(mmsi);
+		builder.append(", lat=");
+		builder.append(lat);
+		builder.append(", lon=");
+		builder.append(lon);
+		builder.append(", sog=");
+		builder.append(sog);
+		builder.append(", cog=");
+		builder.append(cog);
+		builder.append(", time=");
+		builder.append(time);
+		builder.append(", created=");
+		builder.append(created);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

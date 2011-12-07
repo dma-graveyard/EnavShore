@@ -16,7 +16,7 @@ import javax.persistence.Table;
  * The persistent class for the ais_vessel_target database table.
  * 
  */
-@NamedQueries({ @NamedQuery(name = "AisVesselTarget:getById", query = "SELECT vt FROM AisVesselTarget vt WHERE vt.id = :id") })
+@NamedQueries({ @NamedQuery(name = "AisVesselTarget:getById", query = "SELECT vt FROM AisVesselTarget vt WHERE vt.id = :id ORDER BY vt.id DESC") })
 @Entity
 @Table(name = "ais_vessel_target")
 public class AisVesselTarget implements Serializable {

@@ -36,7 +36,7 @@ public class DetailedAisTarget {
 	protected String navStatus;
 	protected Date eta;
 	protected byte posAcc;
-	protected PastTrack pastTrack;
+	protected PastTrack pastTrack = null;
 
 	public DetailedAisTarget() {
 

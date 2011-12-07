@@ -30,9 +30,10 @@ public interface AisService {
 	/**
 	 * Get details for MMSI target
 	 * @param id
+	 * @param pastTrack (get past track also)
 	 * @return
 	 */
-	public DetailedAisTarget getTargetDetails(int id);
+	public DetailedAisTarget getTargetDetails(int id, boolean pastTrack);
 
 	/**
 	 * Get past track for AIS target

@@ -52,7 +52,6 @@ public class AisServiceBean implements AisService {
 			sql += StringUtils.join(ors, " OR ");
 			sql += ")";
 		}
-		System.out.println("sql: " + sql);
 
 		Query query = entityManager.createQuery(sql);
 		query.setParameter("swLat", overviewRequest.getSwLat());
@@ -90,13 +89,15 @@ public class AisServiceBean implements AisService {
 	}
 
 	@Override
-	public DetailedAisTarget getTargetDetails(int id) {
+	public DetailedAisTarget getTargetDetails(int id, boolean pastTrack) {
 		DetailedAisTarget aisTarget = new DetailedAisTarget();
 		AisVesselTarget target = getById(id);
 		if (target != null) {
 			aisTarget.init(target);
 		}
-		aisTarget.setPastTrack(getPastTrack(target.getMmsi()));
+		if (pastTrack) {
+			aisTarget.setPastTrack(getPastTrack(target.getMmsi()));
+		}
 		return aisTarget;
 	}
 	
@@ -114,34 +115,32 @@ public class AisServiceBean implements AisService {
 		Query query = entityManager.createNamedQuery("AisVesselTrack:get");
 		query.setParameter("mmsi", mmsi);
 		Date from = new Date(System.currentTimeMillis() - secondsBack * 1000);
-		System.out.println("from: " + from);
 		query.setParameter("from", from);
 		List<AisVesselTrack> list = query.getResultList();
 		
 		AisVesselTrack last = null;
-		long lastTime = System.currentTimeMillis();
+		Date lastTime = new Date();
 		
 		for (AisVesselTrack aisVesselTrack : list) {
 			// Determine if too long between points
-			long elapsed = lastTime - aisVesselTrack.getTime().getTime();
+			long elapsed = lastTime.getTime() - aisVesselTrack.getTime().getTime();
 			if (elapsed > MAX_PAST_TRACK_GAP) {
 				break;
 			}
+			lastTime = aisVesselTrack.getTime();
 			// Always add first
 			if (last == null) {				
 				pastTrack.getPoints().add(new PastTrackPoint(aisVesselTrack));
-				last = aisVesselTrack;
+				last = aisVesselTrack;				
 				continue;
 			}
 			// Determine distance between this and last
 			GeoLocation thisPos = new GeoLocation(aisVesselTrack.getLat(), aisVesselTrack.getLon());
 			GeoLocation lastPos = new GeoLocation(last.getLat(), last.getLon());
 			double dist = thisPos.getRhumbLineDistance(lastPos);
-			System.out.println("dist: " + dist);
 			if (dist < MIN_PAST_TRACK_DISTANCE) {
 				continue;
 			}
-			System.out.println("adding point");
 			pastTrack.getPoints().add(new PastTrackPoint(aisVesselTrack));
 			last = aisVesselTrack;
 		}
