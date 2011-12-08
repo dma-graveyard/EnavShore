@@ -2,6 +2,7 @@ package dk.frv.enav.shore.core.services.ais;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -16,7 +17,7 @@ import dk.frv.enav.shore.core.domain.AisVesselTrack;
 
 @Stateless
 public class AisServiceBean implements AisService {
-	
+
 	private static final long MAX_PAST_TRACK_GAP = 10 * 60 * 1000; // 10 min
 	private static final long MIN_PAST_TRACK_DISTANCE = 500; // 500 meters
 
@@ -33,6 +34,34 @@ public class AisServiceBean implements AisService {
 
 	@Override
 	public OverviewResponse getOverview(OverviewRequest overviewRequest) {
+		OverviewResponse response = new OverviewResponse();
+		
+		List<Object[]> lines = getOverviewRows(overviewRequest); 
+		
+		for (Object[] values : lines) {
+			response.addShip((Integer) values[0], (String) values[1], (Double) values[2], (Double) values[3], (Double) values[4],
+					(Double) values[5], (Byte) values[6], (Byte) values[7]);
+		}
+
+		return response;
+	}
+	
+	@Override
+	public String getOverviewTable(OverviewRequest overviewRequest) {
+		List<Object[]> lines = getOverviewRows(overviewRequest);
+		StringBuilder buf = new StringBuilder();
+		buf.append("id,latitude,longitude\n");
+		
+		for (Object[] values : lines) {
+			buf.append(Integer.toString((Integer)values[0]) + ",");
+			buf.append(String.format(Locale.US, "%.4f,", (Double) values[4]));
+			buf.append(String.format(Locale.US, "%.4f\n", (Double) values[5]));
+		}
+				
+		return buf.toString();
+	}
+
+	private List<Object[]> getOverviewRows(OverviewRequest overviewRequest) {
 		String sql = "SELECT vt.id, vt.vesselClass, vt.aisVesselPosition.cog, vt.aisVesselPosition.sog, vt.aisVesselPosition.lat, vt.aisVesselPosition.lon, vt.aisVesselStatic.shipType, casp.navStatus "
 				+ "FROM AisVesselTarget vt "
 				+ "LEFT OUTER JOIN vt.aisVesselPosition.aisClassAPosition AS casp "
@@ -42,10 +71,10 @@ public class AisServiceBean implements AisService {
 				+ "AND vt.aisVesselPosition.lon < :neLon "
 				+ "AND vt.validTo >= :now "
 				+ "AND vt.aisVesselPosition.lat IS NOT NULL AND vt.aisVesselPosition.lon IS NOT NULL ";
-		
+
 		if (overviewRequest.getCountries().size() > 0) {
 			String[] ors = new String[overviewRequest.getCountries().size()];
-			for (int i=0; i < ors.length; i++) {
+			for (int i = 0; i < ors.length; i++) {
 				ors[i] = "vt.country = :country" + i;
 			}
 			sql += "\nAND (";
@@ -60,7 +89,7 @@ public class AisServiceBean implements AisService {
 		query.setParameter("neLon", overviewRequest.getNeLon());
 		query.setParameter("now", new Date());
 		if (overviewRequest.getCountries().size() > 0) {
-			for (int i=0; i < overviewRequest.getCountries().size(); i++) {
+			for (int i = 0; i < overviewRequest.getCountries().size(); i++) {
 				System.out.println("country: " + overviewRequest.getCountries().get(i));
 				query.setParameter("country" + i, overviewRequest.getCountries().get(i));
 			}
@@ -68,15 +97,7 @@ public class AisServiceBean implements AisService {
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> lines = query.getResultList();
-
-		OverviewResponse response = new OverviewResponse();
-
-		for (Object[] values : lines) {
-			response.addShip((Integer) values[0], (String) values[1], (Double) values[2], (Double) values[3], (Double) values[4],
-					(Double) values[5], (Byte) values[6], (Byte)values[7]);
-		}
-
-		return response;
+		return lines;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,14 +121,14 @@ public class AisServiceBean implements AisService {
 		}
 		return aisTarget;
 	}
-	
+
 	@Override
 	public PastTrack getPastTrack(int mmsi) {
 		// Default seconds back
 		int secondsBack = 30 * 60; // 30 min
 		return getPastTrack(mmsi, secondsBack);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public PastTrack getPastTrack(int mmsi, int secondsBack) {
@@ -117,10 +138,10 @@ public class AisServiceBean implements AisService {
 		Date from = new Date(System.currentTimeMillis() - secondsBack * 1000);
 		query.setParameter("from", from);
 		List<AisVesselTrack> list = query.getResultList();
-		
+
 		AisVesselTrack last = null;
 		Date lastTime = new Date();
-		
+
 		for (AisVesselTrack aisVesselTrack : list) {
 			// Determine if too long between points
 			long elapsed = lastTime.getTime() - aisVesselTrack.getTime().getTime();
@@ -129,9 +150,9 @@ public class AisServiceBean implements AisService {
 			}
 			lastTime = aisVesselTrack.getTime();
 			// Always add first
-			if (last == null) {				
+			if (last == null) {
 				pastTrack.getPoints().add(new PastTrackPoint(aisVesselTrack));
-				last = aisVesselTrack;				
+				last = aisVesselTrack;
 				continue;
 			}
 			// Determine distance between this and last
@@ -144,7 +165,7 @@ public class AisServiceBean implements AisService {
 			pastTrack.getPoints().add(new PastTrackPoint(aisVesselTrack));
 			last = aisVesselTrack;
 		}
-		
+
 		return pastTrack;
 	}
 

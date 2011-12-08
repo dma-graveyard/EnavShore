@@ -29,27 +29,35 @@ public class Ais extends HttpApiServlet {
 	}
 	
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter out = response.getWriter();        
-        response.setContentType("application/json");
+		PrintWriter out = response.getWriter();                
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");        
         HttpParams params = new HttpParams(request.getParameterMap());
-        String json = "";
+        String output = "";
         
         // Determine method
         String method = (params.containsKey("method") ? params.getFirst("method") : "overview");
         
         if (method.equalsIgnoreCase("overview")) {
+        	response.setContentType("application/json");
         	OverviewRequest overviewRequest = new OverviewRequest(params);
             OverviewResponse overviewResponse = aisService.getOverview(overviewRequest);
-            json = gson.toJson(overviewResponse);
+            output = gson.toJson(overviewResponse);
         }
         else if (method.equalsIgnoreCase("details")) {
+        	response.setContentType("application/json");
         	Integer id = Integer.parseInt(params.getFirst("id"));
         	DetailedAisTarget detailedAisTarget = aisService.getTargetDetails(id, params.containsKey("past_track"));
-        	json = gson.toJson(detailedAisTarget);
+        	output = gson.toJson(detailedAisTarget);
+        }
+        else if (method.equalsIgnoreCase("table")) {
+        	response.setContentType("text/plain");
+        	OverviewRequest overviewRequest = new OverviewRequest(params);        	
+        	String table = aisService.getOverviewTable(overviewRequest);
+        	
+        	output = table;
         }
         
-        out.print(json);
+        out.print(output);
 	}
 }

@@ -1,11 +1,17 @@
 package dk.frv.enav.shore.core.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import dk.frv.ais.message.ShipTypeCargo;
-
-import java.util.Date;
 
 /**
  * The persistent class for the ais_vessel_static database table.
@@ -15,7 +21,7 @@ import java.util.Date;
 @Table(name = "ais_vessel_static")
 public class AisVesselStatic implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private int mmsi;
 	private String callsign;
 	private Date created;
@@ -26,11 +32,13 @@ public class AisVesselStatic implements Serializable {
 	private String name;
 	private Date received;
 	private Byte shipType;
+	private Byte decodedShipType;
+	private Byte cargo;
 	private AisClassAStatic aisClassAStatic;
 	private AisVesselTarget aisVesselTarget;
 
 	public AisVesselStatic() {
-		
+
 	}
 
 	@Id
@@ -123,11 +131,29 @@ public class AisVesselStatic implements Serializable {
 	public void setShipType(Byte shipType) {
 		this.shipType = shipType;
 	}
-	
+
 	@Transient
 	public ShipTypeCargo getShipTypeCargo() {
 		Byte shipType = getShipType();
 		return new ShipTypeCargo((shipType == null) ? 0 : shipType);
+	}
+
+	@Column(name = "decoded_ship_type", nullable = true)
+	public Byte getDecodedShipType() {
+		return decodedShipType;
+	}
+
+	public void setDecodedShipType(Byte decodedShipType) {
+		this.decodedShipType = decodedShipType;
+	}
+
+	@Column(name = "cargo", nullable = true)
+	public Byte getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(Byte cargo) {
+		this.cargo = cargo;
 	}
 
 	// bi-directional one-to-one association to AisClassAStatic

@@ -21,6 +21,13 @@ public interface AisService {
 	public OverviewResponse getOverview(OverviewRequest overviewRequest);
 	
 	/**
+	 * Get overview table
+	 * @param overviewRequest
+	 * @return
+	 */
+	public String getOverviewTable(OverviewRequest overviewRequest);
+	
+	/**
 	 * Get vessel target by id
 	 * @param id
 	 * @return
@@ -49,5 +56,6 @@ public interface AisService {
 	 * @return
 	 */
 	public PastTrack getPastTrack(int mmsi, int secondsBack);
+	
 	
 }

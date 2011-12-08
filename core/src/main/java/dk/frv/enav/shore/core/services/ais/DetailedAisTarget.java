@@ -36,7 +36,8 @@ public class DetailedAisTarget {
 	protected String navStatus;
 	protected Date eta;
 	protected byte posAcc;
-	protected PastTrack pastTrack = null;
+	protected String source;
+	protected PastTrack pastTrack = null;	
 
 	public DetailedAisTarget() {
 
@@ -68,6 +69,8 @@ public class DetailedAisTarget {
 		this.name = aisVesselStatic.getName();
 		this.callsign = aisVesselStatic.getCallsign();
 		this.cargo = aisVesselStatic.getShipTypeCargo().prettyCargo();
+		
+		this.source = aisVessel.getSource();
 
 		// Class A statics
 		if (aisClassAStatic != null) {
@@ -292,6 +295,14 @@ public class DetailedAisTarget {
 
 	public void setWidth(byte width) {
 		this.width = width;
+	}
+	
+	public String getSource() {
+		return source;
+	}
+	
+	public void setSource(String source) {
+		this.source = source;
 	}
 	
 	public PastTrack getPastTrack() {
