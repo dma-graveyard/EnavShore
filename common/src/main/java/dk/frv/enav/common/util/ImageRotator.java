@@ -27,20 +27,31 @@ public class ImageRotator {
 			File file = new File(args[i]);
 			String[] fileName = file.getName().split("\\.");
 			try {
-				Image im = ImageIO.read(file);
-				BufferedImage bi = new BufferedImage(im.getWidth(null), im.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-				BufferedImage biclear = new BufferedImage(im.getWidth(null), im.getHeight(null), BufferedImage.TYPE_INT_ARGB);
-				Graphics2D g = bi.createGraphics();
-				g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-				// copy the original image. Should be at 0 degrees pointing north.
-				g.drawImage(im, 0, 0, null);
-				ImageIO.write(bi, "png", new File(path + "\\" + fileName[0] + "_" + 0 +".png"));
-				for (int j = 0; j < 359; j++) {
-					bi.setData(biclear.getData());
-					g.rotate(Math.toRadians(1), im.getWidth(null)/2, im.getHeight(null)/2);
-					g.drawImage(im, 0, 0, null);
-					ImageIO.write(bi, "png", new File(path + "\\" + fileName[0] + "_" + (j+1)+".png"));
+				int interval = 5;
+				int index = 1;
+				
+				Image image = ImageIO.read(file);
+				BufferedImage source = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				Graphics2D sourceGraphics = source.createGraphics();
+				sourceGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+				sourceGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				sourceGraphics.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+				sourceGraphics.drawImage(image, 0, 0, null);
+				
+				BufferedImage clear = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+				
+				BufferedImage target = new BufferedImage(image.getWidth(null), image.getHeight(null)*(360/interval), BufferedImage.TYPE_INT_ARGB);
+				target.setData(source.getData());
+				
+				for (int j = 0; j < 359; j+=interval) {
+					source.setData(clear.getData());
+					sourceGraphics.rotate(Math.toRadians(interval), image.getWidth(null)/2, image.getHeight(null)/2);
+					sourceGraphics.drawImage(image, 0, 0, null);
+					target.setData(source.getData().createTranslatedChild(0, index*32));
+					index++;
 				}
+				
+				ImageIO.write(target, "png", new File(path + "\\" + fileName[0] + ".png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
