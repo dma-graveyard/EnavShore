@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import dk.frv.ais.geo.GeoLocation;
+import dk.frv.enav.common.util.CreatePolygon;
 import dk.frv.enav.common.util.Point;
 import dk.frv.enav.common.util.PolygonParser;
 import dk.frv.enav.common.xml.nogo.request.NogoRequest;
@@ -57,9 +58,18 @@ public class NogoServiceBean implements NogoService {
 	
 	@Override
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
+		
+		System.out.println(nogoRequest.getDraught());
+		System.out.println(nogoRequest.getNorthWestPointLat());
+		System.out.println(nogoRequest.getNorthWestPointLon());
+		System.out.println(nogoRequest.getSouthEastPointLat());
+		System.out.println(nogoRequest.getSouthEastPointLon());		
+		
+		 BoundingBoxPoint firstPos = getArea(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
+		 BoundingBoxPoint secondPos = getArea(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());		
 
-		 BoundingBoxPoint firstPos = getArea(55.070, 11.668);
-		 BoundingBoxPoint secondPos = getArea(55.170, 11.868);
+//		 BoundingBoxPoint firstPos = getArea(55.070, 11.668);
+//		 BoundingBoxPoint secondPos = getArea(55.170, 11.868);
 		
 //		 BoundingBoxPoint firstPos = getArea(56.1106, 12.1290);
 //		 BoundingBoxPoint secondPos = getArea(55.2878, 12.955);
@@ -83,14 +93,12 @@ public class NogoServiceBean implements NogoService {
 		}
 	//		System.out.println("There are: " + polyArea.size() + " polygons");
 		 
-        
+        Date currentDate = new Date();
+        long futureDate = currentDate.getTime() + 7200000;
 
 		res.setValidFrom(new Date());
-		res.setValidTo(new Date());
-		
-		
-		
-		
+		res.setValidTo(new Date(futureDate));
+			
 		return res;
 	}
 
@@ -110,9 +118,9 @@ public class NogoServiceBean implements NogoService {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public BoundingBoxPoint getArea(double lat1, double lon1) {
+	public BoundingBoxPoint getArea(double lat, double lon) {
 		
-		GeoLocation pos1 = new GeoLocation(lat1, lon1);
+		GeoLocation pos1 = new GeoLocation(lat, lon);
 		
 		Query query = entityManager.createQuery("SELECT dd.n, dd.m, dd.lat, dd.lon " +
 												"FROM DepthDenmark dd " +
@@ -120,11 +128,11 @@ public class NogoServiceBean implements NogoService {
 												"AND " +
 												"dd.lon between :lon1 AND :lon1range");
 
-		query.setParameter("lat1", lat1);
-		query.setParameter("lat1range", lat1 + 0.01);
+		query.setParameter("lat1", lat);
+		query.setParameter("lat1range", lat + 0.01);
 		
-		query.setParameter("lon1", lon1);
-		query.setParameter("lon1range", lon1 + 0.01);		
+		query.setParameter("lon1", lon);
+		query.setParameter("lon1range", lon + 0.01);		
 		
 		List<Object[]> lines = query.getResultList();
 		
@@ -227,9 +235,29 @@ public class NogoServiceBean implements NogoService {
 		
 		PolygonParser polygonParser = new PolygonParser(V);
 		
-		
+		List<List<Point>> finalPolygon = new ArrayList<List<Point>>();
 
 		
+		CreatePolygon polygonCreator = new CreatePolygon(polygonParser.getPolygons().get(0));
+		
+	//	System.out.println(polygonParser.getPolygons().get(0));
+	//	System.out.println(polygonCreator.getK());
+		
+		NogoPolygon poly = new NogoPolygon();
+		List<Point> parsedPoints = polygonParser.getPolygons().get(0);
+		
+		List<Point> parsedPointsSplit = new ArrayList<Point>();
+		
+		for (DepthDenmark depthDenmark : result) {
+    		Point point = new Point(depthDenmark.getN(), depthDenmark.getM());	
+			if (parsedPointsContain(parsedPoints, point)){
+	            NogoPoint nogoPoint = new NogoPoint(depthDenmark.getLat(), depthDenmark.getLon());
+	            poly.getPolygon().add(nogoPoint);
+			}
+		}
+		res.add(poly);
+		
+		/**
 		for (int i = 0; i < polygonParser.getPolygons().size(); i++) {
 			NogoPolygon poly = new NogoPolygon();
 			List<Point> parsedPoints = polygonParser.getPolygons().get(i);
@@ -244,9 +272,7 @@ public class NogoServiceBean implements NogoService {
 			
 		}
 
-		System.out.println(polygonParser.getPolygons().get(7));
-		System.out.println(res.get(7));
-		
+		**/
 	//	polygonParser = null;
 		//parsedPoints = null;
 		//result = null;

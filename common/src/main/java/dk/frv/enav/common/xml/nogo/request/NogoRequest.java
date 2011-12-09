@@ -20,8 +20,10 @@ public class NogoRequest extends ShoreServiceRequest {
 	 * Optional vessel route to use for calculating no go
 	 */
 	private double draught;
-	private double point1;
-	private double point2;
+	private double northWestPointLat;
+	private double northWestPointLon;
+	private double southEastPointLat;
+	private double southEastPointLon;
 	private Date startDate;
 	private Date endDate;
 
@@ -36,20 +38,36 @@ public class NogoRequest extends ShoreServiceRequest {
 		this.draught = draught;
 	}
 
-	public double getPoint1() {
-		return point1;
+	public double getNorthWestPointLat() {
+		return northWestPointLat;
 	}
 
-	public void setPoint1(double point1) {
-		this.point1 = point1;
+	public void setNorthWestPointLat(double northWestPointLat) {
+		this.northWestPointLat = northWestPointLat;
 	}
 
-	public double getPoint2() {
-		return point2;
+	public double getNorthWestPointLon() {
+		return northWestPointLon;
 	}
 
-	public void setPoint2(double point2) {
-		this.point2 = point2;
+	public void setNorthWestPointLon(double northWestPointLon) {
+		this.northWestPointLon = northWestPointLon;
+	}
+
+	public double getSouthEastPointLat() {
+		return southEastPointLat;
+	}
+
+	public void setSouthEastPointLat(double southEastPointLat) {
+		this.southEastPointLat = southEastPointLat;
+	}
+
+	public double getSouthEastPointLon() {
+		return southEastPointLon;
+	}
+
+	public void setSouthEastPointLon(double southEastPointLon) {
+		this.southEastPointLon = southEastPointLon;
 	}
 
 	public Date getStartDate() {
