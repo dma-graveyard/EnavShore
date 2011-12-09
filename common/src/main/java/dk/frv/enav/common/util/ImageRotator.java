@@ -34,35 +34,42 @@ public class ImageRotator {
 		BufferedImage clear = new BufferedImage(imageDimension, imageDimension, BufferedImage.TYPE_INT_ARGB);
 
 		// sprite sheet
-		int spriteHeight = imageDimension * 360 / rotationInterval;
+		int spriteHeight = imageDimension * (360 / rotationInterval + 1); // +1 for the moored image
 		int spriteWidth = (args.length - 1) * imageDimension;
 		BufferedImage sprite = new BufferedImage(spriteWidth, spriteHeight, BufferedImage.TYPE_INT_ARGB);
 		
 		try {
 			for(int i = 1; i < args.length ; i++) {
-				File file = new File(args[i]);
-				int index = 1;
+				File ship = new File(args[i]+".png");
+				Image shipImage = ImageIO.read(ship);
 				
+				File shipMoored = new File(args[i]+ "_moored.png");
+				Image shipMooredImage = ImageIO.read(shipMoored);
+				
+				int index = 2;				
 				int horizontalIndex = (i - 1) * imageDimension;
 				
-				Image image = ImageIO.read(file);
 				BufferedImage source = new BufferedImage(imageDimension, imageDimension, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D sourceGraphics = source.createGraphics();
 				sourceGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 				sourceGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 				sourceGraphics.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
 				
-				// stamp the first image
-				sourceGraphics.drawImage(image, 0, 0, null);
+				sourceGraphics.drawImage(shipMooredImage, 0, 0, null);
 				sprite.setData(source.getData().createTranslatedChild(horizontalIndex, 0));
+				source.setData(clear.getData());
+				
+				// stamp the first image
+				sourceGraphics.drawImage(shipImage, 0, 0, null);
+				sprite.setData(source.getData().createTranslatedChild(horizontalIndex, imageDimension));
 				
 				for (int j = 0; j < 359; j+=rotationInterval) {
 					// clear the buffer
 					source.setData(clear.getData());
 					// and rotate
-					sourceGraphics.rotate(Math.toRadians(rotationInterval), image.getWidth(null)/2, image.getHeight(null)/2);
+					sourceGraphics.rotate(Math.toRadians(rotationInterval), shipImage.getWidth(null)/2, shipImage.getHeight(null)/2);
 					// stamp the next image
-					sourceGraphics.drawImage(image, 0, 0, null);
+					sourceGraphics.drawImage(shipImage, 0, 0, null);
 					sprite.setData(source.getData().createTranslatedChild(horizontalIndex, index * imageDimension));
 					// update index for positioning
 					index++;
