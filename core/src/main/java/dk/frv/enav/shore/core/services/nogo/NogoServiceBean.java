@@ -58,12 +58,14 @@ public class NogoServiceBean implements NogoService {
 	
 	@Override
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
-		
+	
+		/**
 		System.out.println(nogoRequest.getDraught());
 		System.out.println(nogoRequest.getNorthWestPointLat());
 		System.out.println(nogoRequest.getNorthWestPointLon());
 		System.out.println(nogoRequest.getSouthEastPointLat());
-		System.out.println(nogoRequest.getSouthEastPointLon());		
+		System.out.println(nogoRequest.getSouthEastPointLon());
+		**/		
 		
 		 BoundingBoxPoint firstPos = getArea(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
 		 BoundingBoxPoint secondPos = getArea(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());		
@@ -192,6 +194,238 @@ public class NogoServiceBean implements NogoService {
 		System.out.println(m1);
 		System.out.println(n2);
 		System.out.println(m2);
+		
+		
+		//This is where we store our result
+		List<NogoPolygon> res = new ArrayList<NogoPolygon>();
+		// Full query
+		String sqlQuery =
+			"select lat,lon from (" +
+			"select * from depth_denmark master "+
+			"where n between :n1 and :n2 "+
+			"and m between :m1 and :m2 "+
+			"and depth > -7 "+
+			"and not exists "+
+			"(select 1 from depth_denmark s "+
+			"where n between :n1 and :n2 "+
+			"and m between :m1 and :m2 "+
+			"and s.m=master.m "+
+			"and s.n=master.n-1 "+
+			"and depth > -7 "+
+			") "+
+			"union all "+
+			"select * from depth_denmark master2 "+
+			"where n between :n1 and :n2 "+
+			"and m between :m1 and :m2 "+
+			"and depth > -7 "+
+			"and not exists "+
+			"(select 1 from depth_denmark s2 "+
+			"where n between :n1 and :n2 "+
+			"and m between :m1 and :m2 "+
+			"and s2.m=master2.m "+
+			"and s2.n=master2.n+1 "+
+			"and depth > -7) "+
+			") a "+
+			"order by m,n; "
+			;
+		Query query = entityManager.createNativeQuery(sqlQuery);
+		
+		query.setParameter("n1", n1);
+		query.setParameter("n2", n2);
+		query.setParameter("m1", m1);
+		query.setParameter("m2", m2);
+		
+		List<Object[]> result = query.getResultList();
+		
+		NogoPolygon polygon = new NogoPolygon();
+		NogoPolygon temp;
+		
+		double lonOffset = 0.0007854;
+		double latOffset = 0.00055504;
+		int i = 0;
+		
+		for (Object[] objects : result) {
+			NogoPoint point = new NogoPoint( (Double) objects[0], (Double) objects[1]   );
+			if (polygon.getPolygon().size() == 1){
+				polygon.getPolygon().add(point);
+				
+				temp = new NogoPolygon();
+				//The line is complete - time to process it.
+				NogoPoint westPoint = polygon.getPolygon().get(0);
+				NogoPoint eastPoint = polygon.getPolygon().get(1);
+				
+				NogoPoint northWest = new NogoPoint(westPoint.getLat() + latOffset, westPoint.getLon());
+
+				NogoPoint northEast = new NogoPoint(eastPoint.getLat() + latOffset, eastPoint.getLon());
+				
+				NogoPoint southWest = new NogoPoint(westPoint.getLat() - latOffset, westPoint.getLon());
+				
+				NogoPoint southEast= new NogoPoint(eastPoint.getLat() - latOffset, eastPoint.getLon());
+
+				
+				temp.getPolygon().add(northWest);
+				temp.getPolygon().add(southWest);
+				temp.getPolygon().add(southEast);
+				temp.getPolygon().add(northEast);
+
+				res.add(temp);
+				polygon = new NogoPolygon();
+			}else{
+				polygon.getPolygon().add(point);
+			}
+			i++;
+			
+		}
+		
+		
+		//List<DepthDenmark> result = query.getResultList();
+		//System.out.println((Double) result.get(0)[0]);
+		
+		/**
+		List<List<DepthDenmark>> lines = new ArrayList<List<DepthDenmark>>();
+		
+		List<DepthDenmark> line = new ArrayList<DepthDenmark>();;
+		
+		for (DepthDenmark depthDenmark : result) {
+			if (line.size() <2){
+				line.add(depthDenmark);
+				line = new ArrayList<DepthDenmark>();
+			}else{
+				line.add(depthDenmark);
+			}
+			
+		}
+		**/
+
+			
+//			NogoPoint point = new NogoPoint(depthDenmark.getLat(), depthDenmark.getLon());
+//			if((line.size() == 0 || (line.get(line.size()-1).getN() != (depthDenmark.getN()-1)) )){
+	
+//			}
+			
+			
+			//
+			
+		
+		
+	//	System.out.println("There are: " + lines.size() + " lines");
+		
+		
+		
+		
+		/**
+		Query query = entityManager.createQuery("SELECT res FROM " +
+				"(" +
+				"SELECT dd FROM DepthDenmark dd " +
+				"WHERE n BETWEEN 2026 AND 2206 " +
+				"AND " +
+				"m BETWEEN 637 AND 728 " +
+				"AND depth < -7 " +
+				"AND NOT EXISTS " +
+				"(SELECT 1 from DepthDenmark s "+ 
+				"WHERE n BETWEEN 2026 and 2206 "+
+				"AND m BETWEEN 637 and 728 " +
+				"AND s.m=dd.m " +
+				"AND s.n=dd.n-1 "+
+				"AND depth < -7 )"+
+				"left join " +
+				"SELECT dd2 FROM DepthDenmark dd2 " +
+				"WHERE n BETWEEN 2026 and 2206 "+
+				"AND m BETWEEN 637 and 728 "+
+				"AND depth < -7 "+
+				"AND NOT EXISTS " + 
+				"(SELECT 1 from DepthDenmark s2 "+
+				"WHERE n BETWEEN 2026 and 2206 "+
+				"AND m BETWEEN 637 and 728 "+
+				"AND s2.m=dd2.m "+
+				"AND s2.n=dd2.n+1 "+
+				"AND depth < -7) " +
+				")"
+				);
+	**/
+		
+		/** First query
+		Query query = entityManager.createQuery("SELECT dd FROM DepthDenmark dd " +
+				"WHERE n between 2026 AND 2206 " +
+				"AND " +
+				"m between 637 AND 728" +
+				"AND depth < -7 " +
+				"AND NOT EXISTS" +
+				"(SELECT 1 from DepthDenmark s "+ 
+				"WHERE n between 2026 and 2206 "+
+				"AND m between 637 and 728 " +
+				"AND s.m=dd.m " +
+				"AND s.n=dd.n-1 "+
+				"AND depth < -7 )"+
+			);
+		**/
+		
+		/** Second query
+		Query query = entityManager.createQuery("SELECT dd2 from DepthDenmark dd2 " +
+				"WHERE n between 2026 and 2206 "+
+				"AND m between 637 and 728 "+
+				"and depth < -7 "+
+				"and not exists "+ 
+				"(select 1 from DepthDenmark s2 "+
+				"where n between 2026 and 2206 "+
+				"and m between 637 and 728 "+
+				"and s2.m=dd2.m "+
+				"and s2.n=dd2.n+1 "+
+				"and depth < -7) " +
+				")" 
+			);
+		 **/
+		
+		
+		
+		//Query query = entityManager.createQuery(
+				
+				
+
+		
+				/**
+				//"SELECT d FROM  "
+				 "(SELECT dd FROM DepthDenmark dd " +
+				 "WHERE dd.n BETWEEN 2026 AND 2206 " +
+				 "AND dd.m BETWEEN 637 AND 728 " +
+				 "AND dd.depth < -7 ");
+				 //+
+			//	 "AND NOT EXISTS)"); 
+				
+				/**
+				+ "(select 1 from DepthDenmark s"
+				+"where dd.n between 2026 and 2206"
+				+"and dd.m between 637 and 728" 
+				+"and s.m=master.m"
+				+"and s.n=master.n-1"
+				+"and dd.depth < -7"
+				+")");
+				**/
+				/**
+				+"union all"
+				+"select * from DepthDenmark master2"
+				+"where dd.n between 2026 and 2206"
+				+"and dd.m between 637 and 728"
+				+"and dd.depth < -7"
+				+"and not exists" 
+				+"(select 1 from DepthDenmark s2"
+				+"where dd.n between 2026 and 2206"
+				+"and ddm between 637 and 728"
+				+"and s2.m=master2.m"
+				+"and s2.n=master2.n+1"
+				+"and dd.depth < -7)"
+				+") a"
+				+"order by m,n;"
+				);
+		**/
+		
+		
+		
+		
+		
+	
+		
+		
 		/**
 		Query query = entityManager.createQuery("SELECT dd FROM DepthDenmark dd " +
 												"WHERE dd.n between :n1 AND :n2 " +
@@ -199,27 +433,60 @@ public class NogoServiceBean implements NogoService {
 												"dd.m between :m1 AND :m2" +
 												"AND dd.depth is not null");
 **/
+		
+/**		
 		Query query = entityManager.createQuery("SELECT dd " +
 												"FROM DepthDenmark dd " +
 													"WHERE dd.n between :n1 AND :n2 " +
 													"AND dd.m between :m1 AND :m2 " +
-													"AND dd.depth > -7");
+													"AND dd.depth > -7 ORDER BY M, N");
 
 		
 		query.setParameter("n1", n1);
 		query.setParameter("n2", n2);
 		query.setParameter("m1", m1);
 		query.setParameter("m2", m2);
-		
-		
+	
 
 		List<DepthDenmark> result = query.getResultList();
+		
+		List<List<DepthDenmark>> lines = new ArrayList<List<DepthDenmark>>();
+		
+		int m = -1;
+		List<DepthDenmark> line = null;
+		
+		for (DepthDenmark depthDenmark : result) {
+			//What is the index, n
+			if(depthDenmark.getM() > m){
+				line = new ArrayList<DepthDenmark>();
+				lines.add(line);
+				m = depthDenmark.getM();
+			}
+			line.add(depthDenmark);
+			
+			
+//			NogoPoint point = new NogoPoint(depthDenmark.getLat(), depthDenmark.getLon());
+//			if((line.size() == 0 || (line.get(line.size()-1).getN() != (depthDenmark.getN()-1)) )){
+	
+//			}
+			
+			
+			//
+			
+		}
+		
+		System.out.println("There are: " + lines.size() + " lines");
+		
 		/**
+		
+        NogoPolygon poly1 = new NogoPolygon();
 		for (DepthDenmark depthDenmark : result) {
             NogoPoint point = new NogoPoint(depthDenmark.getLat(), depthDenmark.getLon());
-            poly1.getPolygon().add(point);
+			poly1.getPolygon().add(point);
 		}
 		**/
+		//System.out.println("Sending all points : there are " + poly1.getPolygon().size());
+		/**
 		List<Point> V = new ArrayList<Point>();
 		
 		
@@ -248,6 +515,7 @@ public class NogoServiceBean implements NogoService {
 		
 		List<Point> parsedPointsSplit = new ArrayList<Point>();
 		
+		/**
 		for (DepthDenmark depthDenmark : result) {
     		Point point = new Point(depthDenmark.getN(), depthDenmark.getM());	
 			if (parsedPointsContain(parsedPoints, point)){
@@ -255,7 +523,10 @@ public class NogoServiceBean implements NogoService {
 	            poly.getPolygon().add(nogoPoint);
 			}
 		}
-		res.add(poly);
+		**/
+
+
+		//res.add(poly1);
 		
 		/**
 		for (int i = 0; i < polygonParser.getPolygons().size(); i++) {
