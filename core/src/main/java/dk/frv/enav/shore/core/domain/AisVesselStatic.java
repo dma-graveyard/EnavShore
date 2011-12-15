@@ -1,9 +1,17 @@
 package dk.frv.enav.shore.core.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
-
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import dk.frv.ais.message.ShipTypeCargo;
 
 /**
  * The persistent class for the ais_vessel_static database table.
@@ -13,55 +21,33 @@ import java.util.Date;
 @Table(name = "ais_vessel_static")
 public class AisVesselStatic implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
-	public enum VesselType {PASSENGER_VESSEL, CARGO_VESSEL, TANKER, HSC, TUG, PILOT, YACHT, NAVIGATION_AID, UNSPECIFIED};
-	private int mmsi;
+
+	private Integer mmsi;
 	private String callsign;
 	private Date created;
-	private short dimBow;
-	private byte dimPort;
-	private byte dimStarboard;
-	private short dimStern;
+	private Short dimBow;
+	private Byte dimPort;
+	private Byte dimStarboard;
+	private Short dimStern;
 	private String name;
 	private Date received;
 	private Byte shipType;
+	private Byte decodedShipType;
+	private Byte cargo;
 	private AisClassAStatic aisClassAStatic;
 	private AisVesselTarget aisVesselTarget;
 
 	public AisVesselStatic() {
-		
+
 	}
 
-	@Transient
-	public static VesselType getVesselType(byte shipType) {
-		switch(shipType/10) {
-			case 6: return VesselType.PASSENGER_VESSEL;
-			case 7: return VesselType.CARGO_VESSEL;
-			case 8: return VesselType.TANKER;
-			case 4: return VesselType.HSC;
-			case 5:
-				switch(shipType) {
-					case 52: return VesselType.TUG;
-					case 50: return VesselType.PILOT;
-					default: break;
-				}
-			case 3:
-				switch(shipType) {
-					case 36: return VesselType.YACHT;
-					case 37: return VesselType.YACHT;
-					default: break;
-				}
-			default: return VesselType.UNSPECIFIED;
-		}
-	}
-	
 	@Id
 	@Column(unique = true, nullable = false)
-	public int getMmsi() {
+	public Integer getMmsi() {
 		return this.mmsi;
 	}
 
-	public void setMmsi(int mmsi) {
+	public void setMmsi(Integer mmsi) {
 		this.mmsi = mmsi;
 	}
 
@@ -84,38 +70,38 @@ public class AisVesselStatic implements Serializable {
 	}
 
 	@Column(name = "dim_bow", nullable = true)
-	public short getDimBow() {
+	public Short getDimBow() {
 		return this.dimBow;
 	}
 
-	public void setDimBow(short dimBow) {
+	public void setDimBow(Short dimBow) {
 		this.dimBow = dimBow;
 	}
 
 	@Column(name = "dim_port", nullable = true)
-	public byte getDimPort() {
+	public Byte getDimPort() {
 		return this.dimPort;
 	}
 
-	public void setDimPort(byte dimPort) {
+	public void setDimPort(Byte dimPort) {
 		this.dimPort = dimPort;
 	}
 
 	@Column(name = "dim_starboard", nullable = true)
-	public byte getDimStarboard() {
+	public Byte getDimStarboard() {
 		return this.dimStarboard;
 	}
 
-	public void setDimStarboard(byte dimStarboard) {
+	public void setDimStarboard(Byte dimStarboard) {
 		this.dimStarboard = dimStarboard;
 	}
 
 	@Column(name = "dim_stern", nullable = true)
-	public short getDimStern() {
+	public Short getDimStern() {
 		return this.dimStern;
 	}
 
-	public void setDimStern(short dimStern) {
+	public void setDimStern(Short dimStern) {
 		this.dimStern = dimStern;
 	}
 
@@ -144,6 +130,30 @@ public class AisVesselStatic implements Serializable {
 
 	public void setShipType(Byte shipType) {
 		this.shipType = shipType;
+	}
+
+	@Transient
+	public ShipTypeCargo getShipTypeCargo() {
+		Byte shipType = getShipType();
+		return new ShipTypeCargo((shipType == null) ? 0 : shipType);
+	}
+
+	@Column(name = "decoded_ship_type", nullable = true)
+	public Byte getDecodedShipType() {
+		return decodedShipType;
+	}
+
+	public void setDecodedShipType(Byte decodedShipType) {
+		this.decodedShipType = decodedShipType;
+	}
+
+	@Column(name = "cargo", nullable = true)
+	public Byte getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(Byte cargo) {
+		this.cargo = cargo;
 	}
 
 	// bi-directional one-to-one association to AisClassAStatic

@@ -1,22 +1,35 @@
 package dk.frv.enav.shore.core.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * The persistent class for the ais_vessel_target database table.
  * 
  */
+@NamedQueries({ @NamedQuery(name = "AisVesselTarget:getById", query = "SELECT vt FROM AisVesselTarget vt WHERE vt.id = :id ORDER BY vt.id DESC") })
 @Entity
 @Table(name = "ais_vessel_target")
 public class AisVesselTarget implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private int mmsi;
+	private Integer mmsi;
+	private Integer id;
 	private Date created;
 	private Date lastReceived;
+	private Date validTo;
 	private String vesselClass;
+	private String country;
+	private String source;
 	private AisVesselPosition aisVesselPosition;
 	private AisVesselStatic aisVesselStatic;
 
@@ -26,12 +39,22 @@ public class AisVesselTarget implements Serializable {
 
 	@Id
 	@Column(unique = true, nullable = false)
-	public int getMmsi() {
+	public Integer getMmsi() {
 		return this.mmsi;
 	}
 
-	public void setMmsi(int mmsi) {
+	public void setMmsi(Integer mmsi) {
 		this.mmsi = mmsi;
+	}
+
+	@GeneratedValue
+	@Column(unique = true, nullable = false, updatable = false)
+	public Integer getId() {
+		return this.id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	@Column(nullable = false)
@@ -43,13 +66,22 @@ public class AisVesselTarget implements Serializable {
 		this.created = created;
 	}
 
-	@Column(name = "last_received")
+	@Column(name = "last_received", nullable = false)
 	public Date getLastReceived() {
 		return this.lastReceived;
 	}
 
 	public void setLastReceived(Date lastReceived) {
 		this.lastReceived = lastReceived;
+	}
+
+	@Column(name = "valid_to", nullable = false)
+	public Date getValidTo() {
+		return validTo;
+	}
+
+	public void setValidTo(Date validTo) {
+		this.validTo = validTo;
 	}
 
 	@Column(name = "vessel_class", nullable = false, length = 1)
@@ -59,6 +91,24 @@ public class AisVesselTarget implements Serializable {
 
 	public void setVesselClass(String vesselClass) {
 		this.vesselClass = vesselClass;
+	}
+
+	@Column(name = "country", nullable = true, length = 3)
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	@Column(name = "source", nullable = false, length = 4)
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 	// bi-directional one-to-one association to AisVesselPosition

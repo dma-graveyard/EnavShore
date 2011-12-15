@@ -53,24 +53,4 @@
         <copy file="${build.dir}/${build.final.name}" todir="${lib}" />
     </target>
 	
-	<target name="rotate" depends="compile">
-		<mkdir dir="${src.main.resources.dir}/ais/rotatedshipicons" />
-		<java classname="dk.frv.enav.common.util.ImageRotator" fork="true">
-			<arg value="${src.main.resources.dir}/ais/rotatedshipicons" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_blue.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_gray.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_green.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_orange.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_purple.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_red.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_turquoise.png" />
-			<arg value="${src.main.resources.dir}/ais/shipicons/ship_yellow.png" />
-			<classpath>
-				<path refid="compile.class.path" />
-				<pathelement path="${basedir}" />
-				<pathelement path="${build.classes.dir}" />
-			</classpath>
-		</java>
-	</target>
-
 </project>

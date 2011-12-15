@@ -7,10 +7,6 @@
 		<servlet-class>dk.frv.enav.shore.api.http.Status</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>Ais</servlet-name>
-		<servlet-class>dk.frv.enav.shore.api.http.Ais</servlet-class>
-	</servlet>
-	<servlet>
 		<servlet-name>XmlRouteMetoc</servlet-name>
 		<servlet-class>dk.frv.enav.shore.api.xml.RouteMetoc</servlet-class>
 	</servlet>
@@ -34,10 +30,6 @@
 	<servlet-mapping>
 		<servlet-name>Status</servlet-name>
 		<url-pattern>/http/status</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Ais</servlet-name>
-		<url-pattern>/http/ais</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>XmlRouteMetoc</servlet-name>

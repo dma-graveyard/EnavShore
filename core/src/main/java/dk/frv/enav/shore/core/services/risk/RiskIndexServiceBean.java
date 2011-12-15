@@ -13,7 +13,6 @@ import dk.frv.enav.common.xml.risk.response.RiskResponse;
 import dk.frv.enav.shore.core.domain.AisVesselTarget;
 import dk.frv.enav.shore.core.domain.RiskIndexes;
 import dk.frv.enav.shore.core.services.ServiceException;
-import dk.frv.enav.shore.core.services.ais.AisRequest;
 import dk.frv.enav.shore.core.services.ais.AisService;
 
 @Stateless
@@ -27,8 +26,8 @@ public class RiskIndexServiceBean implements RiskIndexService {
 	@Override
 	public RiskResponse getRiskIndexes(RiskRequest req) throws ServiceException {
 
-		AisRequest aisReq = new AisRequest(req.getLatMin() , req.getLonMin(),req.getLatMax(),req.getLonMax());
-		List<AisVesselTarget> list = aisService.getAisTargets(aisReq);
+		
+		List<AisVesselTarget> list = aisService.getAisTargets(req.getLatMin() , req.getLonMin(),req.getLatMax(),req.getLonMax());
 
 		RiskResponse resp = new RiskResponse();
 		for (AisVesselTarget target : list) {
