@@ -15,6 +15,10 @@
 		<servlet-class>dk.frv.enav.shore.api.xml.RouteMetoc</servlet-class>
 	</servlet>
 	<servlet>
+		<servlet-name>SinglePointMetoc</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.xml.SinglePointMetoc</servlet-class>
+	</servlet>
+	<servlet>
 		<servlet-name>XmlMsi</servlet-name>
 		<servlet-class>dk.frv.enav.shore.api.xml.Msi</servlet-class>
 	</servlet>
@@ -38,6 +42,10 @@
 	<servlet-mapping>
 		<servlet-name>XmlRouteMetoc</servlet-name>
 		<url-pattern>/xml/routeMetoc</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SinglePointMetoc</servlet-name>
+		<url-pattern>/xml/singlePointMetoc</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>XmlMsi</servlet-name>
