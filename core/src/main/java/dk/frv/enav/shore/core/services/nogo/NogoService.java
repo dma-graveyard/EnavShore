@@ -29,7 +29,7 @@ public interface NogoService {
 	
 	BoundingBoxPoint getArea(double lat1, double lon1);
 	
-	List<NogoPolygon> getNogoArea(BoundingBoxPoint point1, BoundingBoxPoint point2);
+	List<NogoPolygon> getNogoArea(BoundingBoxPoint point1, BoundingBoxPoint point2, double draught);
 	
 	boolean parsedPointsContain(List<Point> list, Point point);
 }

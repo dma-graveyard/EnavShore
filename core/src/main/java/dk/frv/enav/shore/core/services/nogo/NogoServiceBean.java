@@ -59,26 +59,32 @@ public class NogoServiceBean implements NogoService {
 	@Override
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
 	
-		/**
+		/**	
 		System.out.println(nogoRequest.getDraught());
+
 		System.out.println(nogoRequest.getNorthWestPointLat());
 		System.out.println(nogoRequest.getNorthWestPointLon());
 		System.out.println(nogoRequest.getSouthEastPointLat());
 		System.out.println(nogoRequest.getSouthEastPointLon());
 		**/		
-		
+		System.out.println("NoGo request recieved");
 		 BoundingBoxPoint firstPos = getArea(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
 		 BoundingBoxPoint secondPos = getArea(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());		
 
+		 
 //		 BoundingBoxPoint firstPos = getArea(55.070, 11.668);
 //		 BoundingBoxPoint secondPos = getArea(55.170, 11.868);
 		
 //		 BoundingBoxPoint firstPos = getArea(56.1106, 12.1290);
 //		 BoundingBoxPoint secondPos = getArea(55.2878, 12.955);
 		 
-		 List<NogoPolygon> polyArea = getNogoArea(firstPos,secondPos);
-
+		 List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
 		 
+		 if (firstPos != null && secondPos != null){
+		 System.out.println("Bounding Box found - requesting data");
+		 polyArea = getNogoArea(firstPos,secondPos, nogoRequest.getDraught());
+		 System.out.println("Data recieved and parsed");
+		 }
 		
 //		System.out.println("Our box is located at topLeft:" + topLeft + " topRight: " + topRight
 //				+ " bottomLeft: " + bottomLeft + " bottomRight: " + bottomRight);
@@ -100,6 +106,8 @@ public class NogoServiceBean implements NogoService {
 
 		res.setValidFrom(new Date());
 		res.setValidTo(new Date(futureDate));
+		
+		System.out.println("Sending data");
 			
 		return res;
 	}
@@ -138,6 +146,8 @@ public class NogoServiceBean implements NogoService {
 		
 		List<Object[]> lines = query.getResultList();
 		
+		if (lines.size() != 0)
+		{
 		double distance = 9999999;
 		
 		Object[] bestMatch = null;
@@ -154,12 +164,16 @@ public class NogoServiceBean implements NogoService {
 		}
 		//System.out.println("The point we're looking for is at " + bestMatch[0] +" , " + bestMatch[1]);
 		BoundingBoxPoint point = new BoundingBoxPoint((Integer) bestMatch[0], (Integer) bestMatch[1]);
+		
 		return point;
+		
+		}
+		return null;
 	}	
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<NogoPolygon> getNogoArea(BoundingBoxPoint firstPos, BoundingBoxPoint secondPos) {
+	public List<NogoPolygon> getNogoArea(BoundingBoxPoint firstPos, BoundingBoxPoint secondPos, double draught) {
 		System.gc();
 		
 		//NogoPolygon poly1 = new NogoPolygon();
@@ -190,41 +204,41 @@ public class NogoServiceBean implements NogoService {
 		}
 
 		//SELECT * FROM `enav_p`.`depth_denmark` where n between 2026 and 2206 and m between 637 and 728 and depth is not null;
-		System.out.println(n1);
-		System.out.println(m1);
-		System.out.println(n2);
-		System.out.println(m2);
+		//System.out.println(n1);
+		//System.out.println(m1);
+		//System.out.println(n2);
+		//System.out.println(m2);
 		
 		
 		//This is where we store our result
 		List<NogoPolygon> res = new ArrayList<NogoPolygon>();
 		// Full query
 		String sqlQuery =
-			"select lat,lon from (" +
-			"select * from depth_denmark master "+
+			"SELECT lat,lon from (" +
+			"SELECT * from depth_denmark master "+
 			"where n between :n1 and :n2 "+
 			"and m between :m1 and :m2 "+
-			"and depth > -7 "+
+			"and depth > :d1 "+
 			"and not exists "+
 			"(select 1 from depth_denmark s "+
 			"where n between :n1 and :n2 "+
 			"and m between :m1 and :m2 "+
 			"and s.m=master.m "+
 			"and s.n=master.n-1 "+
-			"and depth > -7 "+
+			"and depth > :d1 "+
 			") "+
 			"union all "+
 			"select * from depth_denmark master2 "+
 			"where n between :n1 and :n2 "+
 			"and m between :m1 and :m2 "+
-			"and depth > -7 "+
+			"and depth > :d1 "+
 			"and not exists "+
 			"(select 1 from depth_denmark s2 "+
 			"where n between :n1 and :n2 "+
 			"and m between :m1 and :m2 "+
 			"and s2.m=master2.m "+
 			"and s2.n=master2.n+1 "+
-			"and depth > -7) "+
+			"and depth > :d1) "+
 			") a "+
 			"order by m,n; "
 			;
@@ -234,13 +248,14 @@ public class NogoServiceBean implements NogoService {
 		query.setParameter("n2", n2);
 		query.setParameter("m1", m1);
 		query.setParameter("m2", m2);
+		query.setParameter("d1", draught);
 		
 		List<Object[]> result = query.getResultList();
 		
 		NogoPolygon polygon = new NogoPolygon();
 		NogoPolygon temp;
 		
-		double lonOffset = 0.0007854;
+//		double lonOffset = 0.0007854;
 		double latOffset = 0.00055504;
 		int i = 0;
 		
