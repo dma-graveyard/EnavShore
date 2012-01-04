@@ -11,15 +11,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="depth_denmark")
+@Table(name="depth_denmark100m")
 public class DepthDenmark implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
 	private double lat;
 	private double lon;
-	private double latp;
-	private double lonp;
 	private int n ;
 	private int m;
 	private Double depth;
@@ -55,26 +53,6 @@ public class DepthDenmark implements Serializable {
 		this.lon = lon;
 	}	
 	
-
-	
-	@Column(name="latp", unique = false, nullable = false, insertable = true, updatable = true)
-	public double getLatp() {
-		return this.latp;
-	}
-
-	public void setLatp(double latp) {
-		this.latp = latp;
-	}
-
-	@Column(name="lonp", unique = false, nullable = false, insertable = true, updatable = true)
-	public double getLonp() {
-		return this.lonp;
-	}
-
-	public void setLonp(double lonp) {
-		this.lonp = lonp;
-	}	
-		
 	@Column(name="n", unique = false, nullable = false, insertable = true, updatable = true)
 	public int getN() {
 		return this.n;

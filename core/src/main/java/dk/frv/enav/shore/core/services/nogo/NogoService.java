@@ -25,8 +25,6 @@ public interface NogoService {
 	
 	int getDataCount();
 	
-	void getData();
-	
 	BoundingBoxPoint getArea(double lat1, double lon1);
 	
 	List<NogoPolygon> getNogoArea(BoundingBoxPoint point1, BoundingBoxPoint point2, double draught);
