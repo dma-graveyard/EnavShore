@@ -69,8 +69,8 @@ public class NogoServiceBean implements NogoService {
 				nogoRequest.getSouthEastPointLon());
 
 
-		// BoundingBoxPoint firstPos = getArea(55.070, 11.668);
-		// BoundingBoxPoint secondPos = getArea(55.170, 11.868);
+//firstPos = getArea(55.070, 11.668);
+//secondPos = getArea(55.170, 11.868);
 
 		// BoundingBoxPoint firstPos = getArea(56.1106, 12.1290);
 		// BoundingBoxPoint secondPos = getArea(55.2878, 12.955);
@@ -80,7 +80,7 @@ public class NogoServiceBean implements NogoService {
 		if (firstPos != null && secondPos != null) {
 			System.out.println("Bounding Box found - requesting data");
 			polyArea = getNogoArea(firstPos, secondPos, nogoRequest.getDraught());
-			//polyArea = getNogoArea(firstPos, secondPos, -7);
+//			polyArea = getNogoArea(firstPos, secondPos, -7);
 			System.out.println("Data recieved and parsed");
 		}
 
@@ -189,6 +189,40 @@ public class NogoServiceBean implements NogoService {
 		System.out.println(m2);
 		System.out.println(draught);
 		
+		
+		Query query = entityManager.createQuery("SELECT dd " +
+				"FROM DepthDenmark dd " +
+				"WHERE dd.n between :n1 AND :n2 " +
+				"AND dd.m between :m1 AND :m2 " +
+				"AND dd.depth > :d1 ORDER BY M, N");
+
+			query.setParameter("n1", n1);
+			query.setParameter("n2", n2);
+			query.setParameter("m1", m1);
+			query.setParameter("m2", m2);
+			query.setParameter("d1", draught);			
+			
+
+			List<DepthDenmark> result = query.getResultList();
+		
+			
+			List<List<DepthDenmark>> lines = new ArrayList<List<DepthDenmark>>();
+			int m = -1;
+			List<DepthDenmark> line = null;
+			for (DepthDenmark depthDenmark : result) {
+			//What is the index, n
+			if(depthDenmark.getM() > m){
+			line = new ArrayList<DepthDenmark>();
+			lines.add(line);
+			m = depthDenmark.getM();
+			}
+			line.add(depthDenmark);
+			
+			}
+//			System.out.println("There are: " + lines.size() + " lines");
+			
+			/**
+			
 		// Full query
 		String sqlQuery =
 			"SELECT lat,lon from (" +
@@ -220,43 +254,6 @@ public class NogoServiceBean implements NogoService {
 			"order by m,n; "
 			;
 
-
-		
-		//Optimized query? NOPE
-		/**
-		String sqlQuery = "SELECT lat,lon from ("
-				+ "select * from depth_denmark100m master "
-				+ "where n between :n1 and :n2 "
-				+ "and m between :m1 and :m2 "
-				+ "and depth > :d1 "
-				+ "and " 
-				+ "(select depth from depth_denmark100m s "
-				+ "where n between :n1 and :n2 "
-				+ "and m between :m1 and :m2 " 
-				+ "and s.m=master.m "
-				+ "and s.n=master.n-1 "
-				+ ")<= :d1 "
-				+ "union all "
-				+ "select * from depth_denmark100m master "
-				+ "where n between :n1 and :n2 "
-				+ "and m between :m1 and :m2 "
-				+ "and depth > :d1 "
-				+ "and (select depth from depth_denmark100m s "
-				+ " where n between :n1 and :n2 "
-				+ "and m between :m1 and :m2 " 
-				+ "and s.m=master.m "
-				+ "and s.n=master.n+1 "
-				+ ")<= :d1 "
-				+ ") a order by m,n ";
-		**/
-		
-		/**
-		String sqlQuery = "select lat,lon from depth_denmark master "
-						+ " where n between :n1 and :n2 "
-						+ " and m between :m1 and :m2 "
-						+ "and depth > :d1 "
-						+ "order by m,n ";
-		**/
 		System.out.println("Executing query");
 		
 		Query query = entityManager.createNativeQuery(sqlQuery);
@@ -270,10 +267,12 @@ public class NogoServiceBean implements NogoService {
 
 		List<Object[]> result = query.getResultList();
 
+		
+		**/
+		
 		System.out.println("Query executed! - parsing");
 				
-		NogoPolygon polygon = new NogoPolygon();
-		NogoPolygon temp;
+
 
 		// double lonOffset = 0.0007854;
 		//The difference between each point / 2. This is used in calculating the polygons surrounding the lines
@@ -288,8 +287,67 @@ public class NogoServiceBean implements NogoService {
 
 		int i = 0;
 
-		for (Object[] objects : result) {
-		NogoPoint point = new NogoPoint( (Double) objects[0], (Double) objects[1] );
+		ParseData parseData = new ParseData();
+		
+		
+		
+		List<List<DepthDenmark>> parsed = parseData.getParsed(lines);
+		
+		//parsed = lines;
+		
+		System.out.println(lines.size());
+		System.out.println(parsed.size());
+		
+		for (int j = 0; j < parsed.size(); j++) {
+			System.out.println(parsed.get(j).size());
+		}
+		
+		NogoPolygon polygon;
+		NogoPolygon temp;
+		
+		for (List<DepthDenmark> splittedLines : parsed) {
+
+			if (splittedLines.size() == 1){
+				NogoPoint point = new NogoPoint( splittedLines.get(0).getLat(), splittedLines.get(0).getLon() );
+				temp = new NogoPolygon();
+				temp.getPolygon().add(point);
+				temp.getPolygon().add(point);
+			}else{
+				temp = new NogoPolygon();
+			for (DepthDenmark dataEntries : splittedLines) {
+				NogoPoint point = new NogoPoint( dataEntries.getLat(), dataEntries.getLon() );
+				temp.getPolygon().add(point);
+			}
+			}
+			
+			NogoPoint westPoint = temp.getPolygon().get(0);
+			NogoPoint eastPoint = temp.getPolygon().get(1);
+			
+			NogoPoint northWest = new NogoPoint(westPoint.getLat() + latOffset, westPoint.getLon());
+
+			NogoPoint northEast = new NogoPoint(eastPoint.getLat() + latOffset, eastPoint.getLon());
+
+			NogoPoint southWest = new NogoPoint(westPoint.getLat() - latOffset, westPoint.getLon());
+
+			NogoPoint southEast= new NogoPoint(eastPoint.getLat() - latOffset, eastPoint.getLon());
+
+
+			polygon  = new NogoPolygon();
+			
+			polygon.getPolygon().add(northWest);
+			polygon.getPolygon().add(southWest);
+			polygon.getPolygon().add(southEast);
+			polygon.getPolygon().add(northEast);
+			
+			
+			res.add(polygon);
+		}
+		
+		System.out.println(res.size());
+		/**
+		
+		for (DepthDenmark objects : result) {
+		NogoPoint point = new NogoPoint( objects.getLat(), objects.getLon() );
 		if (polygon.getPolygon().size() == 1){
 		polygon.getPolygon().add(point);
 
@@ -320,6 +378,9 @@ public class NogoServiceBean implements NogoService {
 		i++;
 
 		}
+		**/
+
+			
 		return res;
 			}
 

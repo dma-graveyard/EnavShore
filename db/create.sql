@@ -117,8 +117,6 @@ CREATE TABLE `depth_denmark` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `lat` DOUBLE NOT NULL ,
   `lon` DOUBLE NOT NULL ,
-  `latp` DOUBLE NOT NULL ,
-  `lonp` DOUBLE NOT NULL ,
   `n` INT NOT NULL ,
   `m` INT NOT NULL ,
   `depth` DOUBLE,
