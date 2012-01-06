@@ -122,3 +122,19 @@ CREATE TABLE `depth_denmark` (
   `depth` DOUBLE,
   INDEX(n, m, lat, lon));
 ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `tide_denmark`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `tide_denmark` ;
+
+CREATE TABLE `tide_denmark` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `lat` DOUBLE NOT NULL ,
+  `lon` DOUBLE NOT NULL ,
+  `n` INT NOT NULL ,
+  `m` INT NOT NULL ,
+  `time` DATETIME NOT NULL,
+  `depth` DOUBLE,
+  INDEX(time, n, m, lat, lon));
+ENGINE = InnoDB;
