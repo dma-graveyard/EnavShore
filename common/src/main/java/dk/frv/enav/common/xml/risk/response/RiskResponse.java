@@ -18,22 +18,24 @@ public class RiskResponse extends ShoreServiceResponse {
 	private static final long serialVersionUID = 1L;
 	
 	
-	private List<RiskIndexes> indexes = new ArrayList<RiskIndexes>();
+	
+	private List<RiskList> list = new ArrayList<RiskList>();
 	
 	public RiskResponse() {
 	}
 
-	public List<RiskIndexes> getIndexes() {
-		return indexes;
+	
+	public List<RiskList> getList() {
+		return list;
 	}
 
-	public void setIndexes(List<RiskIndexes> indexes) {
-		this.indexes = indexes;
+	public void add(RiskList list) {
+		this.list.add(list);
 	}
 
-	public boolean add(RiskIndexes arg0) {
-		return indexes.add(arg0);
-	}
+	
+	
+	
 
 	
 	
