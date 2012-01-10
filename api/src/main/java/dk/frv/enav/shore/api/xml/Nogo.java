@@ -35,7 +35,7 @@ public class Nogo extends XmlApiServlet {
 		try {
 			NogoRequest reqXml = (NogoRequest)getRequestXml(request, "dk.frv.enav.common.xml.nogo.request", logEntry);
 			logEntry.setMmsi(reqXml.getMmsi());
-			resXml = nogoService.makeNogo(reqXml);
+			resXml = nogoService.nogoPoll(reqXml);
 			logEntry.markCompleted();
 		} catch (ServiceException e) {
 			resXml.setErrorCode(e.getErrorCode());
