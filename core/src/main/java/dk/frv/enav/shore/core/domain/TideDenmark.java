@@ -1,12 +1,12 @@
 package dk.frv.enav.shore.core.domain;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Date;
 
 @Entity
 @Table(name="tide_denmark")
@@ -18,7 +18,7 @@ public class TideDenmark implements Serializable {
 	private double lon;
 	private int n ;
 	private int m;
-	private Date time;
+	private Timestamp time;
 	private Double depth;
 
     public TideDenmark() {
@@ -71,11 +71,11 @@ public class TideDenmark implements Serializable {
 	}	
 			
 	@Column(name="time", unique = false, nullable = false, insertable = true, updatable = true)
-	public Date getTime() {
+	public Timestamp getTime() {
 		return this.time;
 	}
 
-	public void setTime(Date time) {
+	public void setTime(Timestamp time) {
 		this.time = time;
 	}	
 	
