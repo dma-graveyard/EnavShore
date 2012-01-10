@@ -1,17 +1,12 @@
 package dk.frv.enav.common.xml.risk.request;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.sun.org.apache.bcel.internal.generic.ARRAYLENGTH;
-
-import dk.frv.enav.common.xml.Route;
 import dk.frv.enav.common.xml.ShoreServiceRequest;
 
 @XmlRootElement

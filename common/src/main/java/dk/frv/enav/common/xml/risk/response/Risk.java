@@ -1,7 +1,6 @@
 package dk.frv.enav.common.xml.risk.response;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  *

@@ -12,8 +12,7 @@ import dk.frv.enav.common.xml.ShoreServiceRequest;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "singlePointMetocRequest", propOrder = {})
 public class SinglePointMetocRequest extends ShoreServiceRequest {
-
-	
+	private static final long serialVersionUID = 1L;
 	Double lat;
 	Double lon;
 	

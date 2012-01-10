@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import dk.frv.enav.common.util.Point;
 import dk.frv.enav.common.xml.nogo.request.NogoRequest;
 import dk.frv.enav.common.xml.nogo.response.NogoResponse;
 import dk.frv.enav.common.xml.nogo.types.BoundingBoxPoint;

@@ -46,6 +46,7 @@ public class RiskIndexServiceBean implements RiskIndexService {
 		return resp;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Risk> findLastByMmsi(Integer mmsi) {
 		Query query = entityManager.createNativeQuery(
 				"select id, mmsi, risk_proba, consequence_index,accident_type,time_created  from risks r1 where (mmsi, accident_type,time_created) in "

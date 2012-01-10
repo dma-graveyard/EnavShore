@@ -225,8 +225,8 @@ public class NogoServiceBean implements NogoService {
 		requestEnd.setSeconds(0);
 		
 		
-		Date currentDate = new Date();
-		long futureDate = currentDate.getTime() + 7200000;
+		//Date currentDate = new Date();
+		//long futureDate = currentDate.getTime() + 7200000;
 
 		res.setValidFrom(requestStart);
 		res.setValidTo(requestEnd);

@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.criteria.CriteriaBuilder.In;
 
 /**
  * The persistent class for the risk_indexes database table.
