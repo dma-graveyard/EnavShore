@@ -215,11 +215,21 @@ public class NogoServiceBean implements NogoService {
 			res.addPolygon(polyArea.get(i));
 		}
 
+		
+		Date requestStart = nogoRequest.getStartDate();
+		requestStart.setMinutes(0);
+		requestStart.setSeconds(0);
+		
+		Date requestEnd = nogoRequest.getEndDate();
+		requestEnd.setMinutes(0);
+		requestEnd.setSeconds(0);
+		
+		
 		Date currentDate = new Date();
 		long futureDate = currentDate.getTime() + 7200000;
 
-		res.setValidFrom(new Date());
-		res.setValidTo(new Date(futureDate));
+		res.setValidFrom(requestStart);
+		res.setValidTo(requestEnd);
 
 		System.out.println("Sending data");
 
