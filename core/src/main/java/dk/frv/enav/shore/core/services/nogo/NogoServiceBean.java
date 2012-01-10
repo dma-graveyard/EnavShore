@@ -108,18 +108,10 @@ public class NogoServiceBean implements NogoService {
 		nogoWorkerFirstPointTide.start();
 		nogoWorkerSecondPointTide.start();
 
-		// Find max change in depth database
+		// Find max change in depth database - not needed anymore
 		// nogoWorkerThirdMaxTide.start();
 
 		// nogoRequest.getStartDate();
-
-		// BoundingBoxPoint firstPos = getAreaDepthDenmark(
-		// nogoRequest.getNorthWestPointLat(),
-		// nogoRequest.getNorthWestPointLon());
-
-		// BoundingBoxPoint secondPos = getAreaDepthDenmark(
-		// nogoRequest.getSouthEastPointLat(),
-		// nogoRequest.getSouthEastPointLon());
 
 		try {
 			nogoWorkerFirstPointDepth.join();
@@ -475,6 +467,9 @@ public class NogoServiceBean implements NogoService {
 	@Override
 	public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth) {
 
+		
+		System.out.println("Query executed! - parsing");
+		
 		// This is where we store our result
 		List<NogoPolygon> res = new ArrayList<NogoPolygon>();
 
@@ -508,133 +503,34 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
-		/**
-		 * Debug stuff System.out.println("Lines depth has " + lines.size() +
-		 * " lines"); System.out.println("Lines tide has " + linesTide.size() +
-		 * " lines");
-		 * 
-		 * System.out.println("First depth has " + lines.get(0).size() +
-		 * " entries"); System.out.println("First tide has " +
-		 * linesTide.get(0).size() + " entries");
-		 * 
-		 * System.out.println("First point in depth is: " +
-		 * lines.get(0).get(0).getLat() + " " + lines.get(0).get(0).getLon());
-		 * System.out.println("First point in tide is: " +
-		 * linesTide.get(0).get(0).getLat() + " " +
-		 * linesTide.get(0).get(0).getLon());
-		 * 
-		 * System.out.println("Last point in depth is: " +
-		 * lines.get(0).get(lines.get(0).size() - 1).getLat() + " " +
-		 * lines.get(0).get(lines.get(0).size() - 1).getLon());
-		 * 
-		 * System.out.println("Last point in tide is: " +
-		 * linesTide.get(0).get(linesTide.get(0).size() - 1).getLat() + " " +
-		 * linesTide.get(0).get(linesTide.get(0).size() - 1).getLon());
-		 * 
-		 * List<List<TideDenmark>> linesTideParsed = new
-		 * ArrayList<List<TideDenmark>>();
-		 * 
-		 * for (int i = 0; i < linesTide.size(); i++) { for (int j = 0; j <
-		 * linesTide.get(i).size(); j++) {
-		 * System.out.println(linesTide.get(i).get(j).getN() + ", " +
-		 * linesTide.get(i).get(j).getM()); } }
-		 **/
+		// Identify how many similar we have
+		int n = linesTide.get(0).get(0).getN();
+		int nCount = 0;
+		for (int j = 0; j < linesTide.get(0).size(); j++) {
 
-		List<List<TideDenmark>> linesTideParsed = new ArrayList<List<TideDenmark>>();
-
-		System.out.println("Looking closer at linesTide");
-		// Eliminate duplicates in tideLines
-		for (int i = 0; i < linesTide.size(); i++) {
-			List<TideDenmark> newListLine = new ArrayList<TideDenmark>();
-
-			// Take first element in first line
-			int n = linesTide.get(i).get(0).getN();
-			int maxN = linesTide.get(i).get(linesTide.get(i).size() - 1).getN() + 1;
-			int j = 1;
-			TideDenmark tempElement = linesTide.get(i).get(0);
-
-			System.out.println("Current N is: " + n);
-			while (true) {
-				System.out.println("Looking at: " + linesTide.get(i).get(j).getN());
-
-				// Reached biggest n
-				if (n == maxN) {
-					System.out.println("Reached max n");
-					break;
-				}
-
-				if (linesTide.get(i).get(j).getN() == n) {
-					System.out.println(" They are equal: "  + linesTide.get(i).get(j).getN() + " and " + n);
-					if (tempElement.getDepth() == null && linesTide.get(i).get(j).getDepth() != null) {
-						tempElement = linesTide.get(i).get(j);
-					}
-
-					if (tempElement.getDepth() != null && linesTide.get(i).get(j).getDepth() != null) {
-
-						// Should I update my tempElement, take the smallest
-						// change
-						if (linesTide.get(i).get(j).getDepth() < tempElement.getDepth()) {
-							tempElement = linesTide.get(i).get(j);
-						}
-					}
-					j++;
-				} else {
-					// There's no more of same n
-					newListLine.add(tempElement);
-					n++;
-				}
-				linesTideParsed.add(newListLine);
-
+			if (n != -1 && linesTide.get(0).get(j).getN() != n) {
+				break;
 			}
+			nCount++;
+
 		}
 		
-//		 Overwrite the old one
-		 linesTide = linesTideParsed;
-		
-		 System.out.println(linesTideParsed.get(0).size());
+		System.out.println("We have: " + nCount + " that are equal");
+		System.out.println("The size of linesTide first line is: " + linesTide.get(0).size());
+		//We have a broad time spand
+		if (nCount != 1) {
+			List<List<TideDenmark>> linesTideParsed = new ArrayList<List<TideDenmark>>();
+			// We need to take nCount out and compare, and return the highest
+			for (int i = 0; i < linesTide.size(); i++) {
+				List<TideDenmark> parsedLine = compareTideLines(linesTide.get(i), nCount);
+				linesTideParsed.add(parsedLine);
+			}
+			// Overwrite the old one 
+			linesTide = linesTideParsed;
+		}
 
 
-		// Take all elements with that n
-		// Take one with lowest depth
-		// Add it to newListLine
-		// Increase n
-
-		//
-		//
-		// for (int j = 0; j < linesTide.get(i).size(); j = j + 2) {
-		//
-		// // They're not null
-		// if (linesTide.get(i).get(j).getDepth() != null
-		// && linesTide.get(i).get(j + 1).getDepth() != null) {
-		//
-		// // Which one is biggest?
-		// if (linesTide.get(i).get(j).getDepth() < linesTide.get(i)
-		// .get(j + 1).getDepth()) {
-		// newListLine.add(linesTide.get(i).get(j));
-		// } else {
-		// newListLine.add(linesTide.get(i).get(j + 1));
-		// }
-		//
-		// // The one of them is null, add the other one
-		// if (linesTide.get(i).get(j).getDepth() != null
-		// && linesTide.get(i).get(j + 1).getDepth() == null) {
-		// newListLine.add(linesTide.get(i).get(j));
-		// }
-		//
-		// if (linesTide.get(i).get(j).getDepth() == null
-		// && linesTide.get(i).get(j + 1).getDepth() != null) {
-		// newListLine.add(linesTide.get(i).get(j + 1));
-		// }
-		//
-		// } else {
-		// // They're both null, just add one of them
-		// newListLine.add(linesTide.get(i).get(j));
-		// }
-		//
-		// }
-		// linesTideParsed.add(newListLine);
-		// }
-
+		System.out.println("The size of linesTideParsed first line is: " + linesTide.get(0).size());
 
 		// Combine the two into one result
 		int j = 0;
@@ -655,7 +551,7 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
-		System.out.println("Query executed! - parsing");
+
 
 		// double lonOffset = 0.0007854;
 		// The difference between each point / 2. This is used in calculating
@@ -671,11 +567,11 @@ public class NogoServiceBean implements NogoService {
 
 		ParseData parseData = new ParseData();
 
-		System.out.println("Lines is: " + lines.size());
+//		System.out.println("Lines is: " + lines.size());
 
 		List<List<DepthDenmark>> parsed = parseData.getParsed(lines);
 
-		System.out.println("Parsed is: " + parsed.size());
+//		System.out.println("Parsed is: " + parsed.size());
 
 		// parsed = lines;
 
@@ -725,9 +621,55 @@ public class NogoServiceBean implements NogoService {
 			res.add(polygon);
 		}
 
-		System.out.println(res.size());
+//		System.out.println(res.size());
 
 		return res;
+	}
+
+	private List<TideDenmark> compareTideLines(List<TideDenmark> list, int nCount) {
+		
+		List<TideDenmark> parsedList = new ArrayList<TideDenmark>();
+		//Take nCount out
+		//Compare them
+		for (int i = 0; i < list.size(); i = i+nCount) {
+			
+			//take all the elements
+			List<TideDenmark> tempList = new ArrayList<TideDenmark>();
+			for (int j = 0; j < nCount; j++) {
+				tempList.add(list.get(j+i));
+			}
+			
+			//find lowest in tempList
+			TideDenmark lowestTide = getLowestTide(tempList);
+			//add it to parsedList
+			parsedList.add(lowestTide);
+		}
+	
+
+		return parsedList;
+	}
+
+	private TideDenmark getLowestTide(List<TideDenmark> tempList) {
+		TideDenmark current = tempList.get(0);
+		
+		for (int i = 0; i < tempList.size(); i++) {
+			if (current.getDepth() != null && tempList.get(i).getDepth() != null){
+				//Take the lowest 
+				if (current.getDepth() > tempList.get(i).getDepth()){
+					current = tempList.get(i);
+				}
+			}
+			//if current is null and the other isn't, take the none null one.
+			//Is this the correct approach?
+			if (current.getDepth() == null && tempList.get(i).getDepth() != null){
+				System.out.println("Strangeness");
+				current = tempList.get(i);
+			}
+			
+		}
+		
+
+		return current;
 	}
 
 	private void combineVertical(List<TideDenmark> currentTideLine, List<List<DepthDenmark>> lines, int k) {
@@ -738,10 +680,10 @@ public class NogoServiceBean implements NogoService {
 		if (k + 5 > lines.size() - 1) {
 
 			for (int i = k + 1; i < lines.size(); i++) {
-				System.out.println("We must work on " + k);
+//				System.out.println("We must work on " + k);
 				combineHorizontal(currentTideLine, lines.get(k));
 			}
-			System.out.println("Do something else");
+//			System.out.println("Do something else");
 
 		} else {
 
@@ -755,26 +697,7 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
-		// Not always divisible by 5
-
-		// Function takes the lines and j, does it on 5 at a time
-		// Also takes currentTideLine
-		// Find the remainder, do it until j + 5 is equal or less than
-		// lines.size()
-
-		// Then special cases for rest
-
-		// Not always divisble by 8
-		// Function that takes a single line and q, and does it on 8 points at a
-		// time
-		// Also takes currentTideDepth to apply to each
-		// Find the remainder, do it until q+8 is equal or less than
-		// lines.size()
-
-		// Then special cases for rest
-		// TODO Auto-generated method stub
-
-	}
+		}
 
 	private void combineHorizontal(List<TideDenmark> currentTideLine, List<DepthDenmark> currentDepthList) {
 
@@ -844,7 +767,7 @@ public class NogoServiceBean implements NogoService {
 			}
 
 		}
-		// TODO Auto-generated method stub
+
 
 	}
 

@@ -1,6 +1,5 @@
 package dk.frv.enav.shore.core.services.nogo;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
