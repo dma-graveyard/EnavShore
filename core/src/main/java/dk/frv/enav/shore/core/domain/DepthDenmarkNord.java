@@ -37,8 +37,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="depth_denmark100m")
-public class DepthDenmark implements Serializable {
+@Table(name="depth_denmark100mNord")
+public class DepthDenmarkNord implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
@@ -48,7 +48,7 @@ public class DepthDenmark implements Serializable {
 	private int m;
 	private Double depth;
 
-    public DepthDenmark() {
+    public DepthDenmarkNord() {
     }
 
 	@Id
