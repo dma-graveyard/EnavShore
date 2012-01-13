@@ -58,6 +58,7 @@ public class NogoServiceBean implements NogoService {
 	public enum WorkerType {
 		DEPTHPOINT, TIDEPOINT, DEPTHDATA, TIDEDATA, MAXTIDE;
 	}
+
 	public enum DataType {
 		SYDKATTEGAT, NORDKATTEGAT;
 	}
@@ -66,14 +67,13 @@ public class NogoServiceBean implements NogoService {
 	@Override
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
 
-//		System.out.println("NoGo request recieved");
+		// System.out.println("NoGo request recieved");
 
 		// First identify which area we are searching in
 
 		GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
 		GeoLocation SouthEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
 
-		
 		NogoWorker nogoWorkerFirstPointDepth = null;
 
 		NogoWorker nogoWorkerSecondPointDepth = null;
@@ -85,38 +85,35 @@ public class NogoServiceBean implements NogoService {
 		NogoWorker nogoWorkerDepthData = null;
 
 		NogoWorker nogoWorkerTideData = null;
-		
-		
-		
+
 		// If check for each area
 		//
 		if (northWest.getLatitude() > 54.36294 && northWest.getLatitude() < 56.36316
 				&& northWest.getLongitude() > 9.419409 && northWest.getLongitude() < 13.149009
 				&& SouthEast.getLatitude() > 54.36294 && SouthEast.getLatitude() < 56.36316
 				&& SouthEast.getLongitude() > 9.419409 && SouthEast.getLongitude() < 13.149009) {
-			
+
 			nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
 			nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
 			nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
 			nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
-			
+
 			nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SYDKATTEGAT);
 			nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
-			
+
 		} else {
 
 			if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237
 					&& northWest.getLongitude() > 9.403869 && northWest.getLongitude() < 12.148899
 					&& SouthEast.getLatitude() > 56.34096 && SouthEast.getLatitude() < 58.26237
 					&& SouthEast.getLongitude() > 9.403869 && SouthEast.getLongitude() < 12.148899) {
-//				System.out.println("Valid nordkattegat point");
-				
-				
+				// System.out.println("Valid nordkattegat point");
+
 				nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
 				nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
 				nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
 				nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
-				
+
 				nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.NORDKATTEGAT);
 				nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.NORDKATTEGAT);
 
@@ -124,17 +121,14 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
-		
-		if(northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294
+		if (northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294
 				|| northWest.getLongitude() > 13.149009 || northWest.getLongitude() < 9.403869
 				|| SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294
-				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869){
-//			System.out.println("No data available");
+				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869) {
+			// System.out.println("No data available");
 			NogoResponse res = new NogoResponse();
 			return res;
 		}
-		
-		
 
 		// NogoWorker nogoWorkerThirdMaxTide = new NogoWorker(entityManager,
 		// WorkerType.MAXTIDE);
@@ -178,16 +172,16 @@ public class NogoServiceBean implements NogoService {
 
 		try {
 			nogoWorkerFirstPointDepth.join();
-//			System.out.println("First depth point found");
+			// System.out.println("First depth point found");
 			nogoWorkerSecondPointDepth.join();
-//			System.out.println("Second depth point found");
+			// System.out.println("Second depth point found");
 			// nogoWorkerThirdMaxTide.join();
 			// System.out.println("MaxTide found");
 
 			nogoWorkerFirstPointTide.join();
-//			System.out.println("First tide point found");
+			// System.out.println("First tide point found");
 			nogoWorkerSecondPointTide.join();
-//			System.out.println("Second tide point found");
+			// System.out.println("Second tide point found");
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -196,22 +190,21 @@ public class NogoServiceBean implements NogoService {
 		BoundingBoxPoint firstPosDepth = nogoWorkerFirstPointDepth.getPoint();
 		BoundingBoxPoint secondPosDepth = nogoWorkerSecondPointDepth.getPoint();
 
-//		System.out.println("depth points are " + nogoWorkerFirstPointDepth.getPoint() + ", "
-//				+ nogoWorkerSecondPointDepth.getPoint());
+		// System.out.println("depth points are " +
+		// nogoWorkerFirstPointDepth.getPoint() + ", "
+		// + nogoWorkerSecondPointDepth.getPoint());
 
 		BoundingBoxPoint firstPosTide = nogoWorkerFirstPointTide.getPoint();
 		BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
 
-//		System.out.println("tide points are " + nogoWorkerFirstPointTide.getPoint() + ", "
-//				+ nogoWorkerSecondPointTide.getPoint());
-
+		// System.out.println("tide points are " +
+		// nogoWorkerFirstPointTide.getPoint() + ", "
+		// + nogoWorkerSecondPointTide.getPoint());
 
 		List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
 
 		if (firstPosDepth != null && secondPosDepth != null) {
-//			System.out.println("Bounding Box found - requesting data");
-
-
+			// System.out.println("Bounding Box found - requesting data");
 
 			nogoWorkerDepthData.setFirstPos(firstPosDepth);
 			nogoWorkerDepthData.setSecondPos(secondPosDepth);
@@ -235,9 +228,9 @@ public class NogoServiceBean implements NogoService {
 			nogoWorkerTideData.setTimeStart(timeStart);
 			nogoWorkerTideData.setTimeEnd(timeEnd);
 
-//			System.out.println("StartTime is: " + timeStart);
-//
-//			System.out.println("EndTime is: " + timeEnd);
+			// System.out.println("StartTime is: " + timeStart);
+			//
+			// System.out.println("EndTime is: " + timeEnd);
 
 			nogoWorkerDepthData.start();
 
@@ -245,9 +238,9 @@ public class NogoServiceBean implements NogoService {
 
 			try {
 				nogoWorkerDepthData.join();
-//				System.out.println("Depth data thread joined");
+				// System.out.println("Depth data thread joined");
 				nogoWorkerTideData.join();
-//				System.out.println("Tide data thread joined");
+				// System.out.println("Tide data thread joined");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -257,7 +250,7 @@ public class NogoServiceBean implements NogoService {
 						nogoWorkerTideData.getTideDatabaseResult(), nogoRequest.getDraught());
 			}
 			// polyArea = getNogoArea(firstPos, secondPos, -7);
-//			System.out.println("Data recieved and parsed");
+			// System.out.println("Data recieved and parsed");
 		}
 
 		NogoResponse res = new NogoResponse();
@@ -280,7 +273,7 @@ public class NogoServiceBean implements NogoService {
 		res.setValidFrom(requestStart);
 		res.setValidTo(requestEnd);
 
-//		System.out.println("Sending data");
+		// System.out.println("Sending data");
 
 		return res;
 	}
@@ -401,11 +394,11 @@ public class NogoServiceBean implements NogoService {
 		// This is where we store our result
 		List<NogoPolygon> res = new ArrayList<NogoPolygon>();
 
-//		System.out.println(n1);
-//		System.out.println(n2);
-//		System.out.println(m1);
-//		System.out.println(m2);
-//		System.out.println(draught);
+		// System.out.println(n1);
+		// System.out.println(n2);
+		// System.out.println(m1);
+		// System.out.println(m2);
+		// System.out.println(draught);
 
 		Query query = entityManager.createQuery("SELECT dd " + "FROM DepthDenmark dd "
 				+ "WHERE dd.n between :n1 AND :n2 " + "AND dd.m between :m1 AND :m2 "
@@ -434,7 +427,7 @@ public class NogoServiceBean implements NogoService {
 		}
 		// System.out.println("There are: " + lines.size() + " lines");
 
-//		System.out.println("Query executed! - parsing");
+		// System.out.println("Query executed! - parsing");
 
 		// double lonOffset = 0.0007854;
 		// The difference between each point / 2. This is used in calculating
@@ -446,7 +439,7 @@ public class NogoServiceBean implements NogoService {
 		// 50m spacing
 		// double latOffset = 0.000290;
 
-//		System.out.println("Parsing Query");
+		// System.out.println("Parsing Query");
 
 		ParseData parseData = new ParseData();
 
@@ -500,7 +493,7 @@ public class NogoServiceBean implements NogoService {
 			res.add(polygon);
 		}
 
-//		System.out.println(res.size());
+		// System.out.println(res.size());
 
 		return res;
 	}
@@ -518,7 +511,7 @@ public class NogoServiceBean implements NogoService {
 			maxDepth = (Double) queryResult;
 		}
 
-//		System.out.println(maxDepth);
+		// System.out.println(maxDepth);
 
 		return maxDepth;
 	}
@@ -526,7 +519,7 @@ public class NogoServiceBean implements NogoService {
 	@Override
 	public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth) {
 
-//		System.out.println("Query executed! - parsing");
+		// System.out.println("Query executed! - parsing");
 
 		// This is where we store our result
 		List<NogoPolygon> res = new ArrayList<NogoPolygon>();
@@ -547,56 +540,59 @@ public class NogoServiceBean implements NogoService {
 		}
 
 		// Seperate it into lines - tide - if we got em
-		if (resultTide != null){
-		List<List<TideDenmark>> linesTide = new ArrayList<List<TideDenmark>>();
-		int mT = -1;
-		List<TideDenmark> lineTide = null;
-		for (TideDenmark tideDenmark : resultTide) {
-			// What is the index, n
-			if (tideDenmark.getM() > mT) {
-				lineTide = new ArrayList<TideDenmark>();
-				linesTide.add(lineTide);
-				mT = tideDenmark.getM();
+		if (resultTide != null) {
+			List<List<TideDenmark>> linesTide = new ArrayList<List<TideDenmark>>();
+			int mT = -1;
+			List<TideDenmark> lineTide = null;
+			for (TideDenmark tideDenmark : resultTide) {
+				// What is the index, n
+				if (tideDenmark.getM() > mT) {
+					lineTide = new ArrayList<TideDenmark>();
+					linesTide.add(lineTide);
+					mT = tideDenmark.getM();
+				}
+				lineTide.add(tideDenmark);
+
 			}
-			lineTide.add(tideDenmark);
 
-		}
-		
-		// Identify how many similar we have
-		int n = linesTide.get(0).get(0).getN();
-		int nCount = 0;
-		for (int j = 0; j < linesTide.get(0).size(); j++) {
+			// Identify how many similar we have
+			int n = linesTide.get(0).get(0).getN();
+			int nCount = 0;
+			for (int j = 0; j < linesTide.get(0).size(); j++) {
 
-			if (n != -1 && linesTide.get(0).get(j).getN() != n) {
-				break;
+				if (n != -1 && linesTide.get(0).get(j).getN() != n) {
+					break;
+				}
+				nCount++;
+
 			}
-			nCount++;
 
-		}
+			// System.out.println("We have: " + nCount + " that are equal");
+			// System.out.println("The size of linesTide first line is: " +
+			// linesTide.get(0).size());
+			// We have a broad time spand
+			if (nCount != 1) {
+				List<List<TideDenmark>> linesTideParsed = new ArrayList<List<TideDenmark>>();
+				// We need to take nCount out and compare, and return the
+				// highest
+				for (int i = 0; i < linesTide.size(); i++) {
+					List<TideDenmark> parsedLine = compareTideLines(linesTide.get(i), nCount);
+					linesTideParsed.add(parsedLine);
+				}
+				// Overwrite the old one
+				linesTide = linesTideParsed;
+			}
 
-//		System.out.println("We have: " + nCount + " that are equal");
-//		System.out.println("The size of linesTide first line is: " + linesTide.get(0).size());
-		// We have a broad time spand
-		if (nCount != 1) {
-			List<List<TideDenmark>> linesTideParsed = new ArrayList<List<TideDenmark>>();
-			// We need to take nCount out and compare, and return the highest
+			// System.out.println("The size of linesTideParsed first line is: "
+			// + linesTide.get(0).size());
+
+			// Combine the two into one result
+			int j = 0;
 			for (int i = 0; i < linesTide.size(); i++) {
-				List<TideDenmark> parsedLine = compareTideLines(linesTide.get(i), nCount);
-				linesTideParsed.add(parsedLine);
+				List<TideDenmark> currentTideLine = linesTide.get(i);
+				combineVertical(currentTideLine, lines, j);
+				j = j + 5;
 			}
-			// Overwrite the old one
-			linesTide = linesTideParsed;
-		}
-
-//		System.out.println("The size of linesTideParsed first line is: " + linesTide.get(0).size());
-
-		// Combine the two into one result
-		int j = 0;
-		for (int i = 0; i < linesTide.size(); i++) {
-			List<TideDenmark> currentTideLine = linesTide.get(i);
-			combineVertical(currentTideLine, lines, j);
-			j = j + 5;
-		}
 
 		}
 		// Remove invalid positions
@@ -620,7 +616,7 @@ public class NogoServiceBean implements NogoService {
 		// 50m spacing
 		// double latOffset = 0.000290;
 
-//		System.out.println("Parsing Query");
+		// System.out.println("Parsing Query");
 
 		ParseData parseData = new ParseData();
 
@@ -718,7 +714,7 @@ public class NogoServiceBean implements NogoService {
 			// if current is null and the other isn't, take the none null one.
 			// Is this the correct approach?
 			if (current.getDepth() == null && tempList.get(i).getDepth() != null) {
-//				System.out.println("Strangeness");
+				// System.out.println("Strangeness");
 				current = tempList.get(i);
 			}
 
