@@ -24,64 +24,78 @@ public class Risk implements Serializable {
 	public dk.frv.enav.common.xml.risk.response.Risk getCommonRiskObject() {
 		dk.frv.enav.common.xml.risk.response.Risk risk = new dk.frv.enav.common.xml.risk.response.Risk();
 		risk.setAccidentType(accidentType);
-		risk.setRiskProba(riskProba);
-		risk.setConsequenceIndex(consequenceIndex);
-		
-
+		risk.setProbability(probability);
+		risk.setConsequence(consequence);
+		risk.setRiskNorm(riskNorm);
+//		risk.setDraught(draught);
+//		risk.setLength(length);
 		return risk;
 	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-	
+
 	private Integer mmsi;
-	
+
 	@Column(name = "accident_type")
 	private String accidentType;
-	
-	@Column(name = "risk_proba")
-	private Double riskProba;
-	
-	@Column(name = "consequence_index")
-	private Double consequenceIndex;
-	
+
+	@Column(name = "risk_index_normalized")
+	private Double riskNorm;
+
+	@Column(name = "probability")
+	private Double probability;
+
+	@Column(name = "consequence")
+	private Double consequence;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "time_created")
-	private Date dateCreated; 
-
+	private Date dateCreated;
+	
+	
 	
 	public Integer getId() {
 		return id;
 	}
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
 	public String getAccidentType() {
 		return accidentType;
 	}
+
 	public void setAccidentType(String accidentType) {
 		this.accidentType = accidentType;
 	}
-	public Double getRiskProba() {
-		return riskProba;
+
+	public Double getRiskNorm() {
+		return riskNorm;
 	}
-	public void setRiskProba(Double riskProba) {
-		this.riskProba = riskProba;
+
+	public void setRiskNorm(Double riskProba) {
+		this.riskNorm = riskProba;
 	}
-	public Double getConsequenceIndex() {
-		return consequenceIndex;
+
+	public Double getProbability() {
+		return probability;
 	}
-	public void setConsequenceIndex(Double consequenceIndex) {
-		this.consequenceIndex = consequenceIndex;
+
+	public void setProbability(Double consequenceIndex) {
+		this.probability = consequenceIndex;
 	}
+
 	public Integer getMmsi() {
 		return mmsi;
 	}
+
 	public void setMmsi(Integer mmsi) {
 		this.mmsi = mmsi;
 	}
-	
+
 	public Date getDateCreated() {
 		return dateCreated;
 	}
@@ -90,5 +104,4 @@ public class Risk implements Serializable {
 		this.dateCreated = dateCreated;
 	}
 
-	
 }

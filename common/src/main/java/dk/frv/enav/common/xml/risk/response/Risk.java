@@ -9,11 +9,12 @@ import java.io.Serializable;
 public class Risk implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-
-	
 	private String accidentType;
-	private Double riskProba;
-	private Double consequenceIndex;
+	private Double riskNorm;
+	private Double probability;
+	private Double consequence;
+	private Double draught;
+	private Double length;
 
 	public Risk() {
 	}
@@ -26,23 +27,44 @@ public class Risk implements Serializable {
 		this.accidentType = accidentType;
 	}
 
-	public Double getRiskProba() {
-		return riskProba;
+	public Double getProbability() {
+		return probability;
 	}
 
-	public void setRiskProba(Double riskProba) {
-		this.riskProba = riskProba;
+	public void setProbability(Double riskProba) {
+		this.probability = riskProba;
 	}
 
-	public Double getConsequenceIndex() {
-		return consequenceIndex;
+	public Double getConsequence() {
+		return consequence;
 	}
 
-	public void setConsequenceIndex(Double consequenceIndex) {
-		this.consequenceIndex = consequenceIndex;
+	public void setConsequence(Double consequenceIndex) {
+		this.consequence = consequenceIndex;
 	}
 
-	
-	
+	public Double getRiskNorm() {
+		return riskNorm;
+	}
+
+	public void setRiskNorm(Double riskNorm) {
+		this.riskNorm = riskNorm;
+	}
+
+	public Double getDraught() {
+		return draught;
+	}
+
+	public void setDraught(Double draught) {
+		this.draught = draught;
+	}
+
+	public Double getLength() {
+		return length;
+	}
+
+	public void setLength(Double length) {
+		this.length = length;
+	}
 
 }
