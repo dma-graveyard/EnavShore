@@ -24,9 +24,27 @@ public class NogoResponse extends ShoreServiceResponse {
 	private List<NogoPolygon> polygons;
 	private Date validFrom;
 	private Date validTo;
+	private int errorCode;
+	private String message;
 	
 	public NogoResponse() {
 		polygons = new ArrayList<NogoPolygon>();
+	}
+
+	public int getNoGoErrorCode() {
+		return errorCode;
+	}
+
+	public void setNoGoErrorCode(int errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getNoGoMessage() {
+		return message;
+	}
+
+	public void setNoGoMessage(String message) {
+		this.message = message;
 	}
 
 	public void addPolygon(NogoPolygon polygon){

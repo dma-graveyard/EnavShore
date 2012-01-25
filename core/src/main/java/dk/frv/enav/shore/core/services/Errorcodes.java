@@ -21,6 +21,9 @@ public class Errorcodes {
 	public static final int INVALID_XML_REQUEST = 14;
 	public static final int FAILED_TO_READ_XML = 15;
 	public static final int METOC_UNAVAILABLE = 16;
+	public static final int NOGO_NO_DATA = 17;
+	public static final int NOGO_NO_TIDE = 18;
+	public static final int NOGO_TIMEOUT = 19;
 
 	private static Errorcodes instance = null;
 
@@ -44,6 +47,9 @@ public class Errorcodes {
 		errorMsg.put(INVALID_XML_REQUEST, "Invalid XML request");
 		errorMsg.put(FAILED_TO_READ_XML, "Failed to read XML");
 		errorMsg.put(METOC_UNAVAILABLE, "METOC unavailable");
+		errorMsg.put(NOGO_NO_DATA, "No data available for requested area");
+		errorMsg.put(NOGO_NO_TIDE, "No tide data available, showing static depth");
+		errorMsg.put(NOGO_TIMEOUT, "NoGo request timed out");
 	}
 
 	public static String getErrorMessage(int errorCode) {

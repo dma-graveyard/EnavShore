@@ -47,6 +47,7 @@ import dk.frv.enav.common.xml.nogo.types.NogoPoint;
 import dk.frv.enav.common.xml.nogo.types.NogoPolygon;
 import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.TideDenmark;
+import dk.frv.enav.shore.core.services.Errorcodes;
 import dk.frv.enav.shore.core.services.ServiceException;
 
 @Stateless
@@ -63,10 +64,13 @@ public class NogoServiceBean implements NogoService {
 		SYDKATTEGAT, NORDKATTEGAT;
 	}
 
+	int errorCode = 0;
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
 
+		
 		// System.out.println("NoGo request recieved");
 
 		// First identify which area we are searching in
@@ -86,8 +90,7 @@ public class NogoServiceBean implements NogoService {
 
 		NogoWorker nogoWorkerTideData = null;
 
-		// If check for each area
-		//
+		// Sydkattegat data
 		if (northWest.getLatitude() > 54.36294 && northWest.getLatitude() < 56.36316
 				&& northWest.getLongitude() > 9.419409 && northWest.getLongitude() < 13.149009
 				&& SouthEast.getLatitude() > 54.36294 && SouthEast.getLatitude() < 56.36316
@@ -102,7 +105,7 @@ public class NogoServiceBean implements NogoService {
 			nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
 
 		} else {
-
+			// Nordkattegat data
 			if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237
 					&& northWest.getLongitude() > 9.403869 && northWest.getLongitude() < 12.148899
 					&& SouthEast.getLatitude() > 56.34096 && SouthEast.getLatitude() < 58.26237
@@ -125,8 +128,12 @@ public class NogoServiceBean implements NogoService {
 				|| northWest.getLongitude() > 13.149009 || northWest.getLongitude() < 9.403869
 				|| SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294
 				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869) {
-			// System.out.println("No data available");
+			System.out.println("No data available");
 			NogoResponse res = new NogoResponse();
+			
+			res.setNoGoErrorCode(17);
+			res.setNoGoMessage(Errorcodes.getErrorMessage(17));
+				
 			return res;
 		}
 
@@ -272,6 +279,9 @@ public class NogoServiceBean implements NogoService {
 
 		res.setValidFrom(requestStart);
 		res.setValidTo(requestEnd);
+		
+		res.setNoGoErrorCode(errorCode);
+		res.setNoGoMessage(Errorcodes.getErrorMessage(errorCode));
 
 		// System.out.println("Sending data");
 
@@ -457,6 +467,8 @@ public class NogoServiceBean implements NogoService {
 		NogoPolygon polygon;
 		NogoPolygon temp;
 
+
+		
 		for (List<DepthDenmark> splittedLines : parsed) {
 
 			if (splittedLines.size() == 1) {
@@ -539,6 +551,11 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
+
+		if (resultTide == null){
+			errorCode = 18;	
+		}
+
 		// Seperate it into lines - tide - if we got em
 		if (resultTide != null) {
 			List<List<TideDenmark>> linesTide = new ArrayList<List<TideDenmark>>();
@@ -612,6 +629,8 @@ public class NogoServiceBean implements NogoService {
 
 		// 100m spacing
 		double latOffset = 0.00055504;
+		
+		double lonOffset = 0.00055504;
 
 		// 50m spacing
 		// double latOffset = 0.000290;
