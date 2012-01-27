@@ -71,7 +71,7 @@ public class NogoServiceBean implements NogoService {
 	public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
 
 		
-		// System.out.println("NoGo request recieved");
+//		System.out.println("NoGo request recieved");
 
 		// First identify which area we are searching in
 
@@ -128,12 +128,16 @@ public class NogoServiceBean implements NogoService {
 				|| northWest.getLongitude() > 13.149009 || northWest.getLongitude() < 9.403869
 				|| SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294
 				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869) {
-			System.out.println("No data available");
-			NogoResponse res = new NogoResponse();
+//			System.out.println("No data available");
 			
+			
+			NogoResponse res = new NogoResponse();
+
 			res.setNoGoErrorCode(17);
 			res.setNoGoMessage(Errorcodes.getErrorMessage(17));
-				
+			
+//			System.out.println("Returning empty res");
+			
 			return res;
 		}
 
@@ -282,9 +286,11 @@ public class NogoServiceBean implements NogoService {
 		
 		res.setNoGoErrorCode(errorCode);
 		res.setNoGoMessage(Errorcodes.getErrorMessage(errorCode));
-
+		
+		errorCode = 0;
+		
+		
 		// System.out.println("Sending data");
-
 		return res;
 	}
 
@@ -551,13 +557,19 @@ public class NogoServiceBean implements NogoService {
 
 		}
 
-
 		if (resultTide == null){
 			errorCode = 18;	
 		}
 
+
 		// Seperate it into lines - tide - if we got em
 		if (resultTide != null) {
+			
+			if (resultTide.size() == 0){
+//				System.out.println("No tide");
+//				errorCode = 18;	
+			}
+			
 			List<List<TideDenmark>> linesTide = new ArrayList<List<TideDenmark>>();
 			int mT = -1;
 			List<TideDenmark> lineTide = null;

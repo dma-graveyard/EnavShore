@@ -182,7 +182,7 @@ public class NogoWorker extends Thread {
 		}
 		
 
-
+		
 		query.setParameter("lat1", pos.getLatitude());
 		query.setParameter("lat1range", pos.getLatitude() + 0.01);
 
