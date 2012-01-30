@@ -48,7 +48,11 @@ public class ParseData {
 					K.add(currentDepthDenmark);
 					previousDepthDenmark = currentDepthDenmark;
 //					System.out.println("Start");
+					
+					if (currentLine.size() != 1){
+					
 					continue;
+					}
 				}
 
 				// It has a next
