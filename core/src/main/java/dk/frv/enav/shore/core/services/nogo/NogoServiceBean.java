@@ -642,7 +642,7 @@ public class NogoServiceBean implements NogoService {
 		// 100m spacing
 		double latOffset = 0.00055504;
 		
-		double lonOffset = 0.00055504;
+		//double lonOffset = 0.00055504;
 
 		// 50m spacing
 		// double latOffset = 0.000290;

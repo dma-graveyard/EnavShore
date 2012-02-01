@@ -6,6 +6,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import dk.dma.aisservices.core.services.ais.AisService;
 import dk.frv.msiedit.core.services.message.MessageService;
 
 public class RemoteServiceFactory {
@@ -27,6 +28,10 @@ public class RemoteServiceFactory {
 
 	public static MessageService getMessageService() {
 		return (MessageService) getInstance().getService("msiEAR/MessageServiceBean/remote");
+	}
+	
+	public static AisService getAisService() {
+		return (AisService) getInstance().getService("aisservices-ear/AisServiceBean/remote");
 	}
 
 	private Object getService(String name) {

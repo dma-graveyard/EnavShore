@@ -2,30 +2,29 @@ package dk.frv.enav.shore.core.services.risk;
 
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import dk.dma.aisservices.core.domain.AisVesselTarget;
+import dk.dma.aisservices.core.services.ais.AisService;
 import dk.frv.enav.common.xml.risk.request.RiskRequest;
 import dk.frv.enav.common.xml.risk.response.RiskList;
 import dk.frv.enav.common.xml.risk.response.RiskResponse;
-import dk.frv.enav.shore.core.domain.AisVesselTarget;
 import dk.frv.enav.shore.core.domain.Risk;
+import dk.frv.enav.shore.core.services.RemoteServiceFactory;
 import dk.frv.enav.shore.core.services.ServiceException;
-import dk.frv.enav.shore.core.services.ais.AisService;
 
 @Stateless
 public class RiskIndexServiceBean implements RiskIndexService {
-	@EJB
-	AisService aisService;
 
 	@PersistenceContext(unitName = "enav")
 	private EntityManager entityManager;
 
 	@Override
 	public RiskResponse getRiskIndexes(RiskRequest req) throws ServiceException {
+		AisService aisService = RemoteServiceFactory.getAisService();		
 
 		List<AisVesselTarget> list = aisService.getAisTargets(req.getLatMin(), req.getLonMin(), req.getLatMax(),
 				req.getLonMax());
