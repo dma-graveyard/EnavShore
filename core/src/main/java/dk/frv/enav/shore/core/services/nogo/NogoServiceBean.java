@@ -624,16 +624,42 @@ public class NogoServiceBean implements NogoService {
 			}
 
 		}
+		
+		List<List<DepthDenmark>> parsedLines = new ArrayList<List<DepthDenmark>>();
+		
+		
+		// Remove invalid positions
+		for (int i = 0; i < lines.size(); i++) {
+			parsedLines.add(new ArrayList<DepthDenmark>());
+			for (int k = 0; k < lines.get(i).size(); k++) {
+				if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
+//					System.out.println("Removing with value: " + lines.get(i).get(k).getDepth());
+//					lines.get(i).remove(k);
+				}else{
+					parsedLines.get(i).add(lines.get(i).get(k));
+				}
+	
+			}
+
+		}
+		
+		lines = parsedLines;
+		
+				/**
 		// Remove invalid positions
 		for (int i = 0; i < lines.size(); i++) {
 
 			for (int k = 0; k < lines.get(i).size(); k++) {
 				if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
+					System.out.println("Removing with value: " + lines.get(i).get(k).getDepth());
 					lines.get(i).remove(k);
 				}
+	
 			}
 
 		}
+		
+		**/
 
 		// double lonOffset = 0.0007854;
 		// The difference between each point / 2. This is used in calculating
@@ -684,9 +710,13 @@ public class NogoServiceBean implements NogoService {
 				}
 			}
 
-			NogoPoint westPoint = temp.getPolygon().get(0);
-			NogoPoint eastPoint = temp.getPolygon().get(1);
+//			NogoPoint westPoint = temp.getPolygon().get(0);
+//			NogoPoint eastPoint = temp.getPolygon().get(1);
 
+			
+			NogoPoint westPoint = new NogoPoint(temp.getPolygon().get(0).getLat(), temp.getPolygon().get(0).getLon() - lonOffset);
+			NogoPoint eastPoint = new NogoPoint(temp.getPolygon().get(1).getLat(), temp.getPolygon().get(1).getLon() + lonOffset);
+			
 			NogoPoint northWest = new NogoPoint(westPoint.getLat() + latOffset, westPoint.getLon());
 
 			NogoPoint northEast = new NogoPoint(eastPoint.getLat() + latOffset, eastPoint.getLon());
