@@ -31,6 +31,7 @@ package dk.frv.enav.shore.core.services.nogo;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -632,10 +633,7 @@ public class NogoServiceBean implements NogoService {
 		for (int i = 0; i < lines.size(); i++) {
 			parsedLines.add(new ArrayList<DepthDenmark>());
 			for (int k = 0; k < lines.get(i).size(); k++) {
-				if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
-//					System.out.println("Removing with value: " + lines.get(i).get(k).getDepth());
-//					lines.get(i).remove(k);
-				}else{
+				if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
 					parsedLines.get(i).add(lines.get(i).get(k));
 				}
 	
@@ -661,17 +659,7 @@ public class NogoServiceBean implements NogoService {
 		
 		**/
 
-		// double lonOffset = 0.0007854;
-		// The difference between each point / 2. This is used in calculating
-		// the polygons surrounding the lines
 
-		// 100m spacing
-		double latOffset = 0.00055504;
-		
-		//double lonOffset = 0.00055504;
-
-		// 50m spacing
-		// double latOffset = 0.000290;
 
 		// System.out.println("Parsing Query");
 
@@ -692,11 +680,86 @@ public class NogoServiceBean implements NogoService {
 		// System.out.println(parsed.get(j).size());
 		// }
 
+		
+		//All the line component are split into sections, ie. all on same index m are put in a list together
+		List<List<List<DepthDenmark>>> lineSection = new ArrayList<List<List<DepthDenmark>>>();
+		List<List<DepthDenmark>> tempLine = new ArrayList<List<DepthDenmark>>();
+		
+		m = parsed.get(0).get(0).getM();
+
+		//Split the list based on the m index - note the index is opposite of the longitude coordinates
+		for (List<DepthDenmark> splittedLines : parsed) {
+			if ( (splittedLines.get(0).getM()) > m ){
+//				System.out.println("New line detected");
+				lineSection.add(tempLine);
+				tempLine = new ArrayList<List<DepthDenmark>>();
+				tempLine.add(splittedLines);
+				m = splittedLines.get(0).getM();
+			}else{
+				tempLine.add(splittedLines);
+			}
+		}
+		lineSection.add(tempLine);
+		
+		
+		//Reverse the list
+		Collections.reverse(lineSection);
+		
+		//Seperate? Find all the required connection things
+
+		for (int i = 0; i < lineSection.size(); i++) {
+			
+			for (int j = 0; j < lineSection.get(i).size(); j++) {
+			
+				List<NogoPolygon> neighbours = new ArrayList<NogoPolygon>();
+				
+				//It has a next line
+				if (i != lineSection.size()-1){
+				neighbours = 
+					connectNeighbourLines.connectFindValidNeighbours(lineSection.get(i).get(j), lineSection.get(i+1));
+				
+				if (neighbours.size() != 0){
+					res.add(neighbours.get(0));
+					}
+				}
+			}
+			
+//			List<NogoPolygon> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(i), lineSection.get(1));
+//			System.out.println(neighbours.size() + " neighbours found");
+			
+
+			
+			
+		}
+		
+//		List<List<DepthDenmark>> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(0), lineSection.get(1));
+//		System.out.println(neighbours.size() + " neighbours found");
+//		
+//		neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(1).get(0), lineSection.get(2));
+//		System.out.println(neighbours.size() + " neighbours found");
+		
+		
+		
 		NogoPolygon polygon;
 		NogoPolygon temp;
 
+		// double lonOffset = 0.0007854;
+		// The difference between each point / 2. This is used in calculating
+		// the polygons surrounding the lines
+
+		// 100m spacing
+		double latOffset = 0.00055504;
+//		double latOffset = 0.0;
+		
+		double lonOffset = 0.00055504;
+//		double lonOffset = 0.0;
+
+		// 50m spacing
+		// double latOffset = 0.000290;
+		
 		for (List<DepthDenmark> splittedLines : parsed) {
 
+			//Singleton
 			if (splittedLines.size() == 1) {
 				NogoPoint point = new NogoPoint(splittedLines.get(0).getLat(), splittedLines.get(0).getLon());
 				temp = new NogoPolygon();
@@ -710,10 +773,6 @@ public class NogoServiceBean implements NogoService {
 				}
 			}
 
-//			NogoPoint westPoint = temp.getPolygon().get(0);
-//			NogoPoint eastPoint = temp.getPolygon().get(1);
-
-			
 			NogoPoint westPoint = new NogoPoint(temp.getPolygon().get(0).getLat(), temp.getPolygon().get(0).getLon() - lonOffset);
 			NogoPoint eastPoint = new NogoPoint(temp.getPolygon().get(1).getLat(), temp.getPolygon().get(1).getLon() + lonOffset);
 			
@@ -732,6 +791,10 @@ public class NogoServiceBean implements NogoService {
 			polygon.getPolygon().add(southEast);
 			polygon.getPolygon().add(northEast);
 
+			
+			
+			
+			
 			res.add(polygon);
 		}
 
