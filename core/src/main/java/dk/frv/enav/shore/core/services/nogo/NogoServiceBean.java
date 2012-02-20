@@ -717,7 +717,7 @@ public class NogoServiceBean implements NogoService {
 				if (i != lineSection.size()-1){
 				neighbours = 
 					connectNeighbourLines.connectFindValidNeighbours(lineSection.get(i).get(j), lineSection.get(i+1));
-				
+//				System.out.println(neighbours.size());
 				if (neighbours.size() != 0){
 					res.add(neighbours.get(0));
 					}
