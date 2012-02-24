@@ -23,13 +23,6 @@ public interface NogoService {
 	 */
 	NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException;
 	
-	BoundingBoxPoint getAreaDepthDenmark(double lat1, double lon1);
-	
-	BoundingBoxPoint getTideDenmark(double lat1, double lon1);
-	
-	double maxTideDepth();
-	
-	List<NogoPolygon> getNogoArea(BoundingBoxPoint point1, BoundingBoxPoint point2, double draught);
 	
 	List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth);
 	
