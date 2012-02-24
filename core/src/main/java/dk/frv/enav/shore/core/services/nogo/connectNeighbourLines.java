@@ -205,7 +205,7 @@ public class connectNeighbourLines {
 		double leftLon = getLeft(triangle);
 		double rightLon = getRight(triangle);
 		
-		double latTop = Math.floor(getLatMax(triangle)*1000);
+//		double latTop = Math.floor(getLatMax(triangle)*1000);
 		double latBot = Math.floor(getLatMax(triangle)*1000);
 		
 //		System.out.println("Triangle at top: " + latTop);
@@ -216,7 +216,7 @@ public class connectNeighbourLines {
 			double leftLonCurrent = getLeft(currentTriangle);
 			double rightLonCurrent = getRight(currentTriangle);
 			
-			double latTopCurrent = Math.floor(getLatMax(currentTriangle)*1000);
+//			double latTopCurrent = Math.floor(getLatMax(currentTriangle)*1000);
 			double latBotCurrent = Math.floor(getLatMax(currentTriangle)*1000);
 
 //			System.out.println("Triangle current at top: " + latTopCurrent);

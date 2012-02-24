@@ -6,7 +6,6 @@ import javax.ejb.Local;
 
 import dk.frv.enav.common.xml.nogo.request.NogoRequest;
 import dk.frv.enav.common.xml.nogo.response.NogoResponse;
-import dk.frv.enav.common.xml.nogo.types.BoundingBoxPoint;
 import dk.frv.enav.common.xml.nogo.types.NogoPolygon;
 import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.TideDenmark;
