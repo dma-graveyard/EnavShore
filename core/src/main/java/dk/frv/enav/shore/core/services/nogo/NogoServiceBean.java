@@ -595,11 +595,11 @@ public class NogoServiceBean implements NogoService {
 			res.add(polygon);
 			
 			/**Remove to draw singletons **/
-			}
+//			}
 			
 			
 		}
-
+		}
 		// System.out.println(res.size());
 
 		return res;
