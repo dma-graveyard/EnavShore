@@ -13,16 +13,32 @@ public class connectNeighbourLines {
 
 		double latOffset = 0.00055504;
 		double lonOffset = 0.00055504;
+		
+		boolean singletonSelf = false;
+		
+		boolean singletonOther = false;
 
+		double selfLeft;
+		double selfRight;
+
+		double leftPoint;
+		double rightPoint;
+		
 		List<NogoPolygon> polygon = new ArrayList<NogoPolygon>();
 
 		if (line.size() == 1) {
-			System.out.println("singleton shit");
+//			System.out.println("singleton shit");
+			singletonSelf = true;
+			selfLeft = line.get(0).getN();
+			selfRight = line.get(0).getN();
+			
+			
 		} else {
-
-			int selfLeft = line.get(0).getN();
-			int selfRight = line.get(1).getN();
-
+			singletonSelf = false;
+			selfLeft = line.get(0).getN();
+			selfRight = line.get(1).getN();
+		}
+			
 //			System.out.println("left end point is: " + selfLeft + " lon is: " + line.get(0).getLon() + " lat is: "
 //					+ line.get(0).getLat());
 //			System.out.println("right end point is: " + selfRight + " lon is: " + line.get(1).getLon() + " lat is: "
@@ -34,11 +50,14 @@ public class connectNeighbourLines {
 				// nextLines.get(i));
 
 				if (nextLines.get(i).size() == 1) {
-					System.out.println("singleton shit");
+//					System.out.println("singleton shit");
+					singletonOther = true;
+					leftPoint = nextLines.get(i).get(0).getN();
+					rightPoint = nextLines.get(i).get(0).getN();
 				} else {
-
-					int leftPoint = nextLines.get(i).get(0).getN();
-					int rightPoint = nextLines.get(i).get(1).getN();
+					singletonOther = false;
+					leftPoint = nextLines.get(i).get(0).getN();
+					rightPoint = nextLines.get(i).get(1).getN();
 //
 //					System.out.println("left end point investigated: " + leftPoint + " lon is: "
 //							+ nextLines.get(i).get(0).getLon() + " lat is: " + nextLines.get(i).get(0).getLat());
@@ -52,6 +71,8 @@ public class connectNeighbourLines {
 
 						NogoPolygon triangle = new NogoPolygon();
 
+						
+						
 						// Three nogo points make a triangle
 						NogoPoint rightTop = new NogoPoint(line.get(0).getLat() + latOffset, line.get(0).getLon()
 								- lonOffset);
@@ -62,6 +83,8 @@ public class connectNeighbourLines {
 								.get(i).get(0).getLon()
 								- lonOffset);
 
+						
+						
 						triangle.getPolygon().add(rightTop);
 						triangle.getPolygon().add(rightBottom);
 						triangle.getPolygon().add(leftBottom);
@@ -114,17 +137,66 @@ public class connectNeighbourLines {
 //						System.out.println("Outward right neighbour");
 
 						NogoPolygon triangle = new NogoPolygon();
-
 						// Three nogo points make a triangle
-						NogoPoint leftTop = new NogoPoint(line.get(1).getLat() + latOffset, line.get(1).getLon()
-								+ lonOffset);
+						
+						NogoPoint leftTop = null;
+						NogoPoint leftBottom = null;
+						NogoPoint rightBottom = null;
+						
+						if (!singletonSelf && !singletonOther){
+							leftTop = new NogoPoint(line.get(1).getLat() + latOffset, line.get(1).getLon()
+									+ lonOffset);
+							
+							leftBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, line.get(1)
+									.getLon() + lonOffset);
+							
+							rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, nextLines
+									.get(i).get(1).getLon()
+									+ lonOffset);
+						}
+						
+						if (singletonSelf && singletonOther){
+							leftTop = new NogoPoint(line.get(0).getLat() + latOffset, line.get(0).getLon()
+									+ lonOffset);
+							
+							leftBottom = new NogoPoint(nextLines.get(i).get(0).getLat() + latOffset, line.get(0)
+									.getLon() + lonOffset);
+							
+							rightBottom = new NogoPoint(nextLines.get(i).get(0).getLat() + latOffset, nextLines
+									.get(i).get(0).getLon()
+									+ lonOffset);
+						}
+						
+						if (singletonSelf && !singletonOther){
+							leftTop = new NogoPoint(line.get(0).getLat() + latOffset, line.get(0).getLon()
+									+ lonOffset);
+							
+							leftBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, line.get(0)
+									.getLon() + lonOffset);
+							
+							rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, nextLines
+									.get(i).get(1).getLon()
+									+ lonOffset);
+						}
 
-						NogoPoint leftBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, line.get(1)
-								.getLon() + lonOffset);
-						NogoPoint rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, nextLines
-								.get(i).get(1).getLon()
-								+ lonOffset);
+						
+												
+						if (!singletonSelf && singletonOther){
+							leftTop = new NogoPoint(line.get(1).getLat() + latOffset, line.get(1).getLon()
+									+ lonOffset);
+							
+							leftBottom = new NogoPoint(nextLines.get(i).get(0).getLat() + latOffset, line.get(1)
+									.getLon() + lonOffset);
+							
+							rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() + latOffset, nextLines
+									.get(i).get(0).getLon()
+									+ lonOffset);
+						}
+						
 
+
+						
+	
 						triangle.getPolygon().add(leftTop);
 						triangle.getPolygon().add(leftBottom);
 						triangle.getPolygon().add(rightBottom);
@@ -139,18 +211,58 @@ public class connectNeighbourLines {
 
 						NogoPolygon triangle = new NogoPolygon();
 
-						// System.out.println("Inwarde Right neighbour");
-
 						// Three nogo points make a triangle
+						
+						NogoPoint leftTop = null;
+						NogoPoint rightTop = null;
+						NogoPoint rightBottom = null;
+						
+						
 
-						NogoPoint leftTop = new NogoPoint(line.get(1).getLat() - latOffset, line.get(1).getLon()
-								+ lonOffset);
-						NogoPoint rightTop = new NogoPoint(line.get(1).getLat() - latOffset, nextLines.get(i).get(1)
-								.getLon()
-								+ lonOffset);
-						NogoPoint rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() - latOffset, nextLines
-								.get(i).get(1).getLon()
-								+ lonOffset);
+						if (!singletonSelf && !singletonOther){
+							leftTop = new NogoPoint(line.get(1).getLat() - latOffset, line.get(1).getLon()
+									+ lonOffset);
+							rightTop = new NogoPoint(line.get(1).getLat() - latOffset, nextLines.get(i).get(1)
+									.getLon()
+									+ lonOffset);
+							rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() - latOffset, nextLines
+									.get(i).get(1).getLon()
+									+ lonOffset);
+						}
+						
+						if (singletonSelf && singletonOther){
+							leftTop = new NogoPoint(line.get(0).getLat() - latOffset, line.get(0).getLon()
+									+ lonOffset);
+							rightTop = new NogoPoint(line.get(0).getLat() - latOffset, nextLines.get(i).get(0)
+									.getLon()
+									+ lonOffset);
+							rightBottom = new NogoPoint(nextLines.get(i).get(0).getLat() - latOffset, nextLines
+									.get(i).get(0).getLon()
+									+ lonOffset);
+						}
+						
+						if (!singletonSelf && singletonOther){
+							leftTop = new NogoPoint(line.get(1).getLat() - latOffset, line.get(1).getLon()
+									+ lonOffset);
+							rightTop = new NogoPoint(line.get(1).getLat() - latOffset, nextLines.get(i).get(0)
+									.getLon()
+									+ lonOffset);
+							rightBottom = new NogoPoint(nextLines.get(i).get(0).getLat() - latOffset, nextLines
+									.get(i).get(0).getLon()
+									+ lonOffset);
+						}
+						
+						if (singletonSelf && !singletonOther){
+							leftTop = new NogoPoint(line.get(0).getLat() - latOffset, line.get(0).getLon()
+									+ lonOffset);
+							rightTop = new NogoPoint(line.get(0).getLat() - latOffset, nextLines.get(i).get(1)
+									.getLon()
+									+ lonOffset);
+							rightBottom = new NogoPoint(nextLines.get(i).get(1).getLat() - latOffset, nextLines
+									.get(i).get(1).getLon()
+									+ lonOffset);
+						}
+
 
 						// triangle.getPolygon().add(middlePoint);
 						triangle.getPolygon().add(leftTop);
@@ -163,7 +275,7 @@ public class connectNeighbourLines {
 
 				}
 
-			}
+			
 		}
 
 		return polygon;

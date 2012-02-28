@@ -72,7 +72,7 @@ public class NogoServiceBean implements NogoService {
 
 		
 //		System.out.println("NoGo request recieved");
-
+		
 		// First identify which area we are searching in
 
 		GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
@@ -296,6 +296,7 @@ public class NogoServiceBean implements NogoService {
 	}
 
 
+	@SuppressWarnings("unused")
 	@Override
 	public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth) {
 
@@ -327,7 +328,10 @@ public class NogoServiceBean implements NogoService {
 		// Seperate it into lines - tide - if we got em
 		if (resultTide != null) {
 			
-			if (resultTide.size() == 0){
+			
+			//Disable tide for now
+			if (true){
+//			if (resultTide.size() == 0){
 //				System.out.println("No tide");
 //				errorCode = 18;	
 			}else{
