@@ -200,4 +200,8 @@ public class MsiMessage implements Serializable {
 		this.navtexNo = navtexNo;
 	}
 	
+	public boolean hasLocation() {
+		return (location != null && location.getPoints() != null && location.getPoints().size() > 0);
+	}
+	
 }
