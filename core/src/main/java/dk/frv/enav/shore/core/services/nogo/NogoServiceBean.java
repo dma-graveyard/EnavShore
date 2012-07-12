@@ -61,10 +61,13 @@ public class NogoServiceBean implements NogoService {
 	}
 
 	public enum DataType {
-		SYDKATTEGAT, NORDKATTEGAT;
+		SYDKATTEGAT, NORDKATTEGAT, SF_BAY;
 	}
 
 	int errorCode = 0;
+	
+	double latOffset;
+	double lonOffset;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -104,6 +107,9 @@ public class NogoServiceBean implements NogoService {
 			nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SYDKATTEGAT);
 			nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
 
+			
+			latOffset = 0.00055504;
+			lonOffset = 0.00055504;
 		} else {
 			// Nordkattegat data
 			if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237
@@ -121,14 +127,73 @@ public class NogoServiceBean implements NogoService {
 				nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.NORDKATTEGAT);
 
 			}
+			
+			latOffset = 0.00055504;
+			lonOffset = 0.00055504;
 
 		}
 
-		if (northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294
+		
+		
+		// SF Bay data
+		if (
+				   northWest.getLatitude() > 37.17 && northWest.getLatitude() < 38.35
+				&& northWest.getLongitude() > -123.21 && northWest.getLongitude() < -121.32
+				&& SouthEast.getLatitude() > 37.17 && SouthEast.getLatitude() < 38.35
+				&& SouthEast.getLongitude() > -123.21 && SouthEast.getLongitude() < -121.32) {
+//			 System.out.println("Valid nordkattegat point");
+
+			nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
+			nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
+			nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
+			nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
+
+			nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SF_BAY);
+			nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SF_BAY);
+
+			
+			latOffset = 0.000418;
+			lonOffset = latOffset;
+		}
+		
+		
+		
+		
+		
+		
+		
+		//Is the points outside our area?
+		
+		
+		
+		
+		if (
+				
+				
+				(
+				northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294
 				|| northWest.getLongitude() > 13.149009 || northWest.getLongitude() < 9.403869
+				
+				
 				|| SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294
-				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869) {
+				|| SouthEast.getLongitude() > 13.149009 || SouthEast.getLongitude() < 9.403869) 
+		
+				
+			
+			&&
+			(
+					northWest.getLatitude() > 38.35 || northWest.getLatitude() < 37.16
+					|| northWest.getLongitude() > -121.32 || northWest.getLongitude() < -123.21
+					
+					
+					|| 					SouthEast.getLatitude() > 38.35 || SouthEast.getLatitude() < 37.16
+					|| SouthEast.getLongitude() > -121.32 || SouthEast.getLongitude() < -123.21)
+			
+					)
+		{
 //			System.out.println("No data available");
+			
+			
 			
 			
 			NogoResponse res = new NogoResponse();
@@ -540,10 +605,10 @@ public class NogoServiceBean implements NogoService {
 		// the polygons surrounding the lines
 
 		// 100m spacing
-		double latOffset = 0.00055504;
-//		double latOffset = 0.0;
-		
-		double lonOffset = 0.00055504;
+//		double latOffset = 0.00055504;
+////		double latOffset = 0.0;
+//		
+//		double lonOffset = 0.00055504;
 //		double lonOffset = 0.0;
 
 		// 50m spacing
