@@ -191,7 +191,7 @@ public class NogoWorker extends Thread {
 		
 		if (dataType == DataType.SF_BAY){
 			query.setParameter("lat1", pos.getLatitude());
-			query.setParameter("lat1range", pos.getLatitude() + 0.0007);
+			query.setParameter("lat1range", pos.getLatitude() + 0.001);
 			query.setParameter("lon1", pos.getLongitude());
 			query.setParameter("lon1range", pos.getLongitude() + 0.001);
 		}else{
@@ -203,6 +203,17 @@ public class NogoWorker extends Thread {
 
 
 		List<Object[]> lines = query.getResultList();
+		
+		if (lines.size() == 0){
+			query.setParameter("lat1", pos.getLatitude());
+			query.setParameter("lat1range", pos.getLatitude() + 0.002);
+			query.setParameter("lon1", pos.getLongitude());
+			query.setParameter("lon1range", pos.getLongitude() + 0.001);
+			
+			 lines = query.getResultList();
+		}
+		
+//		System.out.println(lines.size());
 		
 		if (lines.size() != 0) {
 			double distance = 9999999;

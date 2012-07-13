@@ -106,5 +106,9 @@ public class DepthDenmark implements Serializable {
 		this.depth = depth;
 	}		
 
+	@Override
+	public String toString(){
+		return "n: " + n + " m: " + m;
+	}
 }
 	

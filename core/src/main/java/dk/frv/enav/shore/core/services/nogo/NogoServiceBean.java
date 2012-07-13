@@ -65,6 +65,8 @@ public class NogoServiceBean implements NogoService {
 	}
 
 	int errorCode = 0;
+	DataType type;
+	
 	
 	double latOffset;
 	double lonOffset;
@@ -108,8 +110,11 @@ public class NogoServiceBean implements NogoService {
 			nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
 
 			
-			latOffset = 0.00055504;
+			latOffset = 0.00055500;
 			lonOffset = 0.00055504;
+			
+			type = DataType.SYDKATTEGAT;
+			
 		} else {
 			// Nordkattegat data
 			if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237
@@ -130,6 +135,8 @@ public class NogoServiceBean implements NogoService {
 			
 			latOffset = 0.00055504;
 			lonOffset = 0.00055504;
+			
+			type = DataType.NORDKATTEGAT;
 
 		}
 
@@ -154,6 +161,8 @@ public class NogoServiceBean implements NogoService {
 			
 			latOffset = 0.000418;
 			lonOffset = latOffset;
+			
+			type = DataType.SF_BAY;
 		}
 		
 		
@@ -580,6 +589,9 @@ public class NogoServiceBean implements NogoService {
 		
 			
 			//We found our neighbours, make sure they don't clash together
+		
+		if (type != DataType.SF_BAY){
+		
 			List<NogoPolygon> finalNeighbours = connectNeighbourLines.triangleOverlap(allNeighboursLine);
 			
 			
@@ -587,7 +599,7 @@ public class NogoServiceBean implements NogoService {
 				res.add(finalNeighbours.get(k));
 			}
 			
-	
+		}
 		
 //		List<List<DepthDenmark>> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(0), lineSection.get(1));
 //		System.out.println(neighbours.size() + " neighbours found");

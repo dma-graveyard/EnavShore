@@ -22,8 +22,11 @@ public class ParseData {
 
 		this.lines = lines;
 
-//		System.out.println(lines);
-
+//for (int i = 0; i < lines.size(); i++) {
+//	for (int j = 0; j < lines.get(i).size(); j++) {
+//		System.out.println(lines.get(i).get(j));
+//	}
+//}
 		// Data initialized
 
 		List<List<DepthDenmark>> result = new ArrayList<List<DepthDenmark>>();
@@ -41,6 +44,7 @@ public class ParseData {
 			for (int j = 0; j < currentLine.size(); j++) {
 				
 				currentDepthDenmark = currentLine.get(j);
+				
 //				System.out.println("The current DepthDenmark is: " + currentDepthDenmark.getN() + ", " + currentDepthDenmark.getM());
 
 				if (j == 0) {
@@ -63,6 +67,7 @@ public class ParseData {
 					
 					if((previousDepthDenmark.getN() != currentDepthDenmark.getN()-1) && nextDepthDenmark.getN() != currentDepthDenmark.getN() + 1){
 						//Punkt der står alene
+						
 						
 						if (K.size() != 0){
 							result.add(K);
@@ -124,8 +129,13 @@ public class ParseData {
 
 					// Is it a seperate DepthDenmark
 					if (!(previousDepthDenmark.getN() == currentDepthDenmark.getN() - 1)) {
-						//result.add(K);
-						//K = new ArrayList<DepthDenmark>();
+						
+						//We need this? causes some empty lines to be added
+
+						result.add(K);
+						K = new ArrayList<DepthDenmark>();
+						
+						
 						K.add(currentDepthDenmark);
 						result.add(K);
 						K = new ArrayList<DepthDenmark>();
@@ -150,6 +160,22 @@ public class ParseData {
 
 			}
 
+		}
+		
+//		System.out.println("We have the following lines:");
+		
+		
+		//Remove any empty lines
+		for (int i = 0; i < result.size(); i++) {
+			if (result.get(i).size() == 0){
+//				System.out.println("ZERO!");
+				result.remove(i);
+			}
+//			System.out.println("NEW LINE!");
+//			for (int k = 0; k < result.get(i).size(); k++) {
+
+//				System.out.println(result.get(i).get(k));
+//			}
 		}
 
 		return result;
