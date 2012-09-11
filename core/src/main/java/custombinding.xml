@@ -1,0 +1,9 @@
+<jxb:bindings version="2.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema" wsdlLocation="http://localhost:8080/msi/ws/warning?wsdl">
+    <jxb:globalBindings generateElementProperty="false">   
+    	<jxb:javaType name="java.util.Calendar" xmlType="xs:dateTime"
+    	parseMethod="javax.xml.bind.DatatypeConverter.parseDate"
+      	printMethod="javax.xml.bind.DatatypeConverter.printDate"
+      >    	
+    	</jxb:javaType>
+    </jxb:globalBindings> 
+</jxb:bindings>
