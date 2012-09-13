@@ -30,11 +30,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MsiDtoArray }
+     * 
+     */
+    public MsiDtoArray createMsiDtoArray() {
+        return new MsiDtoArray();
+    }
+
+    /**
      * Create an instance of {@link PointDto }
      * 
      */
     public PointDto createPointDto() {
         return new PointDto();
+    }
+
+    /**
+     * Create an instance of {@link MsiDtoLight }
+     * 
+     */
+    public MsiDtoLight createMsiDtoLight() {
+        return new MsiDtoLight();
+    }
+
+    /**
+     * Create an instance of {@link MsiDto }
+     * 
+     */
+    public MsiDto createMsiDto() {
+        return new MsiDto();
     }
 
     /**
@@ -51,30 +75,6 @@ public class ObjectFactory {
      */
     public MsiDtoLightArray createMsiDtoLightArray() {
         return new MsiDtoLightArray();
-    }
-
-    /**
-     * Create an instance of {@link MsiDtoLight }
-     * 
-     */
-    public MsiDtoLight createMsiDtoLight() {
-        return new MsiDtoLight();
-    }
-
-    /**
-     * Create an instance of {@link MsiDtoArray }
-     * 
-     */
-    public MsiDtoArray createMsiDtoArray() {
-        return new MsiDtoArray();
-    }
-
-    /**
-     * Create an instance of {@link MsiDto }
-     * 
-     */
-    public MsiDto createMsiDto() {
-        return new MsiDto();
     }
 
 }

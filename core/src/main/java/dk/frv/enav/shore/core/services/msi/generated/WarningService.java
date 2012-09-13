@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "WarningService", targetNamespace = "http://enav.frv.dk/msi/ws/warning", wsdlLocation = "http://localhost:8080/msi/ws/warning?wsdl")
+@WebServiceClient(name = "WarningService", targetNamespace = "http://enav.frv.dk/msi/ws/warning", wsdlLocation = "http://service.e-navigation.net/msi/ws/warning?wsdl")
 public class WarningService
     extends Service
 {
@@ -30,9 +30,9 @@ public class WarningService
         try {
             URL baseUrl;
             baseUrl = dk.frv.enav.shore.core.services.msi.generated.WarningService.class.getResource(".");
-            url = new URL(baseUrl, "http://localhost:8080/msi/ws/warning?wsdl");
+            url = new URL(baseUrl, "http://service.e-navigation.net/msi/ws/warning?wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost:8080/msi/ws/warning?wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://service.e-navigation.net/msi/ws/warning?wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         WARNINGSERVICE_WSDL_LOCATION = url;
