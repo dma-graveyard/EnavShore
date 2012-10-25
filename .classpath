@@ -24,7 +24,7 @@
 	<classpathentry kind="lib" path="extlib/msiedit-core.jar"/>
 	<classpathentry kind="lib" path="extlib/gson-1.7.1.jar"/>
 	<classpathentry kind="lib" path="extlib/aisservices.jar"/>
+	<classpathentry kind="lib" path="extlib/aislib-1.6.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="extlib/aislib-1.3.jar" sourcepath="/aislib/core/src/main/java"/>
 	<classpathentry kind="output" path=".build"/>
 </classpath>
