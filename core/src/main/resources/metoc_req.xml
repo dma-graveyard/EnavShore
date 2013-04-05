@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?> 
+<metocForecastRequest>
+    <mmsi>999999999</mmsi>
+    <dataTypes>SE</dataTypes>
+    <dataTypes>CU</dataTypes>
+    <dataTypes>WA</dataTypes>
+    <dataTypes>WI</dataTypes>
+    <dataTypes>DE</dataTypes>
+    <dt>15</dt>
+    <waypoints>
+        <eta>2013-04-05T15:10:51.000+01:00</eta>
+        <heading>RL</heading>
+        <lat>55.70816666666666</lat>
+        <lon>12.6115</lon>
+    </waypoints>
+    <waypoints>
+        <eta>2013-04-05T15:20:51.000+01:00</eta>
+        <heading>RL</heading>
+        <lat>55.725183333333334</lat>
+        <lon>12.648666666666667</lon>
+    </waypoints>
+</metocForecastRequest>
