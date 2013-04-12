@@ -11,9 +11,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+
 import dk.frv.enav.common.xml.ShoreServiceRequest;
 import dk.frv.enav.common.xml.metoc.MetocDataTypes;
 
+@SuppressWarnings("unused")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "metocForecastRequest", propOrder = {})
@@ -34,10 +36,16 @@ public class MetocForecastRequest extends ShoreServiceRequest implements Seriali
 	
 	private Integer t1;
 	
+	
 	/**
 	 * List of waypoints
 	 */
 	private List<MetocForecastRequestWp> waypoints = new ArrayList<MetocForecastRequestWp>();
+	
+	/**
+	 * Metoc provider
+	 */
+	private String provider = "";
 	
 	public MetocForecastRequest() {
 		
@@ -82,6 +90,14 @@ public class MetocForecastRequest extends ShoreServiceRequest implements Seriali
 	public void setWaypoints(List<MetocForecastRequestWp> waypoints) {
 		this.waypoints = waypoints;
 	}
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 	
 	
 }

@@ -7,7 +7,33 @@ import org.apache.commons.lang.StringUtils;
  * 
  */
 public enum MetocDataTypes {
-	WI, CU, WA, SE, DE;
+	WI {
+	    @Override
+	    public String toString() {
+	        return "WI";
+	    }
+	}, CU {
+        @Override
+        public String toString() {
+            return "CU";
+        }   
+	}, WA {
+        @Override
+        public String toString() {
+            return "WA";
+        }
+      	    
+	}, SE {
+       @Override
+        public String toString() {
+            return "SE";
+        } 
+	}, DE {
+        @Override
+        public String toString() {
+            return "DE";
+        }   
+	};
 	
 	public static MetocDataTypes parseType(String type) throws Exception {
 		if (type.equalsIgnoreCase("WI")) {
