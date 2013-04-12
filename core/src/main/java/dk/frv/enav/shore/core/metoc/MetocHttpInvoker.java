@@ -26,7 +26,7 @@ import dk.frv.enav.common.xml.metoc.request.MetocForecastRequest;
 import dk.frv.enav.common.xml.metoc.request.MetocForecastRequestWp;
 import dk.frv.enav.common.xml.metoc.response.MetocForecastResponse;
 
-public class MetocHttpInvoker {
+public class MetocHttpInvoker implements MetocInvoker{
 	
 	private static Logger LOG = Logger.getLogger(MetocHttpInvoker.class);
 	
