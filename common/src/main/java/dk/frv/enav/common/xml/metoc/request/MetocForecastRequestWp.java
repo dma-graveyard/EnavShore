@@ -19,7 +19,7 @@ public class MetocForecastRequestWp implements Serializable {
 	/**
 	 * Heading on outgoing leg
 	 */
-	private String heading; // GC or RL
+	private String heading = "RL"; // GC or RL
 	
 	public MetocForecastRequestWp() {
 		
