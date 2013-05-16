@@ -120,7 +120,7 @@ CREATE TABLE `depth_denmark` (
   `n` INT NOT NULL ,
   `m` INT NOT NULL ,
   `depth` DOUBLE,
-  INDEX(n, m, lat, lon));
+  INDEX(n, m, lat, lon))
 ENGINE = InnoDB;
 
 -- -----------------------------------------------------
@@ -136,5 +136,5 @@ CREATE TABLE `tide_denmark` (
   `m` INT NOT NULL ,
   `time` DATETIME NOT NULL,
   `depth` DOUBLE,
-  INDEX(time, n, m, lat, lon));
+  INDEX(time, n, m, lat, lon))
 ENGINE = InnoDB;
