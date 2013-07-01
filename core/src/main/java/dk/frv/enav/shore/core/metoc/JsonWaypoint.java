@@ -1,7 +1,5 @@
 package dk.frv.enav.shore.core.metoc;
 
-import dk.frv.enav.common.xml.metoc.request.MetocForecastRequest;
-import dk.frv.enav.common.xml.metoc.request.MetocForecastRequestWp;
 
 public class JsonWaypoint {
     public String eta;

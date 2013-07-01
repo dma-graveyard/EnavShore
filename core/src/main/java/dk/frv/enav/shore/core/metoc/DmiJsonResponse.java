@@ -1,6 +1,5 @@
 package dk.frv.enav.shore.core.metoc;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,31 +15,39 @@ import dk.frv.enav.common.xml.metoc.response.MetocForecastResponse;
 
 public class DmiJsonResponse {
     class DmiMetocForecast {
-        public String created;
-        public List<DmiForecastPoint> forecasts;
+        public String created = "0";
+        public List<DmiForecastPoint> forecasts = new LinkedList<>();
         
     }
     
-    private Integer errorCode = 0;
-    private String errorMessage = "";
+    private Integer error = 0;
+    private String errorMsg = "";
     
-    private DmiMetocForecast metocForecast;
+    private DmiMetocForecast metocForecast = new DmiMetocForecast();
     
     public List<DmiForecastPoint> getForecasts() {
-        return metocForecast.forecasts;
+        if (metocForecast != null) {
+            return metocForecast.forecasts;
+        } 
+        
+        return new LinkedList<DmiForecastPoint>();
+        
     }
     
     public Date getCreated() {
-        return DateUtils.getISO8620SSSZZ(metocForecast.created);
-        
+        try {
+            return DateUtils.getISO8620SSSZZ(metocForecast.created);
+        } catch (NullPointerException e) {
+            return new Date(0);
+        }
     }
 
-    public Integer getErrorCode() {
-        return errorCode;
+    public Integer getError() {
+        return error;
     }
     
-    public String getErrorMessage() {
-        return errorMessage;
+    public String getErrorMsg() {
+        return errorMsg;
     }
     
     public static MetocForecastResponse metocFromJson(String jsonString) {
@@ -105,8 +112,8 @@ public class DmiJsonResponse {
         
         MetocForecastResponse metocForecastResponse = new MetocForecastResponse();
         metocForecastResponse.setMetocForecast(returnedMetocForecast);
-        metocForecastResponse.setErrorCode(dmiJsonResponse.getErrorCode());
-        metocForecastResponse.setErrorMessage(dmiJsonResponse.getErrorMessage());
+        metocForecastResponse.setErrorCode(dmiJsonResponse.getError());
+        metocForecastResponse.setErrorMessage(dmiJsonResponse.getErrorMsg());
         
         return metocForecastResponse;
     }

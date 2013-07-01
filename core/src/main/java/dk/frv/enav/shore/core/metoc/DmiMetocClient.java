@@ -37,7 +37,8 @@ public class DmiMetocClient implements MetocInvoker {
         Gson gson = new Gson();
         
         String jsonS = gson.toJson(new DmiJsonRequest(metocRequest));
-        LOG.debug("DMI Request: "+jsonS);
+        System.out.println("DMI Request: "+jsonS);
+
 
         HttpClient httpClient = new HttpClient();
         httpClient.setUrl("http://sejlrute.dmi.dk/SejlRute/SR");
@@ -62,12 +63,19 @@ public class DmiMetocClient implements MetocInvoker {
             
             LOG.error("Failed to make HTTP request: " + e.getMessage());
         }
+        
         String responseString = httpClient.getResponseString();
         LOG.debug("Response:\n" + responseString);
         
-        MetocForecastResponse response = DmiJsonResponse.metocFromJson(responseString);
+        MetocForecastResponse response;
+        try {
+            response = DmiJsonResponse.metocFromJson(responseString);
+        } catch (Exception e) {
+            response = new MetocForecastResponse();
+            response.setErrorCode(responseCode);
+            response.setErrorMessage(responseString);
+        }
 
-        
         httpClient.releaseConnection();
         if (responseCode != 200) {
             LOG.error("Error from METOC service: " + responseString);

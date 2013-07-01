@@ -71,7 +71,6 @@ public class MetocServiceBean implements MetocService {
 			throw new ServiceException(Errorcodes.METOC_UNAVAILABLE);
 		}
 
-		res.setErrorCode(Errorcodes.OK);
 
 		return res;
 	}
