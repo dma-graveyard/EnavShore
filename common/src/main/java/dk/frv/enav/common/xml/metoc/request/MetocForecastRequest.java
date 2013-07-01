@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlType;
 import dk.frv.enav.common.xml.ShoreServiceRequest;
 import dk.frv.enav.common.xml.metoc.MetocDataTypes;
 
-@SuppressWarnings("unused")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "metocForecastRequest", propOrder = {})
