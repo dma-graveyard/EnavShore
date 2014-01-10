@@ -138,3 +138,18 @@ CREATE TABLE `tide_denmark` (
   `depth` DOUBLE,
   INDEX(time, n, m, lat, lon))
 ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `humber_depth`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `humber_depth` ;
+
+CREATE TABLE `humber_depth` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `lat` DOUBLE NOT NULL ,
+  `lon` DOUBLE NOT NULL ,
+  `n` INT NOT NULL ,
+  `m` INT NOT NULL ,
+  `depth` DOUBLE,
+  INDEX(n, m, lat, lon))
+ENGINE = InnoDB;

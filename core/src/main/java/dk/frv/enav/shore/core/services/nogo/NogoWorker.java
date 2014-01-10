@@ -40,6 +40,7 @@ import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.nogo.types.BoundingBoxPoint;
 import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.DepthDenmarkNord;
+import dk.frv.enav.shore.core.domain.Humber;
 import dk.frv.enav.shore.core.domain.TideDenmark;
 import dk.frv.enav.shore.core.domain.sfBay;
 import dk.frv.enav.shore.core.services.nogo.NogoServiceBean.DataType;
@@ -186,6 +187,10 @@ public class NogoWorker extends Thread {
 			query = entityManager.createQuery("SELECT dd.n, dd.m, dd.lat, dd.lon " + "FROM sfBay dd "
 					+ "where dd.lat between :lat1 AND :lat1range " + "AND " + "dd.lon between :lon1 AND :lon1range");
 		}
+	              if (dataType == DataType.HUMBER){
+	                        query = entityManager.createQuery("SELECT dd.n, dd.m, dd.lat, dd.lon " + "FROM Humber dd "
+	                                        + "where dd.lat between :lat1 AND :lat1range " + "AND " + "dd.lon between :lon1 AND :lon1range");
+	                }
 		
 		
 		
@@ -346,6 +351,11 @@ public class NogoWorker extends Thread {
 					+ "WHERE dd.n between :n1 AND :n2 " + "AND dd.m between :m1 AND :m2 "
 					+ "ORDER BY M, N");
 		}
+	              if (dataType == DataType.HUMBER){
+	                        query = entityManager.createQuery("SELECT dd " + "FROM Humber dd "
+	                                        + "WHERE dd.n between :n1 AND :n2 " + "AND dd.m between :m1 AND :m2 "
+	                                        + "ORDER BY M, N");
+	                }
 		
 
 		query.setParameter("n1", n1);
@@ -393,6 +403,23 @@ public class NogoWorker extends Thread {
 				result.add(converted);
 			}
 		}
+		
+	              if (dataType == DataType.HUMBER){
+	                        List<Humber> resultHumber = query.getResultList();
+	                        result = new ArrayList<DepthDenmark>();
+	                        
+	                        for (int i = 0; i < resultHumber.size(); i++) {
+	                                Humber currentSf = resultHumber.get(i);
+	                                DepthDenmark converted = new DepthDenmark();
+	                                converted.setId(currentSf.getId());
+	                                converted.setLat(currentSf.getLat());
+	                                converted.setLon(currentSf.getLon());
+	                                converted.setN(currentSf.getN());
+	                                converted.setM(currentSf.getM());
+	                                converted.setDepth(currentSf.getDepth());
+	                                result.add(converted);
+	                        }
+	                }
 		
 		
 //		List<DepthDenmarkNord> 
