@@ -81,6 +81,9 @@ public class NogoServiceBean implements NogoService {
         GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
         GeoLocation SouthEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
 
+        // System.out.println("northWest " + northWest);
+        // System.out.println("southEAst " + SouthEast);
+
         NogoWorker nogoWorkerFirstPointDepth = null;
 
         NogoWorker nogoWorkerSecondPointDepth = null;
@@ -150,8 +153,8 @@ public class NogoServiceBean implements NogoService {
             nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SF_BAY);
             nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SF_BAY);
 
-            latOffset = 0.000418;
-            lonOffset = latOffset;
+            latOffset = -0.00008;
+            lonOffset = 0.000151883;
 
             type = DataType.SF_BAY;
         }
@@ -160,27 +163,29 @@ public class NogoServiceBean implements NogoService {
         if (northWest.getLatitude() > 53.53 && northWest.getLatitude() < 53.742 && northWest.getLongitude() > -0.87
                 && northWest.getLongitude() < 0.25 && SouthEast.getLatitude() > 53.53 && SouthEast.getLatitude() < 53.742
                 && SouthEast.getLongitude() > -0.87 && SouthEast.getLongitude() < 0.25) {
-             System.out.println("Valid Humber point");
+            System.out.println("Valid Humber point");
 
             nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
             nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
-            // nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
-            // nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
+            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
+            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
 
             nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.HUMBER);
-            // nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.HUMBER);
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.HUMBER);
 
-            latOffset = 0.000418;
-            lonOffset = latOffset;
+            // latOffset = 0.0000418;
+
+            // latOffset = 0.0000868125;
+            // lonOffset = 0.000151883;
+            latOffset = 0.0000434;
+            lonOffset = 0;
 
             type = DataType.HUMBER;
         }
 
         // Is the points outside our area?
 
-        if (
-
-        (northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294 || northWest.getLongitude() > 13.149009
+        if ((northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294 || northWest.getLongitude() > 13.149009
                 || northWest.getLongitude() < 9.403869
 
                 || SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294 || SouthEast.getLongitude() > 13.149009 || SouthEast
@@ -192,8 +197,12 @@ public class NogoServiceBean implements NogoService {
                         || SouthEast.getLatitude() > 38.35 || SouthEast.getLatitude() < 37.16 || SouthEast.getLongitude() > -121.32 || SouthEast
                         .getLongitude() < -123.21)
 
+                && (northWest.getLatitude() < 53.53 || northWest.getLatitude() > 53.742 || northWest.getLongitude() < -0.87
+                        || northWest.getLongitude() > 0.25 || SouthEast.getLatitude() < 53.53 || SouthEast.getLatitude() > 53.742
+                        || SouthEast.getLongitude() < -0.87 || SouthEast.getLongitude() > 0.25)
+
         ) {
-            // System.out.println("No data available");
+            System.out.println("No data available");
 
             NogoResponse res = new NogoResponse();
 
@@ -243,9 +252,9 @@ public class NogoServiceBean implements NogoService {
 
         try {
             nogoWorkerFirstPointDepth.join();
-            // System.out.println("First depth point found");
+            System.out.println("First depth point found");
             nogoWorkerSecondPointDepth.join();
-            // System.out.println("Second depth point found");
+            System.out.println("Second depth point found");
             // nogoWorkerThirdMaxTide.join();
             // System.out.println("MaxTide found");
 
@@ -309,20 +318,22 @@ public class NogoServiceBean implements NogoService {
 
             try {
                 nogoWorkerDepthData.join();
-                // System.out.println("Depth data thread joined");
+                System.out.println("Depth data thread joined");
                 nogoWorkerTideData.join();
-                // System.out.println("Tide data thread joined");
+                System.out.println("Tide data thread joined");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            System.out.println("Depth database size: " + nogoWorkerDepthData.getDepthDatabaseResult().size());
 
             if (nogoWorkerDepthData.getDepthDatabaseResult().size() != 0) {
 
+                System.out.println("Begin parsing");
                 polyArea = parseResult(nogoWorkerDepthData.getDepthDatabaseResult(), nogoWorkerTideData.getTideDatabaseResult(),
                         nogoRequest.getDraught());
             }
             // polyArea = getNogoArea(firstPos, secondPos, -7);
-            // System.out.println("Data recieved and parsed");
+            System.out.println("Data recieved and parsed");
         }
 
         NogoResponse res = new NogoResponse();
@@ -350,7 +361,7 @@ public class NogoServiceBean implements NogoService {
 
         errorCode = 0;
 
-        // System.out.println("Sending data");
+        System.out.println("Sending data");
         return res;
     }
 
@@ -375,7 +386,6 @@ public class NogoServiceBean implements NogoService {
                 m = depthDenmark.getM();
             }
             line.add(depthDenmark);
-
         }
 
         if (resultTide == null) {
@@ -455,6 +465,10 @@ public class NogoServiceBean implements NogoService {
             parsedLines.add(new ArrayList<DepthDenmark>());
             for (int k = 0; k < lines.get(i).size(); k++) {
                 if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
+                    // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
+                    if (lines.get(i).get(k).getDepth() != 1000000) {
+                        System.out.println("Something interesting");
+                    }
                     parsedLines.get(i).add(lines.get(i).get(k));
                 }
 
@@ -552,7 +566,7 @@ public class NogoServiceBean implements NogoService {
 
         // We found our neighbours, make sure they don't clash together
 
-        if (type != DataType.SF_BAY) {
+        if (type != DataType.SF_BAY || type != DataType.HUMBER) {
 
             List<NogoPolygon> finalNeighbours = connectNeighbourLines.triangleOverlap(allNeighboursLine);
 
@@ -571,6 +585,8 @@ public class NogoServiceBean implements NogoService {
 
         NogoPolygon polygon;
         NogoPolygon temp;
+
+        System.out.println("splitted lines is: " + parsed.size());
 
         // double lonOffset = 0.0007854;
         // The difference between each point / 2. This is used in calculating
