@@ -234,15 +234,18 @@ public class NogoWorker extends Thread {
 
             for (Object[] objects : lines) {
                 // Minimum distance
-                GeoLocation pos = new GeoLocation((Double) objects[2], (Double) objects[3]);
-                double distancePoint = pos.getGeodesicDistance(pos);
+                GeoLocation pos2 = new GeoLocation((Double) objects[2], (Double) objects[3]);
+                double distancePoint = pos2.getGeodesicDistance(pos);
+//                System.out.println("Comparing distance: " + distancePoint);
                 // System.out.println(distancePoint + " for " + (Integer)
                 // objects[0] + " , " + (Integer) objects[1] + " at " + pos);
                 if (distancePoint < distance) {
                     distance = distancePoint;
                     bestMatch = objects;
+                    
                 }
             }
+//            System.out.println("Best distance is " + distance);
             // System.out.println("The point we're looking for is at " +
             // bestMatch[0] +" , " + bestMatch[1]);
             BoundingBoxPoint point = new BoundingBoxPoint((Integer) bestMatch[0], (Integer) bestMatch[1]);
