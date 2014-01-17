@@ -214,7 +214,7 @@ public class NogoWorker extends Thread {
 
         List<Object[]> lines = query.getResultList();
 
-        System.out.println("How many possible point matches did we get: " + lines.size());
+//        System.out.println("How many possible point matches did we get: " + lines.size());
 
         if (lines.size() == 0) {
             query.setParameter("lat1", pos.getLatitude());
@@ -428,7 +428,7 @@ public class NogoWorker extends Thread {
 
         // List<DepthDenmarkNord>
 
-        System.out.println("Results generated");
+//        System.out.println("Results generated");
         return result;
     }
 

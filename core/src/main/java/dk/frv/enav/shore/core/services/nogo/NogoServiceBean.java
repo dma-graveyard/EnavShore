@@ -466,9 +466,7 @@ public class NogoServiceBean implements NogoService {
             for (int k = 0; k < lines.get(i).size(); k++) {
                 if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
                     // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
-                    if (lines.get(i).get(k).getDepth() != 1000000) {
-                        System.out.println("Something interesting");
-                    }
+          
                     parsedLines.get(i).add(lines.get(i).get(k));
                 }
 
@@ -586,7 +584,7 @@ public class NogoServiceBean implements NogoService {
         NogoPolygon polygon;
         NogoPolygon temp;
 
-        System.out.println("splitted lines is: " + parsed.size());
+//        System.out.println("splitted lines is: " + parsed.size());
 
         // double lonOffset = 0.0007854;
         // The difference between each point / 2. This is used in calculating
