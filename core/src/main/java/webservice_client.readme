@@ -1,4 +1,4 @@
 ##
 ## Run following command (shiped with java jdk)in core java source folder to generate web service client.
 ## Could be considered included in ant build script
-wsimport -b custombinding.xml -keep -Xnocompile -p dk.frv.enav.shore.core.services.msi.generated http://service.e-navigation.net/msi/ws/warning?wsdl
+wsimport -b custombinding.xml -keep -Xnocompile -p dk.frv.enav.shore.core.services.msi.generated http://msi.dma.dk/msi/ws/warning?wsdl
