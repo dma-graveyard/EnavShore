@@ -153,7 +153,7 @@ public class NogoServiceBean implements NogoService {
             nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SF_BAY);
             nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SF_BAY);
 
-            latOffset = 0.0000418;
+            latOffset = 0.000418;
             lonOffset = latOffset;
 
             type = DataType.SF_BAY;
