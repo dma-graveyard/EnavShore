@@ -160,9 +160,9 @@ public class NogoServiceBean implements NogoService {
         }
 
         // Humber Data
-        if (northWest.getLatitude() > 53.53 && northWest.getLatitude() < 53.742 && northWest.getLongitude() > -0.87
-                && northWest.getLongitude() < 0.25 && SouthEast.getLatitude() > 53.53 && SouthEast.getLatitude() < 53.742
-                && SouthEast.getLongitude() > -0.87 && SouthEast.getLongitude() < 0.25) {
+        if (northWest.getLatitude() > 53.516960327477875 && northWest.getLatitude() < 53.741792160953665 && northWest.getLongitude() > -0.8661253027560037
+                && northWest.getLongitude() < 0.24236332125267657 && SouthEast.getLatitude() > 53.516960327477875 && SouthEast.getLatitude() < 53.741792160953665
+                && SouthEast.getLongitude() > -0.8661253027560037 && SouthEast.getLongitude() < 0.24236332125267657) {
             System.out.println("Valid Humber point");
 
             nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
@@ -177,8 +177,8 @@ public class NogoServiceBean implements NogoService {
 
             // latOffset = 0.0000868125;
             // lonOffset = 0.000151883;
-            latOffset = 0.0000434;
-            lonOffset = 0;
+            latOffset = 0.00011247;
+            lonOffset = 0.000554522;
 
             type = DataType.HUMBER;
         }
@@ -270,9 +270,9 @@ public class NogoServiceBean implements NogoService {
         BoundingBoxPoint firstPosDepth = nogoWorkerFirstPointDepth.getPoint();
         BoundingBoxPoint secondPosDepth = nogoWorkerSecondPointDepth.getPoint();
 
-        // System.out.println("depth points are " +
-        // nogoWorkerFirstPointDepth.getPoint() + ", "
-        // + nogoWorkerSecondPointDepth.getPoint());
+         System.out.println("depth points are " +
+         nogoWorkerFirstPointDepth.getPoint() + ", "
+         + nogoWorkerSecondPointDepth.getPoint());
 
         BoundingBoxPoint firstPosTide = nogoWorkerFirstPointTide.getPoint();
         BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
@@ -284,7 +284,7 @@ public class NogoServiceBean implements NogoService {
         List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
 
         if (firstPosDepth != null && secondPosDepth != null) {
-            // System.out.println("Bounding Box found - requesting data");
+             System.out.println("Bounding Box found - requesting data");
 
             nogoWorkerDepthData.setFirstPos(firstPosDepth);
             nogoWorkerDepthData.setSecondPos(secondPosDepth);
@@ -327,10 +327,14 @@ public class NogoServiceBean implements NogoService {
             System.out.println("Depth database size: " + nogoWorkerDepthData.getDepthDatabaseResult().size());
 
             if (nogoWorkerDepthData.getDepthDatabaseResult().size() != 0) {
-
+                double depth = nogoRequest.getDraught();
+                if (this.type == DataType.HUMBER){
+                    depth = -depth;
+                }
+                
                 System.out.println("Begin parsing");
                 polyArea = parseResult(nogoWorkerDepthData.getDepthDatabaseResult(), nogoWorkerTideData.getTideDatabaseResult(),
-                        nogoRequest.getDraught());
+                        depth);
             }
             // polyArea = getNogoArea(firstPos, secondPos, -7);
             System.out.println("Data recieved and parsed");
@@ -464,11 +468,31 @@ public class NogoServiceBean implements NogoService {
         for (int i = 0; i < lines.size(); i++) {
             parsedLines.add(new ArrayList<DepthDenmark>());
             for (int k = 0; k < lines.get(i).size(); k++) {
-                if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
-                    // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
-          
-                    parsedLines.get(i).add(lines.get(i).get(k));
+                
+                if (this.type == DataType.HUMBER){
+
+                    if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
+                        // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
+              
+                        
+                        //Combine it with Tide for Humber NoGo
+                        
+                        parsedLines.get(i).add(lines.get(i).get(k));
+                        
+                        
+                        
+                    }
+
+                    
+                }else{
+                    if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
+                        // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
+              
+                        parsedLines.get(i).add(lines.get(i).get(k));
+                    }
+                    
                 }
+                
 
             }
 
