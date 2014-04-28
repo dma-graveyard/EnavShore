@@ -197,9 +197,9 @@ public class NogoServiceBean implements NogoService {
                         || SouthEast.getLatitude() > 38.35 || SouthEast.getLatitude() < 37.16 || SouthEast.getLongitude() > -121.32 || SouthEast
                         .getLongitude() < -123.21)
 
-                && (northWest.getLatitude() < 53.53 || northWest.getLatitude() > 53.742 || northWest.getLongitude() < -0.87
-                        || northWest.getLongitude() > 0.25 || SouthEast.getLatitude() < 53.53 || SouthEast.getLatitude() > 53.742
-                        || SouthEast.getLongitude() < -0.87 || SouthEast.getLongitude() > 0.25)
+                && (northWest.getLatitude() < 53.516960327477875 || northWest.getLatitude() > 53.741792160953665 || northWest.getLongitude() < -0.8661253027560037
+                        || northWest.getLongitude() > 0.24236332125267657 || SouthEast.getLatitude() < 53.516960327477875 || SouthEast.getLatitude() > 53.741792160953665
+                        || SouthEast.getLongitude() < -0.8661253027560037 || SouthEast.getLongitude() > 0.24236332125267657)
 
         ) {
             System.out.println("No data available");

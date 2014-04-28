@@ -153,3 +153,173 @@ CREATE TABLE `humber_depth` (
   `depth` DOUBLE,
   INDEX(n, m, lat, lon))
 ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `BLACK10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `BLACK10_14_TIDE` ;
+
+CREATE TABLE `BLACK10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `BRUFF10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `BRUFF10_14_TIDE` ;
+
+CREATE TABLE `BRUFF10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `BURT10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `BURT10_14_TIDE` ;
+
+CREATE TABLE `BURT10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `GOOLE10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `GOOLE10_14_TIDE` ;
+
+CREATE TABLE `GOOLE10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `GRIM10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `GRIM10_14_TIDE` ;
+
+CREATE TABLE `GRIM10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `HST10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `HST10_14_TIDE` ;
+
+CREATE TABLE `HST10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `HULAD10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `HULAD10_14_TIDE` ;
+
+CREATE TABLE `HULAD10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `HUMBE10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `HUMBE10_14_TIDE` ;
+
+CREATE TABLE `HUMBE10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `IMMIN10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `IMMIN10_14_TIDE` ;
+
+CREATE TABLE `IMMIN10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `KDOCK10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `KDOCK10_14_TIDE` ;
+
+CREATE TABLE `KDOCK10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `KEAD10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `KEAD10_14_TIDE` ;
+
+CREATE TABLE `KEAD10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `N_SH10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `N_SH10_14_TIDE` ;
+
+CREATE TABLE `N_SH10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `SPURN10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `SPURN10_14_TIDE` ;
+
+CREATE TABLE `SPURN10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `SUNK10_14_TIDE`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `SUNK10_14_TIDE` ;
+
+CREATE TABLE `SUNK10_14_TIDE` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `dateTime` TIMESTAMP NOT NULL ,
+  `depth` DOUBLE NOT NULL,
+  INDEX(dateTime))
+ENGINE = InnoDB;
