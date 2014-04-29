@@ -57,7 +57,7 @@ public class NogoServiceBean implements NogoService {
     private EntityManager entityManager;
 
     public enum WorkerType {
-        DEPTHPOINT, TIDEPOINT, DEPTHDATA, TIDEDATA, MAXTIDE;
+        DEPTHPOINT, TIDEPOINT, DEPTHDATA, TIDEDATA, MAXTIDE, HUMBERTIDE;
     }
 
     public enum DataType {
@@ -160,18 +160,27 @@ public class NogoServiceBean implements NogoService {
         }
 
         // Humber Data
-        if (northWest.getLatitude() > 53.516960327477875 && northWest.getLatitude() < 53.741792160953665 && northWest.getLongitude() > -0.8661253027560037
-                && northWest.getLongitude() < 0.24236332125267657 && SouthEast.getLatitude() > 53.516960327477875 && SouthEast.getLatitude() < 53.741792160953665
+        if (northWest.getLatitude() > 53.516960327477875 && northWest.getLatitude() < 53.741792160953665
+                && northWest.getLongitude() > -0.8661253027560037 && northWest.getLongitude() < 0.24236332125267657
+                && SouthEast.getLatitude() > 53.516960327477875 && SouthEast.getLatitude() < 53.741792160953665
                 && SouthEast.getLongitude() > -0.8661253027560037 && SouthEast.getLongitude() < 0.24236332125267657) {
             System.out.println("Valid Humber point");
 
             nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
             nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
+
             nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
             nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
 
             nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.HUMBER);
-            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.HUMBER);
+            
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.HUMBERTIDE, DataType.HUMBER);
+
+            java.sql.Timestamp timeStart = new Timestamp(nogoRequest.getStartDate().getTime());
+            java.sql.Timestamp timeEnd = new Timestamp(nogoRequest.getEndDate().getTime());
+
+            nogoWorkerTideData.setTimeStart(timeStart);
+            nogoWorkerTideData.setTimeEnd(timeEnd);
 
             // latOffset = 0.0000418;
 
@@ -197,8 +206,9 @@ public class NogoServiceBean implements NogoService {
                         || SouthEast.getLatitude() > 38.35 || SouthEast.getLatitude() < 37.16 || SouthEast.getLongitude() > -121.32 || SouthEast
                         .getLongitude() < -123.21)
 
-                && (northWest.getLatitude() < 53.516960327477875 || northWest.getLatitude() > 53.741792160953665 || northWest.getLongitude() < -0.8661253027560037
-                        || northWest.getLongitude() > 0.24236332125267657 || SouthEast.getLatitude() < 53.516960327477875 || SouthEast.getLatitude() > 53.741792160953665
+                && (northWest.getLatitude() < 53.516960327477875 || northWest.getLatitude() > 53.741792160953665
+                        || northWest.getLongitude() < -0.8661253027560037 || northWest.getLongitude() > 0.24236332125267657
+                        || SouthEast.getLatitude() < 53.516960327477875 || SouthEast.getLatitude() > 53.741792160953665
                         || SouthEast.getLongitude() < -0.8661253027560037 || SouthEast.getLongitude() > 0.24236332125267657)
 
         ) {
@@ -270,9 +280,8 @@ public class NogoServiceBean implements NogoService {
         BoundingBoxPoint firstPosDepth = nogoWorkerFirstPointDepth.getPoint();
         BoundingBoxPoint secondPosDepth = nogoWorkerSecondPointDepth.getPoint();
 
-         System.out.println("depth points are " +
-         nogoWorkerFirstPointDepth.getPoint() + ", "
-         + nogoWorkerSecondPointDepth.getPoint());
+        System.out.println("depth points are " + nogoWorkerFirstPointDepth.getPoint() + ", "
+                + nogoWorkerSecondPointDepth.getPoint());
 
         BoundingBoxPoint firstPosTide = nogoWorkerFirstPointTide.getPoint();
         BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
@@ -284,7 +293,7 @@ public class NogoServiceBean implements NogoService {
         List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
 
         if (firstPosDepth != null && secondPosDepth != null) {
-             System.out.println("Bounding Box found - requesting data");
+            System.out.println("Bounding Box found - requesting data");
 
             nogoWorkerDepthData.setFirstPos(firstPosDepth);
             nogoWorkerDepthData.setSecondPos(secondPosDepth);
@@ -294,28 +303,31 @@ public class NogoServiceBean implements NogoService {
             // Testing
             // nogoWorkerDepthData.setDraught(-7);
 
-            nogoWorkerTideData.setFirstPos(firstPosTide);
-            nogoWorkerTideData.setSecondPos(secondPosTide);
+            if (this.type != DataType.HUMBER){
+                nogoWorkerTideData.setFirstPos(firstPosTide);
+                nogoWorkerTideData.setSecondPos(secondPosTide);
 
-            // Use 01-05 until we get better database setup
-            // 2012-01-05 22:00:00
-            java.sql.Timestamp timeStart = new Timestamp(112, 0, 5, 0, 0, 0, 0);
-            java.sql.Timestamp timeEnd = new Timestamp(112, 0, 5, 0, 0, 0, 0);
+                // Use 01-05 until we get better database setup
+                // 2012-01-05 22:00:00
+                java.sql.Timestamp timeStart = new Timestamp(112, 0, 5, 0, 0, 0, 0);
+                java.sql.Timestamp timeEnd = new Timestamp(112, 0, 5, 0, 0, 0, 0);
 
-            timeStart.setHours(nogoRequest.getStartDate().getHours());
-            timeEnd.setHours(nogoRequest.getEndDate().getHours());
+                timeStart.setHours(nogoRequest.getStartDate().getHours());
+                timeEnd.setHours(nogoRequest.getEndDate().getHours());
 
-            nogoWorkerTideData.setTimeStart(timeStart);
-            nogoWorkerTideData.setTimeEnd(timeEnd);
+                nogoWorkerTideData.setTimeStart(timeStart);
+                nogoWorkerTideData.setTimeEnd(timeEnd);
 
-            // System.out.println("StartTime is: " + timeStart);
-            //
-            // System.out.println("EndTime is: " + timeEnd);
+                // System.out.println("StartTime is: " + timeStart);
+                //
+                // System.out.println("EndTime is: " + timeEnd);
+            }
 
             nogoWorkerDepthData.start();
 
             nogoWorkerTideData.start();
 
+            
             try {
                 nogoWorkerDepthData.join();
                 System.out.println("Depth data thread joined");
@@ -327,14 +339,19 @@ public class NogoServiceBean implements NogoService {
             System.out.println("Depth database size: " + nogoWorkerDepthData.getDepthDatabaseResult().size());
 
             if (nogoWorkerDepthData.getDepthDatabaseResult().size() != 0) {
+
+                List<DepthDenmark> depthResult = nogoWorkerDepthData.getDepthDatabaseResult();
+
                 double depth = nogoRequest.getDraught();
-                if (this.type == DataType.HUMBER){
+                if (this.type == DataType.HUMBER) {
                     depth = -depth;
+
+                    depthResult = combineWithHumberTide(depthResult);
                 }
-                
-                System.out.println("Begin parsing");
-                polyArea = parseResult(nogoWorkerDepthData.getDepthDatabaseResult(), nogoWorkerTideData.getTideDatabaseResult(),
-                        depth);
+
+                System.out.println("Begin parsing into line segments");
+
+                polyArea = parseResult(depthResult, nogoWorkerTideData.getTideDatabaseResult(), depth);
             }
             // polyArea = getNogoArea(firstPos, secondPos, -7);
             System.out.println("Data recieved and parsed");
@@ -369,10 +386,36 @@ public class NogoServiceBean implements NogoService {
         return res;
     }
 
+    private List<DepthDenmark> combineWithHumberTide(List<DepthDenmark> result) {
+
+        for (int i = 0; i < result.size(); i++) {
+
+            // Position.create(result.get(i).getLat(), result.get(i).getLon());
+
+            // Example 10 meters tide ie. risen by 10
+
+            // result.get(i).setDepth(result.get(i).getDepth() + 8);
+
+        }
+
+        return result;
+    }
+
+    // private void findNearestTideGauge(Position position) {
+    // Position spurnPoint = Position.create(53.582778, 0.116111);
+    //
+    // }
+
     @SuppressWarnings("unused")
     @Override
     public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth) {
 
+        
+        if (this.type == DataType.HUMBER) {
+            System.out.println("HUMBER STUFF");
+            
+        }
+        
         // System.out.println("Query executed! - parsing");
 
         // This is where we store our result
@@ -468,31 +511,26 @@ public class NogoServiceBean implements NogoService {
         for (int i = 0; i < lines.size(); i++) {
             parsedLines.add(new ArrayList<DepthDenmark>());
             for (int k = 0; k < lines.get(i).size(); k++) {
-                
-                if (this.type == DataType.HUMBER){
+
+                if (this.type == DataType.HUMBER) {
 
                     if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
                         // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
-              
-                        
-                        //Combine it with Tide for Humber NoGo
-                        
+
+                        // Combine it with Tide for Humber NoGo
+
                         parsedLines.get(i).add(lines.get(i).get(k));
-                        
-                        
-                        
+
                     }
 
-                    
-                }else{
+                } else {
                     if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() > depth) {
                         // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
-              
+
                         parsedLines.get(i).add(lines.get(i).get(k));
                     }
-                    
+
                 }
-                
 
             }
 
@@ -523,81 +561,84 @@ public class NogoServiceBean implements NogoService {
         List<List<List<DepthDenmark>>> lineSection = new ArrayList<List<List<DepthDenmark>>>();
         List<List<DepthDenmark>> tempLine = new ArrayList<List<DepthDenmark>>();
 
-        m = parsed.get(0).get(0).getM();
+        if (parsed.size() > 0) {
 
-        // Split the list based on the m index - note the index is opposite of the longitude coordinates
-        for (List<DepthDenmark> splittedLines : parsed) {
-            if ((splittedLines.get(0).getM()) > m) {
-                // System.out.println("New line detected");
-                lineSection.add(tempLine);
-                tempLine = new ArrayList<List<DepthDenmark>>();
-                tempLine.add(splittedLines);
-                m = splittedLines.get(0).getM();
-            } else {
-                tempLine.add(splittedLines);
+            m = parsed.get(0).get(0).getM();
+
+            // Split the list based on the m index - note the index is opposite of the longitude coordinates
+            for (List<DepthDenmark> splittedLines : parsed) {
+                if ((splittedLines.get(0).getM()) > m) {
+                    // System.out.println("New line detected");
+                    lineSection.add(tempLine);
+                    tempLine = new ArrayList<List<DepthDenmark>>();
+                    tempLine.add(splittedLines);
+                    m = splittedLines.get(0).getM();
+                } else {
+                    tempLine.add(splittedLines);
+                }
             }
-        }
-        lineSection.add(tempLine);
+            lineSection.add(tempLine);
 
-        // Reverse the list
-        Collections.reverse(lineSection);
+            // Reverse the list
+            Collections.reverse(lineSection);
 
-        // Seperate? Find all the required connection things
+            // Seperate? Find all the required connection things
 
-        List<NogoPolygon> allNeighboursLine = new ArrayList<NogoPolygon>();
+            List<NogoPolygon> allNeighboursLine = new ArrayList<NogoPolygon>();
 
-        for (int i = 0; i < lineSection.size(); i++) {
+            for (int i = 0; i < lineSection.size(); i++) {
 
-            for (int j = 0; j < lineSection.get(i).size(); j++) {
+                for (int j = 0; j < lineSection.get(i).size(); j++) {
 
-                List<NogoPolygon> neighbours = new ArrayList<NogoPolygon>();
+                    List<NogoPolygon> neighbours = new ArrayList<NogoPolygon>();
 
-                // It has a next line
-                if (i != lineSection.size() - 1) {
-                    neighbours = connectNeighbourLines
-                            .connectFindValidNeighbours(lineSection.get(i).get(j), lineSection.get(i + 1));
+                    // It has a next line
+                    if (i != lineSection.size() - 1) {
+                        neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(i).get(j),
+                                lineSection.get(i + 1));
 
-                    allNeighboursLine.addAll(neighbours);
+                        allNeighboursLine.addAll(neighbours);
 
-                    //
-                    // if (neighbours.size() != 0){
-                    // for (int k = 0; k < neighbours.size(); k++) {
-                    //
-                    // //Check for overlap, first between line + 1 and the triangles
-                    // if (!connectNeighbourLines.doesOverlap(neighbours.get(k), lineSection.get(i+1))){
-                    // res.add(neighbours.get(k));
-                    // }
-                    //
-                    // //Then for each triangle with the other triangles
-                    //
-                    // //If no overlap, add it
-                    //
-                    //
-                    // }
-                    // }
+                        //
+                        // if (neighbours.size() != 0){
+                        // for (int k = 0; k < neighbours.size(); k++) {
+                        //
+                        // //Check for overlap, first between line + 1 and the triangles
+                        // if (!connectNeighbourLines.doesOverlap(neighbours.get(k), lineSection.get(i+1))){
+                        // res.add(neighbours.get(k));
+                        // }
+                        //
+                        // //Then for each triangle with the other triangles
+                        //
+                        // //If no overlap, add it
+                        //
+                        //
+                        // }
+                        // }
+                    }
+
+                }
+
+                // System.out.println(allNeighboursLine.size());
+
+                // List<NogoPolygon> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(i),
+                // lineSection.get(1));
+
+            }
+
+            // We found our neighbours, make sure they don't clash together
+
+            if (type != DataType.SF_BAY || type != DataType.HUMBER) {
+
+                List<NogoPolygon> finalNeighbours = connectNeighbourLines.triangleOverlap(allNeighboursLine);
+
+                for (int k = 0; k < finalNeighbours.size(); k++) {
+                    res.add(finalNeighbours.get(k));
                 }
 
             }
 
-            // System.out.println(allNeighboursLine.size());
-
-            // List<NogoPolygon> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(i),
-            // lineSection.get(1));
-
         }
-
-        // We found our neighbours, make sure they don't clash together
-
-        if (type != DataType.SF_BAY || type != DataType.HUMBER) {
-
-            List<NogoPolygon> finalNeighbours = connectNeighbourLines.triangleOverlap(allNeighboursLine);
-
-            for (int k = 0; k < finalNeighbours.size(); k++) {
-                res.add(finalNeighbours.get(k));
-            }
-
-        }
-
         // List<List<DepthDenmark>> neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(0).get(0),
         // lineSection.get(1));
         // System.out.println(neighbours.size() + " neighbours found");
@@ -608,7 +649,7 @@ public class NogoServiceBean implements NogoService {
         NogoPolygon polygon;
         NogoPolygon temp;
 
-//        System.out.println("splitted lines is: " + parsed.size());
+        // System.out.println("splitted lines is: " + parsed.size());
 
         // double lonOffset = 0.0007854;
         // The difference between each point / 2. This is used in calculating

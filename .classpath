@@ -25,6 +25,7 @@
 	<classpathentry kind="lib" path="extlib/gson-1.7.1.jar"/>
 	<classpathentry kind="lib" path="extlib/aisservices.jar"/>
 	<classpathentry kind="lib" path="extlib/aislib-1.6.jar"/>
+	<classpathentry kind="lib" path="extlib/enav-model-0.2-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path=".build"/>
 </classpath>

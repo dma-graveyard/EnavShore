@@ -162,8 +162,54 @@ public class NogoWorker extends Thread {
 
         }
 
+        if (workerType == WorkerType.HUMBERTIDE) {
+            System.out.println("Humber Tide Worker");
+            if (timeStart != null && timeEnd != null) {
+                getHumberTidalValues();
+            }
+
+        }
+
         // System.out.print("Thread " + getName() + ": Done with work\n");
         _status = THREADPASS;
+    }
+
+    private void getHumberTidalValues() {
+
+        // Retrieve list of buoys
+
+        // For each buyo retrieve the data in the time section
+        // List of strings
+
+        // Hashmap of
+        // Buyoy custom class with NAME and Lat/Lon
+        // Each tidal gauge have a depth value
+
+        retrieveHumberTidalValue("SpurnTide2014");
+    }
+
+    private void retrieveHumberTidalValue(String dbname) {
+
+        // SELECT MIN(depth) FROM enav_p.spurn_tide_2014 where dateTime >= '2014-01-02 00:00:00' AND dateTime < '2014-01-02
+        // 23:53:00'
+
+        Query query = null;
+        query = entityManager.createQuery("SELECT MIN(dd.depth) " + "FROM " + dbname + " dd "
+                + "where dd.dateTime >= :time1 AND dd.dateTime <= :time2");
+        query.setParameter("time1", timeStart);
+        query.setParameter("time2", timeEnd);
+
+        
+        Double result = (Double) query.getSingleResult();
+        
+        System.out.println("Minimum depth for spurn is " + result);
+        
+//        List<Object[]> lines = query.getResultList();
+//        System.out.println("Found " + lines.size() + " tidal results of depth stuff Humber");
+//        for (int i = 0; i < lines.size(); i++) {
+//            System.out.println(lines.get(i));
+//            
+//        }
     }
 
     @SuppressWarnings("unchecked")
@@ -214,7 +260,7 @@ public class NogoWorker extends Thread {
 
         List<Object[]> lines = query.getResultList();
 
-//        System.out.println("How many possible point matches did we get: " + lines.size());
+        // System.out.println("How many possible point matches did we get: " + lines.size());
 
         if (lines.size() == 0) {
             query.setParameter("lat1", pos.getLatitude());
@@ -236,16 +282,16 @@ public class NogoWorker extends Thread {
                 // Minimum distance
                 GeoLocation pos2 = new GeoLocation((Double) objects[2], (Double) objects[3]);
                 double distancePoint = pos2.getGeodesicDistance(pos);
-//                System.out.println("Comparing distance: " + distancePoint);
+                // System.out.println("Comparing distance: " + distancePoint);
                 // System.out.println(distancePoint + " for " + (Integer)
                 // objects[0] + " , " + (Integer) objects[1] + " at " + pos);
                 if (distancePoint < distance) {
                     distance = distancePoint;
                     bestMatch = objects;
-                    
+
                 }
             }
-//            System.out.println("Best distance is " + distance);
+            // System.out.println("Best distance is " + distance);
             // System.out.println("The point we're looking for is at " +
             // bestMatch[0] +" , " + bestMatch[1]);
             BoundingBoxPoint point = new BoundingBoxPoint((Integer) bestMatch[0], (Integer) bestMatch[1]);
@@ -428,7 +474,7 @@ public class NogoWorker extends Thread {
 
         // List<DepthDenmarkNord>
 
-//        System.out.println("Results generated");
+        // System.out.println("Results generated");
         return result;
     }
 
