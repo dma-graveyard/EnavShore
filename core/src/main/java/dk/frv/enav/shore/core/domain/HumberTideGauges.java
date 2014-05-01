@@ -29,16 +29,50 @@
  */
 package dk.frv.enav.shore.core.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
-@Entity
-@Table(name = "spurn10_14_tide")
-public class SpurnTide2014 extends HumberTideGauges {
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public class HumberTideGauges implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public SpurnTide2014() {
+    protected int id;
+    protected Timestamp dateTime;
+    protected Double depth;
+
+    public HumberTideGauges() {
     }
 
+    @Id
+    @Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Column(name = "dateTime", unique = false, nullable = false, insertable = true, updatable = false)
+    public Timestamp getdateTime() {
+        return this.dateTime;
+    }
+
+    public void setDateTime(Timestamp timestamp) {
+        this.dateTime = timestamp;
+    }
+
+    @Column(name = "depth", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getDepth() {
+        return this.depth;
+    }
+
+    public void setDepth(Double depth) {
+        this.depth = depth;
+    }
 
 }

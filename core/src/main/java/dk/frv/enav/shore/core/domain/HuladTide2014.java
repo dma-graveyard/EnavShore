@@ -33,11 +33,11 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "spurn10_14_tide")
-public class SpurnTide2014 extends HumberTideGauges {
+@Table(name = "hulad10_14_tide")
+public class HuladTide2014 extends HumberTideGauges {
     private static final long serialVersionUID = 1L;
 
-    public SpurnTide2014() {
+    public HuladTide2014() {
     }
 
 

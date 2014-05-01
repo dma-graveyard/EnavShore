@@ -29,16 +29,73 @@
  */
 package dk.frv.enav.shore.core.domain;
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "spurn10_14_tide")
-public class SpurnTide2014 extends HumberTideGauges {
+@Table(name = "humber_tidal_dbs")
+public class HumberTideTabels implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public SpurnTide2014() {
+    private int id;
+    private String dbName;
+    private String fullName;
+    private double latitude;
+    private double longitude;
+
+    public HumberTideTabels() {
     }
+
+    @Id
+    @Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    @Column(name = "db_name", unique = false, nullable = false, insertable = true, updatable = false)
+    public String getDbName() {
+        return this.dbName;
+    }
+    
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+
+    @Column(name = "full_name", unique = false, nullable = false, insertable = true, updatable = false)
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    @Column(name = "latitude", unique = false, nullable = false, insertable = true, updatable = false)
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    @Column(name = "longitude", unique = false, nullable = false, insertable = true, updatable = false)
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
 
 
 }
