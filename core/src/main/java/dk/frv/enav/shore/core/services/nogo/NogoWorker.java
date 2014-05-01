@@ -42,7 +42,7 @@ import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.DepthDenmarkNord;
 import dk.frv.enav.shore.core.domain.Humber;
 import dk.frv.enav.shore.core.domain.TideDenmark;
-import dk.frv.enav.shore.core.domain.SFBay;
+import dk.frv.enav.shore.core.domain.sfBay;
 import dk.frv.enav.shore.core.services.nogo.NogoServiceBean.DataType;
 import dk.frv.enav.shore.core.services.nogo.NogoServiceBean.WorkerType;
 
@@ -438,11 +438,11 @@ public class NogoWorker extends Thread {
         }
 
         if (dataType == DataType.SF_BAY) {
-            List<SFBay> resultSf = query.getResultList();
+            List<sfBay> resultSf = query.getResultList();
             result = new ArrayList<DepthDenmark>();
 
             for (int i = 0; i < resultSf.size(); i++) {
-                SFBay currentSf = resultSf.get(i);
+                sfBay currentSf = resultSf.get(i);
                 DepthDenmark converted = new DepthDenmark();
                 converted.setId(currentSf.getId());
                 converted.setLat(currentSf.getLat());
