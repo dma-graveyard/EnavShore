@@ -36,11 +36,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import dk.dma.enav.model.geometry.Position;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.nogo.types.BoundingBoxPoint;
 import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.DepthDenmarkNord;
 import dk.frv.enav.shore.core.domain.Humber;
+import dk.frv.enav.shore.core.domain.HumberTideTabels;
 import dk.frv.enav.shore.core.domain.TideDenmark;
 import dk.frv.enav.shore.core.domain.sfBay;
 import dk.frv.enav.shore.core.services.nogo.NogoServiceBean.DataType;
@@ -65,6 +67,8 @@ public class NogoWorker extends Thread {
     private Timestamp timeStart;
     private Timestamp timeEnd;
     private DataType dataType;
+
+    private List<HumberTidePoint> humberTidalPoints;
 
     public void setTimeStart(Timestamp timeStart) {
         this.timeStart = timeStart;
@@ -174,9 +178,24 @@ public class NogoWorker extends Thread {
         _status = THREADPASS;
     }
 
+    @SuppressWarnings("unchecked")
     private void getHumberTidalValues() {
 
+        humberTidalPoints = new ArrayList<HumberTidePoint>();
+
         // Retrieve list of buoys
+        Query query = null;
+        query = entityManager.createQuery("SELECT dd FROM HumberTideTabels dd");
+
+        List<HumberTideTabels> results = query.getResultList();
+
+        for (int i = 0; i < results.size(); i++) {
+            // System.out.println(results.get(i).getDbName());
+            double minimumDepth = retrieveHumberTidalValue(results.get(i).getDbName());
+            Position position = Position.create(results.get(i).getLatitude(), results.get(i).getLongitude());
+            humberTidalPoints.add(new HumberTidePoint(position, minimumDepth));
+
+        }
 
         // For each buyo retrieve the data in the time section
         // List of strings
@@ -185,10 +204,10 @@ public class NogoWorker extends Thread {
         // Buyoy custom class with NAME and Lat/Lon
         // Each tidal gauge have a depth value
 
-        retrieveHumberTidalValue("SpurnTide2014");
+        // retrieveHumberTidalValue("SpurnTide2014");
     }
 
-    private void retrieveHumberTidalValue(String dbname) {
+    private double retrieveHumberTidalValue(String dbname) {
 
         // SELECT MIN(depth) FROM enav_p.spurn_tide_2014 where dateTime >= '2014-01-02 00:00:00' AND dateTime < '2014-01-02
         // 23:53:00'
@@ -199,17 +218,16 @@ public class NogoWorker extends Thread {
         query.setParameter("time1", timeStart);
         query.setParameter("time2", timeEnd);
 
-        
         Double result = (Double) query.getSingleResult();
-        
-        System.out.println("Minimum depth for spurn is " + result);
-        
-//        List<Object[]> lines = query.getResultList();
-//        System.out.println("Found " + lines.size() + " tidal results of depth stuff Humber");
-//        for (int i = 0; i < lines.size(); i++) {
-//            System.out.println(lines.get(i));
-//            
-//        }
+        return result;
+        // System.out.println("Minimum depth for spurn is " + result);
+
+        // List<Object[]> lines = query.getResultList();
+        // System.out.println("Found " + lines.size() + " tidal results of depth stuff Humber");
+        // for (int i = 0; i < lines.size(); i++) {
+        // System.out.println(lines.get(i));
+        //
+        // }
     }
 
     @SuppressWarnings("unchecked")
@@ -524,4 +542,13 @@ public class NogoWorker extends Thread {
         return result;
     }
 
+    /**
+     * @return the humberTidalPoints
+     */
+    public List<HumberTidePoint> getHumberTidalPoints() {
+        return humberTidalPoints;
+    }
+
+    
+    
 }

@@ -39,6 +39,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import dk.dma.enav.model.geometry.CoordinateSystem;
+import dk.dma.enav.model.geometry.Position;
 import dk.frv.ais.geo.GeoLocation;
 import dk.frv.enav.common.xml.nogo.request.NogoRequest;
 import dk.frv.enav.common.xml.nogo.response.NogoResponse;
@@ -173,7 +175,7 @@ public class NogoServiceBean implements NogoService {
             nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
 
             nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.HUMBER);
-            
+
             nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.HUMBERTIDE, DataType.HUMBER);
 
             java.sql.Timestamp timeStart = new Timestamp(nogoRequest.getStartDate().getTime());
@@ -303,7 +305,7 @@ public class NogoServiceBean implements NogoService {
             // Testing
             // nogoWorkerDepthData.setDraught(-7);
 
-            if (this.type != DataType.HUMBER){
+            if (this.type != DataType.HUMBER) {
                 nogoWorkerTideData.setFirstPos(firstPosTide);
                 nogoWorkerTideData.setSecondPos(secondPosTide);
 
@@ -327,7 +329,6 @@ public class NogoServiceBean implements NogoService {
 
             nogoWorkerTideData.start();
 
-            
             try {
                 nogoWorkerDepthData.join();
                 System.out.println("Depth data thread joined");
@@ -346,7 +347,7 @@ public class NogoServiceBean implements NogoService {
                 if (this.type == DataType.HUMBER) {
                     depth = -depth;
 
-                    depthResult = combineWithHumberTide(depthResult);
+                    depthResult = combineWithHumberTide(depthResult, nogoWorkerTideData.getHumberTidalPoints());
                 }
 
                 System.out.println("Begin parsing into line segments");
@@ -386,14 +387,37 @@ public class NogoServiceBean implements NogoService {
         return res;
     }
 
-    private List<DepthDenmark> combineWithHumberTide(List<DepthDenmark> result) {
+    private List<DepthDenmark> combineWithHumberTide(List<DepthDenmark> result, List<HumberTidePoint> list) {
+
+        if (list == null || list.size() == 0) {
+            errorCode = 18;
+            return result;
+        }
 
         for (int i = 0; i < result.size(); i++) {
 
-            // Position.create(result.get(i).getLat(), result.get(i).getLon());
+            Position pointPosition = Position.create(result.get(i).getLat(), result.get(i).getLon());
 
-            // Example 10 meters tide ie. risen by 10
+            int closetGauge = -1;
+            double smallestDistance = Double.MAX_VALUE;
+            for (int j = 0; j < list.size(); j++) {
+                double distance = list.get(j).getPosition().distanceTo(pointPosition, CoordinateSystem.CARTESIAN);
 
+                if (distance < smallestDistance) {
+                    closetGauge = j;
+                    smallestDistance = distance;
+                }
+            }
+
+            // System.out.println("Clostest point is " + closetGauge + " with distance of " + smallestDistance);
+
+
+//            System.out.println(result.get(i).getDepth());
+            if (result.get(i).getDepth() > 0){
+                result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());    
+            }
+            
+            // Example 10 meters tide ie. risen by 10            
             // result.get(i).setDepth(result.get(i).getDepth() + 8);
 
         }
@@ -410,12 +434,6 @@ public class NogoServiceBean implements NogoService {
     @Override
     public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth) {
 
-        
-        if (this.type == DataType.HUMBER) {
-            System.out.println("HUMBER STUFF");
-            
-        }
-        
         // System.out.println("Query executed! - parsing");
 
         // This is where we store our result
@@ -435,7 +453,7 @@ public class NogoServiceBean implements NogoService {
             line.add(depthDenmark);
         }
 
-        if (resultTide == null) {
+        if (resultTide == null && this.type != DataType.HUMBER) {
             errorCode = 18;
         }
 
@@ -516,9 +534,6 @@ public class NogoServiceBean implements NogoService {
 
                     if (lines.get(i).get(k).getDepth() == null || lines.get(i).get(k).getDepth() < depth) {
                         // System.out.println("Current line depth is: " + lines.get(i).get(k).getDepth());
-
-                        // Combine it with Tide for Humber NoGo
-
                         parsedLines.get(i).add(lines.get(i).get(k));
 
                     }

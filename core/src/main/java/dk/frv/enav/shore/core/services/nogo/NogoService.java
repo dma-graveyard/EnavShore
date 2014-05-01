@@ -23,6 +23,6 @@ public interface NogoService {
 	NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException;
 	
 	
-	List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth);
+	public List<NogoPolygon> parseResult(List<DepthDenmark> result, List<TideDenmark> resultTide, double depth);
 	
 }
