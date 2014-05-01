@@ -38,7 +38,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="sf_bay")
-public class sfBay implements Serializable {
+public class SFBay implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private int id;
@@ -48,7 +48,7 @@ public class sfBay implements Serializable {
 	private int m;
 	private Double depth;
 
-    public sfBay() {
+    public SFBay() {
     }
 
 	@Id

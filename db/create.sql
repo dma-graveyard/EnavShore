@@ -154,6 +154,21 @@ CREATE TABLE `humber_depth` (
   INDEX(n, m, lat, lon))
 ENGINE = InnoDB;
 
+
+-- -----------------------------------------------------
+-- Table `HUMBER_TIDAL_DBS`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `HUMBER_TIDAL_DBS` ;
+
+CREATE TABLE `HUMBER_TIDAL_DBS` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `db_name` VARCHAR(25) NOT NULL,
+  `full_name` VARCHAR(50) NOT NULL,
+  `latitude` DOUBLE NOT NULL,
+  `longitude` DOUBLE NOT NULL,
+  INDEX(db_name))
+ENGINE = InnoDB;
+
 -- -----------------------------------------------------
 -- Table `BLACK10_14_TIDE`
 -- -----------------------------------------------------
@@ -288,17 +303,6 @@ CREATE TABLE `KEAD10_14_TIDE` (
   INDEX(dateTime))
 ENGINE = InnoDB;
 
--- -----------------------------------------------------
--- Table `N_SH10_14_TIDE`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `N_SH10_14_TIDE` ;
-
-CREATE TABLE `N_SH10_14_TIDE` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `dateTime` TIMESTAMP NOT NULL ,
-  `depth` DOUBLE NOT NULL,
-  INDEX(dateTime))
-ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `SPURN10_14_TIDE`
