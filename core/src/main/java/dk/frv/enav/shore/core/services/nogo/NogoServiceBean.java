@@ -409,10 +409,8 @@ public class NogoServiceBean implements NogoService {
                 }
             }
 
-            // System.out.println("Clostest point is " + closetGauge + " with distance of " + smallestDistance);
-
-
 //            System.out.println(result.get(i).getDepth());
+            
             if (result.get(i).getDepth() > 0){
                 result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());    
             }
