@@ -221,8 +221,6 @@ public class NogoServiceBean implements NogoService {
             res.setNoGoErrorCode(17);
             res.setNoGoMessage(Errorcodes.getErrorMessage(17));
 
-            // System.out.println("Returning empty res");
-
             return res;
         }
 
