@@ -47,6 +47,8 @@ import dk.frv.enav.common.xml.nogo.response.NogoResponse;
 import dk.frv.enav.common.xml.nogo.types.BoundingBoxPoint;
 import dk.frv.enav.common.xml.nogo.types.NogoPoint;
 import dk.frv.enav.common.xml.nogo.types.NogoPolygon;
+import dk.frv.enav.common.xml.nogoslices.request.NogoRequestSlices;
+import dk.frv.enav.common.xml.nogoslices.response.NogoResponseSlices;
 import dk.frv.enav.shore.core.domain.DepthDenmark;
 import dk.frv.enav.shore.core.domain.TideDenmark;
 import dk.frv.enav.shore.core.services.Errorcodes;
@@ -63,7 +65,7 @@ public class NogoServiceBean implements NogoService {
     }
 
     public enum DataType {
-        SYDKATTEGAT, NORDKATTEGAT, SF_BAY, HUMBER;
+        SYDKATTEGAT, NORDKATTEGAT, SF_BAY, HUMBER, UNKNOWN;
     }
 
     int errorCode = 0;
@@ -72,149 +74,45 @@ public class NogoServiceBean implements NogoService {
     double latOffset;
     double lonOffset;
 
+    NogoWorker nogoWorkerFirstPointDepth = null;
+
+    NogoWorker nogoWorkerSecondPointDepth = null;
+
+    NogoWorker nogoWorkerFirstPointTide = null;
+
+    NogoWorker nogoWorkerSecondPointTide = null;
+
+    NogoWorker nogoWorkerDepthData = null;
+
+    NogoWorker nogoWorkerTideData = null;
+
+    // old test static values
+    // firstPos = getArea(55.070, 11.668);
+    // secondPos = getArea(55.170, 11.868)
+
+    // Testing stuff
+    // nogoWorkerFirstPointDepth.setPos(new GeoLocation(55.070, 11.668));
+    //
+    // nogoWorkerSecondPointDepth.setPos(new GeoLocation(55.170, 11.868));
+    //
+    // nogoWorkerFirstPointTide.setPos(new GeoLocation(55.070, 11.668));
+    //
+    // nogoWorkerSecondPointTide.setPos(new GeoLocation(55.170, 11.868));
+
     @SuppressWarnings("deprecation")
     @Override
     public NogoResponse nogoPoll(NogoRequest nogoRequest) throws ServiceException {
 
-        // System.out.println("NoGo request recieved");
-
         // First identify which area we are searching in
 
         GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
-        GeoLocation SouthEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
+        GeoLocation southEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
 
-        // System.out.println("northWest " + northWest);
-        // System.out.println("southEAst " + SouthEast);
+        // Determine the area
+        getDataRegion(northWest, southEast);
 
-        NogoWorker nogoWorkerFirstPointDepth = null;
-
-        NogoWorker nogoWorkerSecondPointDepth = null;
-
-        NogoWorker nogoWorkerFirstPointTide = null;
-
-        NogoWorker nogoWorkerSecondPointTide = null;
-
-        NogoWorker nogoWorkerDepthData = null;
-
-        NogoWorker nogoWorkerTideData = null;
-
-        // Sydkattegat data
-        if (northWest.getLatitude() > 54.36294 && northWest.getLatitude() < 56.36316 && northWest.getLongitude() > 9.419409
-                && northWest.getLongitude() < 13.149009 && SouthEast.getLatitude() > 54.36294 && SouthEast.getLatitude() < 56.36316
-                && SouthEast.getLongitude() > 9.419409 && SouthEast.getLongitude() < 13.149009) {
-
-            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
-            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
-            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
-            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
-
-            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SYDKATTEGAT);
-            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
-
-            latOffset = 0.00055500;
-            lonOffset = 0.00055504;
-
-            type = DataType.SYDKATTEGAT;
-
-        } else {
-            // Nordkattegat data
-            if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237 && northWest.getLongitude() > 9.403869
-                    && northWest.getLongitude() < 12.148899 && SouthEast.getLatitude() > 56.34096
-                    && SouthEast.getLatitude() < 58.26237 && SouthEast.getLongitude() > 9.403869
-                    && SouthEast.getLongitude() < 12.148899) {
-                // System.out.println("Valid nordkattegat point");
-
-                nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
-                nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
-                nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
-                nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
-
-                nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.NORDKATTEGAT);
-                nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.NORDKATTEGAT);
-
-            }
-
-            latOffset = 0.00055504;
-            lonOffset = 0.00055504;
-
-            type = DataType.NORDKATTEGAT;
-
-        }
-
-        // SF Bay data
-        if (northWest.getLatitude() > 37.17 && northWest.getLatitude() < 38.35 && northWest.getLongitude() > -123.21
-                && northWest.getLongitude() < -121.32 && SouthEast.getLatitude() > 37.17 && SouthEast.getLatitude() < 38.35
-                && SouthEast.getLongitude() > -123.21 && SouthEast.getLongitude() < -121.32) {
-            // System.out.println("Valid nordkattegat point");
-
-            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
-            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
-            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
-            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
-
-            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SF_BAY);
-            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SF_BAY);
-
-            latOffset = 0.000418;
-            lonOffset = latOffset;
-
-            type = DataType.SF_BAY;
-        }
-
-        // Humber Data
-        if (northWest.getLatitude() > 53.516960327477875 && northWest.getLatitude() < 53.741792160953665
-                && northWest.getLongitude() > -0.8661253027560037 && northWest.getLongitude() < 0.24236332125267657
-                && SouthEast.getLatitude() > 53.516960327477875 && SouthEast.getLatitude() < 53.741792160953665
-                && SouthEast.getLongitude() > -0.8661253027560037 && SouthEast.getLongitude() < 0.24236332125267657) {
-            System.out.println("Valid Humber point");
-
-            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
-            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
-
-            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
-            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
-
-            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.HUMBER);
-
-            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.HUMBERTIDE, DataType.HUMBER);
-
-            java.sql.Timestamp timeStart = new Timestamp(nogoRequest.getStartDate().getTime());
-            java.sql.Timestamp timeEnd = new Timestamp(nogoRequest.getEndDate().getTime());
-
-            nogoWorkerTideData.setTimeStart(timeStart);
-            nogoWorkerTideData.setTimeEnd(timeEnd);
-
-            // latOffset = 0.0000418;
-
-            // latOffset = 0.0000868125;
-            // lonOffset = 0.000151883;
-            latOffset = 0.00011247;
-            lonOffset = 0.000554522;
-
-            type = DataType.HUMBER;
-        }
-
-        // Is the points outside our area?
-
-        if ((northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294 || northWest.getLongitude() > 13.149009
-                || northWest.getLongitude() < 9.403869
-
-                || SouthEast.getLatitude() > 58.26237 || SouthEast.getLatitude() < 54.36294 || SouthEast.getLongitude() > 13.149009 || SouthEast
-                .getLongitude() < 9.403869)
-
-                && (northWest.getLatitude() > 38.35 || northWest.getLatitude() < 37.16 || northWest.getLongitude() > -121.32
-                        || northWest.getLongitude() < -123.21
-
-                        || SouthEast.getLatitude() > 38.35 || SouthEast.getLatitude() < 37.16 || SouthEast.getLongitude() > -121.32 || SouthEast
-                        .getLongitude() < -123.21)
-
-                && (northWest.getLatitude() < 53.516960327477875 || northWest.getLatitude() > 53.741792160953665
-                        || northWest.getLongitude() < -0.8661253027560037 || northWest.getLongitude() > 0.24236332125267657
-                        || SouthEast.getLatitude() < 53.516960327477875 || SouthEast.getLatitude() > 53.741792160953665
-                        || SouthEast.getLongitude() < -0.8661253027560037 || SouthEast.getLongitude() > 0.24236332125267657)
-
-        ) {
-            System.out.println("No data available");
+        // The areas given are not valid
+        if (this.type == DataType.UNKNOWN) {
 
             NogoResponse res = new NogoResponse();
 
@@ -224,28 +122,10 @@ public class NogoServiceBean implements NogoService {
             return res;
         }
 
-        // NogoWorker nogoWorkerThirdMaxTide = new NogoWorker(entityManager,
-        // WorkerType.MAXTIDE);
+        // Create the workers
+        createBathymetryWorkers(northWest, southEast);
 
-        nogoWorkerFirstPointDepth.setPos(new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon()));
-
-        nogoWorkerSecondPointDepth.setPos(new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon()));
-
-        nogoWorkerFirstPointTide.setPos(new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon()));
-
-        nogoWorkerSecondPointTide.setPos(new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon()));
-
-        // firstPos = getArea(55.070, 11.668);
-        // secondPos = getArea(55.170, 11.868)
-
-        // Testing stuff
-        // nogoWorkerFirstPointDepth.setPos(new GeoLocation(55.070, 11.668));
-        //
-        // nogoWorkerSecondPointDepth.setPos(new GeoLocation(55.170, 11.868));
-        //
-        // nogoWorkerFirstPointTide.setPos(new GeoLocation(55.070, 11.668));
-        //
-        // nogoWorkerSecondPointTide.setPos(new GeoLocation(55.170, 11.868));
+        createTidalWorkers(northWest, southEast, nogoRequest.getStartDate(), nogoRequest.getEndDate());
 
         // Get the grid position of the data in the depth database
         nogoWorkerFirstPointDepth.start();
@@ -254,11 +134,6 @@ public class NogoServiceBean implements NogoService {
         // Get the grid position of the data in the tide database
         nogoWorkerFirstPointTide.start();
         nogoWorkerSecondPointTide.start();
-
-        // Find max change in depth database - not needed anymore
-        // nogoWorkerThirdMaxTide.start();
-
-        // nogoRequest.getStartDate();
 
         try {
             nogoWorkerFirstPointDepth.join();
@@ -286,10 +161,6 @@ public class NogoServiceBean implements NogoService {
         BoundingBoxPoint firstPosTide = nogoWorkerFirstPointTide.getPoint();
         BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
 
-        // System.out.println("tide points are " +
-        // nogoWorkerFirstPointTide.getPoint() + ", "
-        // + nogoWorkerSecondPointTide.getPoint());
-
         List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
 
         if (firstPosDepth != null && secondPosDepth != null) {
@@ -299,9 +170,6 @@ public class NogoServiceBean implements NogoService {
             nogoWorkerDepthData.setSecondPos(secondPosDepth);
 
             nogoWorkerDepthData.setDraught(nogoRequest.getDraught());
-
-            // Testing
-            // nogoWorkerDepthData.setDraught(-7);
 
             if (this.type != DataType.HUMBER) {
                 nogoWorkerTideData.setFirstPos(firstPosTide);
@@ -317,10 +185,6 @@ public class NogoServiceBean implements NogoService {
 
                 nogoWorkerTideData.setTimeStart(timeStart);
                 nogoWorkerTideData.setTimeEnd(timeEnd);
-
-                // System.out.println("StartTime is: " + timeStart);
-                //
-                // System.out.println("EndTime is: " + timeEnd);
             }
 
             nogoWorkerDepthData.start();
@@ -385,6 +249,183 @@ public class NogoServiceBean implements NogoService {
         return res;
     }
 
+    @Override
+    public void getDataRegion(GeoLocation northWest, GeoLocation southEast) {
+        // Sydkattegat data
+        if (northWest.getLatitude() > 54.36294 && northWest.getLatitude() < 56.36316 && northWest.getLongitude() > 9.419409
+                && northWest.getLongitude() < 13.149009 && southEast.getLatitude() > 54.36294 && southEast.getLatitude() < 56.36316
+                && southEast.getLongitude() > 9.419409 && southEast.getLongitude() < 13.149009) {
+
+            latOffset = 0.00055504;
+            lonOffset = 0.00055504;
+
+            type = DataType.SYDKATTEGAT;
+
+        }
+
+        // Nordkattegat data
+        if (northWest.getLatitude() > 56.34096 && northWest.getLatitude() < 58.26237 && northWest.getLongitude() > 9.403869
+                && northWest.getLongitude() < 12.148899 && southEast.getLatitude() > 56.34096 && southEast.getLatitude() < 58.26237
+                && southEast.getLongitude() > 9.403869 && southEast.getLongitude() < 12.148899) {
+            // System.out.println("Valid nordkattegat point");
+
+            latOffset = 0.00055504;
+            lonOffset = 0.00055504;
+
+            type = DataType.NORDKATTEGAT;
+        }
+
+        // SF Bay data
+        if (northWest.getLatitude() > 37.17 && northWest.getLatitude() < 38.35 && northWest.getLongitude() > -123.21
+                && northWest.getLongitude() < -121.32 && southEast.getLatitude() > 37.17 && southEast.getLatitude() < 38.35
+                && southEast.getLongitude() > -123.21 && southEast.getLongitude() < -121.32) {
+
+            latOffset = 0.000418;
+            lonOffset = latOffset;
+
+            type = DataType.SF_BAY;
+        }
+
+        // Humber Data
+        if (northWest.getLatitude() > 53.516960327477875 && northWest.getLatitude() < 53.741792160953665
+                && northWest.getLongitude() > -0.8661253027560037 && northWest.getLongitude() < 0.24236332125267657
+                && southEast.getLatitude() > 53.516960327477875 && southEast.getLatitude() < 53.741792160953665
+                && southEast.getLongitude() > -0.8661253027560037 && southEast.getLongitude() < 0.24236332125267657) {
+            System.out.println("Valid Humber point");
+
+            latOffset = 0.00011247;
+            lonOffset = 0.000554522;
+
+            type = DataType.HUMBER;
+        }
+
+        if ((northWest.getLatitude() > 58.26237 || northWest.getLatitude() < 54.36294 || northWest.getLongitude() > 13.149009
+                || northWest.getLongitude() < 9.403869
+
+                || southEast.getLatitude() > 58.26237 || southEast.getLatitude() < 54.36294 || southEast.getLongitude() > 13.149009 || southEast
+                .getLongitude() < 9.403869)
+
+                && (northWest.getLatitude() > 38.35 || northWest.getLatitude() < 37.16 || northWest.getLongitude() > -121.32
+                        || northWest.getLongitude() < -123.21
+
+                        || southEast.getLatitude() > 38.35 || southEast.getLatitude() < 37.16 || southEast.getLongitude() > -121.32 || southEast
+                        .getLongitude() < -123.21)
+
+                && (northWest.getLatitude() < 53.516960327477875 || northWest.getLatitude() > 53.741792160953665
+                        || northWest.getLongitude() < -0.8661253027560037 || northWest.getLongitude() > 0.24236332125267657
+                        || southEast.getLatitude() < 53.516960327477875 || southEast.getLatitude() > 53.741792160953665
+                        || southEast.getLongitude() < -0.8661253027560037 || southEast.getLongitude() > 0.24236332125267657)
+
+        ) {
+            type = DataType.UNKNOWN;
+        }
+    }
+
+    @Override
+    public void createTidalWorkers(GeoLocation northWest, GeoLocation southEast, Date timeStart, Date timeEnd) {
+
+        // Sydkattegat data
+        if (type == DataType.SYDKATTEGAT) {
+
+            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
+            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SYDKATTEGAT);
+
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SYDKATTEGAT);
+
+        }
+        // Nordkattegat data
+        if (type == DataType.NORDKATTEGAT) {
+            // System.out.println("Valid nordkattegat point");
+
+            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
+            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.NORDKATTEGAT);
+
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.NORDKATTEGAT);
+
+        }
+
+        // SF Bay data
+        if (type == DataType.SF_BAY) {
+            // System.out.println("Valid nordkattegat point");
+
+            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
+            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.SF_BAY);
+
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.TIDEDATA, DataType.SF_BAY);
+
+        }
+
+        // Humber Data
+        if (type == DataType.HUMBER) {
+            System.out.println("Valid Humber point");
+
+            nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
+            nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
+
+            nogoWorkerTideData = new NogoWorker(entityManager, WorkerType.HUMBERTIDE, DataType.HUMBER);
+
+            java.sql.Timestamp timeStartSql = new Timestamp(timeStart.getTime());
+            java.sql.Timestamp timeEndSql = new Timestamp(timeEnd.getTime());
+
+            nogoWorkerTideData.setTimeStart(timeStartSql);
+            nogoWorkerTideData.setTimeEnd(timeEndSql);
+        }
+
+        nogoWorkerFirstPointTide.setPos(northWest);
+
+        nogoWorkerSecondPointTide.setPos(southEast);
+    }
+
+    @Override
+    public void createBathymetryWorkers(GeoLocation northWest, GeoLocation southEast) {
+
+        // Sydkattegat data
+        if (type == DataType.SYDKATTEGAT) {
+
+            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
+            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SYDKATTEGAT);
+
+            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SYDKATTEGAT);
+        }
+
+        // Nordkattegat data
+        if (type == DataType.NORDKATTEGAT) {
+            // System.out.println("Valid nordkattegat point");
+
+            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
+            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.NORDKATTEGAT);
+
+            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.NORDKATTEGAT);
+
+        }
+
+        // SF Bay data
+        if (type == DataType.SF_BAY) {
+
+            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
+            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.SF_BAY);
+
+            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.SF_BAY);
+
+        }
+
+        // Humber Data
+        if (type == DataType.HUMBER) {
+            System.out.println("Valid Humber point");
+
+            nogoWorkerFirstPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
+            nogoWorkerSecondPointDepth = new NogoWorker(entityManager, WorkerType.DEPTHPOINT, DataType.HUMBER);
+
+            nogoWorkerDepthData = new NogoWorker(entityManager, WorkerType.DEPTHDATA, DataType.HUMBER);
+
+        }
+
+        nogoWorkerFirstPointDepth.setPos(northWest);
+
+        nogoWorkerSecondPointDepth.setPos(southEast);
+
+    }
+
     private List<DepthDenmark> combineWithHumberTide(List<DepthDenmark> result, List<HumberTidePoint> list) {
 
         if (list == null || list.size() == 0) {
@@ -407,13 +448,13 @@ public class NogoServiceBean implements NogoService {
                 }
             }
 
-//            System.out.println(result.get(i).getDepth());
-            
-            if (result.get(i).getDepth() > 0){
-                result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());    
+            // System.out.println(result.get(i).getDepth());
+
+            if (result.get(i).getDepth() > 0) {
+                result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());
             }
-            
-            // Example 10 meters tide ie. risen by 10            
+
+            // Example 10 meters tide ie. risen by 10
             // result.get(i).setDepth(result.get(i).getDepth() + 8);
 
         }
@@ -868,6 +909,30 @@ public class NogoServiceBean implements NogoService {
 
         }
 
+    }
+
+    @Override
+    public NogoResponseSlices nogoPoll(NogoRequestSlices nogoRequest) throws ServiceException {
+
+        NogoResponseSlices reply = new NogoResponseSlices();
+
+        GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
+        GeoLocation southEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
+
+        getDataRegion(northWest, southEast);
+
+        
+        System.out.println("NoGo Response Slices HELO");
+        
+        reply.setErrorMessage("You have recieved a slice object, good job");
+        reply.addResponse(new NogoResponse());
+        
+        if (this.type == DataType.UNKNOWN) {
+            reply.setNoGoErrorCode(17);
+            reply.setNoGoMessage(Errorcodes.getErrorMessage(17));
+            return reply;
+        }
+        return reply;
     }
 
 }

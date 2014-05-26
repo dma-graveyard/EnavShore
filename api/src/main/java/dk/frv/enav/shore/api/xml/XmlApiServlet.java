@@ -55,7 +55,7 @@ public abstract class XmlApiServlet extends HttpServlet {
 				xmlRequest = writer.toString();
 			}
 			
-			LOG.debug("XML request:\n" + xmlRequest);
+			LOG.info("XML request:\n" + xmlRequest);
 
 			// Unmarshall
 			ByteArrayInputStream input = new ByteArrayInputStream (xmlRequest.getBytes("UTF-8")); 

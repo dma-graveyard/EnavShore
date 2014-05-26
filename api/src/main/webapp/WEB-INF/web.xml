@@ -22,6 +22,10 @@
 		<servlet-name>XmlNogo</servlet-name>
 		<servlet-class>dk.frv.enav.shore.api.xml.Nogo</servlet-class>
 	</servlet>
+		<servlet>
+		<servlet-name>XmlNogoSlices</servlet-name>
+		<servlet-class>dk.frv.enav.shore.api.xml.NogoSlices</servlet-class>
+	</servlet>
 	<servlet>
 		<servlet-name>XmlRisk</servlet-name>
 		<servlet-class>dk.frv.enav.shore.api.xml.RiskIndexServlet</servlet-class>
@@ -46,6 +50,10 @@
 	<servlet-mapping>
 		<servlet-name>XmlNogo</servlet-name>
 		<url-pattern>/xml/nogo</url-pattern>
+	</servlet-mapping>
+		<servlet-mapping>
+		<servlet-name>XmlNogoSlices</servlet-name>
+		<url-pattern>/xml/slicesnogo</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>XmlRisk</servlet-name>
