@@ -167,7 +167,7 @@ public class NogoWorker extends Thread {
         }
 
         if (workerType == WorkerType.HUMBERTIDE) {
-            System.out.println("Humber Tide Worker");
+//            System.out.println("Humber Tide Worker");
             if (timeStart != null && timeEnd != null) {
                 getHumberTidalValues();
             }
@@ -476,7 +476,7 @@ public class NogoWorker extends Thread {
             System.out.println("Retrieving Humber");
             List<Humber> resultHumber = query.getResultList();
             result = new ArrayList<DepthDenmark>();
-            System.out.println("Retrieving Humber " + result.size());
+            System.out.println("Retrieving Humber " + resultHumber.size());
             for (int i = 0; i < resultHumber.size(); i++) {
                 Humber currentSf = resultHumber.get(i);
                 DepthDenmark converted = new DepthDenmark();

@@ -27,5 +27,6 @@
 	<classpathentry kind="lib" path="extlib/aislib-1.6.jar"/>
 	<classpathentry kind="lib" path="extlib/enav-model-0.2-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="extlib/joda-time-2.2.jar"/>
 	<classpathentry kind="output" path=".build"/>
 </classpath>

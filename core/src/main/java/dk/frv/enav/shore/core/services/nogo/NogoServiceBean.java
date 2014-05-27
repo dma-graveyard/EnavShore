@@ -34,10 +34,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import org.joda.time.DateTime;
 
 import dk.dma.enav.model.geometry.CoordinateSystem;
 import dk.dma.enav.model.geometry.Position;
@@ -357,7 +360,6 @@ public class NogoServiceBean implements NogoService {
 
         // Humber Data
         if (type == DataType.HUMBER) {
-            System.out.println("Valid Humber point");
 
             nogoWorkerFirstPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
             nogoWorkerSecondPointTide = new NogoWorker(entityManager, WorkerType.TIDEPOINT, DataType.HUMBER);
@@ -430,6 +432,7 @@ public class NogoServiceBean implements NogoService {
 
         if (list == null || list.size() == 0) {
             errorCode = 18;
+            System.out.println("ERROR CODE 18 CANNOT COMBINE");
             return result;
         }
 
@@ -448,11 +451,14 @@ public class NogoServiceBean implements NogoService {
                 }
             }
 
-            // System.out.println(result.get(i).getDepth());
+//             System.out.println(result.get(i).getDepth());
 
             if (result.get(i).getDepth() > 0) {
                 result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());
             }
+
+            // System.out.println("Using gauage index " + closetGauge + " with min depth" +
+            // list.get(closetGauge).getMinimumDepth());
 
             // Example 10 meters tide ie. risen by 10
             // result.get(i).setDepth(result.get(i).getDepth() + 8);
@@ -911,28 +917,200 @@ public class NogoServiceBean implements NogoService {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public NogoResponseSlices nogoPoll(NogoRequestSlices nogoRequest) throws ServiceException {
 
-        NogoResponseSlices reply = new NogoResponseSlices();
+        NogoResponseSlices res = new NogoResponseSlices();
 
         GeoLocation northWest = new GeoLocation(nogoRequest.getNorthWestPointLat(), nogoRequest.getNorthWestPointLon());
         GeoLocation southEast = new GeoLocation(nogoRequest.getSouthEastPointLat(), nogoRequest.getSouthEastPointLon());
 
         getDataRegion(northWest, southEast);
 
-        
-        System.out.println("NoGo Response Slices HELO");
-        
-        reply.setErrorMessage("You have recieved a slice object, good job");
-        reply.addResponse(new NogoResponse());
-        
         if (this.type == DataType.UNKNOWN) {
-            reply.setNoGoErrorCode(17);
-            reply.setNoGoMessage(Errorcodes.getErrorMessage(17));
-            return reply;
+            res.setNoGoErrorCode(17);
+            res.setNoGoMessage(Errorcodes.getErrorMessage(17));
+            return res;
         }
-        return reply;
+
+        // Create the workers
+        createBathymetryWorkers(northWest, southEast);
+
+        // Only a single slice is requested, just perform normal poll and add result
+        if (nogoRequest.getSlices() == 1) {
+            System.out.println("Single slice - special case");
+            NogoRequest singleSliceRequest = new NogoRequest();
+            singleSliceRequest.setDraught(nogoRequest.getDraught());
+            singleSliceRequest.setStartDate(nogoRequest.getStartDate());
+            singleSliceRequest.setEndDate(nogoRequest.getEndDate());
+            singleSliceRequest.setNorthWestPointLat(nogoRequest.getNorthWestPointLat());
+            singleSliceRequest.setNorthWestPointLon(nogoRequest.getNorthWestPointLon());
+            singleSliceRequest.setSouthEastPointLat(nogoRequest.getSouthEastPointLat());
+            singleSliceRequest.setSouthEastPointLon(nogoRequest.getSouthEastPointLon());
+
+            NogoResponse singleResponse = nogoPoll(singleSliceRequest);
+
+            res.setNoGoErrorCode(singleResponse.getNoGoErrorCode());
+            res.setNoGoMessage(Errorcodes.getErrorMessage(singleResponse.getNoGoErrorCode()));
+            res.setValidFrom(singleResponse.getValidFrom());
+            res.setValidTo(singleResponse.getValidTo());
+
+            return res;
+
+        }
+
+        // Retrieve the base data
+        // // Get the grid position of the data in the depth database
+        nogoWorkerFirstPointDepth.start();
+        nogoWorkerSecondPointDepth.start();
+
+        try {
+            nogoWorkerFirstPointDepth.join();
+            System.out.println("First depth point found");
+            nogoWorkerSecondPointDepth.join();
+            System.out.println("Second depth point found");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        BoundingBoxPoint firstPosDepth = nogoWorkerFirstPointDepth.getPoint();
+        BoundingBoxPoint secondPosDepth = nogoWorkerSecondPointDepth.getPoint();
+
+        if (firstPosDepth != null && secondPosDepth != null) {
+            // System.out.println("Bounding Box found - requesting data");
+            //
+            nogoWorkerDepthData.setFirstPos(firstPosDepth);
+            nogoWorkerDepthData.setSecondPos(secondPosDepth);
+
+            nogoWorkerDepthData.setDraught(nogoRequest.getDraught());
+
+            System.out.println("Depth data start");
+            nogoWorkerDepthData.start();
+
+            try {
+                nogoWorkerDepthData.join();
+                System.out.println("Depth data thread joined");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if (nogoWorkerDepthData.getDepthDatabaseResult().size() != 0) {
+
+                // This is the raw data from the database. Should be re-used.
+                // List<DepthDenmark> depthResult = nogoWorkerDepthData.getDepthDatabaseResult();
+
+                long miliseconds = nogoRequest.getEndDate().getTime() - nogoRequest.getStartDate().getTime();
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(miliseconds);
+                int timeSlice = (int) (minutes / nogoRequest.getSlices());
+                DateTime currentTime = new DateTime(nogoRequest.getStartDate().getTime());
+                DateTime nextTime = currentTime.plusMinutes(timeSlice);
+
+                List<DepthDenmark> depthResult = nogoWorkerDepthData.getDepthDatabaseResult();
+                
+                for (int i = 0; i < nogoRequest.getSlices(); i++) {
+                    
+                    List<DepthDenmark> depthResultCopy = new ArrayList<DepthDenmark>();
+                    
+                    for (DepthDenmark entry : depthResult) {
+                        depthResultCopy.add(entry.clone());
+                    }
+                    
+//                    System.out.println("Processing slice " + i + " from " + currentTime + " to " + nextTime);
+                    // Setup tide worker
+                    createTidalWorkers(northWest, southEast, new Date(currentTime.getMillis()), new Date(nextTime.getMillis()));
+
+                    // // Get the grid position of the data in the tide database
+                    nogoWorkerFirstPointTide.start();
+                    nogoWorkerSecondPointTide.start();
+
+                    try {
+                        nogoWorkerFirstPointTide.join();
+                        // System.out.println("First tide point found");
+                        nogoWorkerSecondPointTide.join();
+                        // System.out.println("Second tide point found");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    BoundingBoxPoint firstPosTide = nogoWorkerFirstPointTide.getPoint();
+                    BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
+
+                    if (this.type != DataType.HUMBER) {
+//                        System.out.println("Not humber");
+                        nogoWorkerTideData.setFirstPos(firstPosTide);
+                        nogoWorkerTideData.setSecondPos(secondPosTide);
+
+                        // Use 01-05 until we get better database setup
+                        // 2012-01-05 22:00:00
+                        java.sql.Timestamp timeStart = new Timestamp(112, 0, 5, 0, 0, 0, 0);
+                        java.sql.Timestamp timeEnd = new Timestamp(112, 0, 5, 0, 0, 0, 0);
+
+                        timeStart.setHours(currentTime.getHourOfDay());
+                        timeEnd.setHours(nextTime.getHourOfDay());
+
+                        nogoWorkerTideData.setTimeStart(timeStart);
+                        nogoWorkerTideData.setTimeEnd(timeEnd);
+                    }
+
+                    nogoWorkerTideData.start();
+
+                    try {
+                        nogoWorkerTideData.join();
+//                        System.out.println("Tide data thread joined");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    // List<DepthDenmark> depthResultCopy = new ArrayList<DepthDenmark>(depthResult);
+                    List<NogoPolygon> polyArea = new ArrayList<NogoPolygon>();
+                    double depth = nogoRequest.getDraught();
+
+                    if (this.type == DataType.HUMBER) {
+//                        System.out.println("Humber combining");
+                        depth = -depth;
+                        depthResultCopy = combineWithHumberTide(depthResultCopy, nogoWorkerTideData.getHumberTidalPoints());
+                    }
+
+                    // Combine into polygon area
+                    polyArea = parseResult(depthResultCopy, nogoWorkerTideData.getTideDatabaseResult(), depth);
+
+                    NogoResponse sliceResponse = new NogoResponse();
+
+                    for (int j = 0; j < polyArea.size(); j++) {
+                        sliceResponse.addPolygon(polyArea.get(j));
+                    }
+
+                    Date requestStart = new Date(currentTime.getMillis());
+                    Date requestEnd = new Date(nextTime.getMillis());
+
+                    sliceResponse.setValidFrom(requestStart);
+                    sliceResponse.setValidTo(requestEnd);
+                    sliceResponse.setNoGoErrorCode(errorCode);
+                    sliceResponse.setNoGoMessage(Errorcodes.getErrorMessage(errorCode));
+                    res.addResponse(sliceResponse);
+
+                    errorCode = 0;
+
+                    currentTime = nextTime;
+                    nextTime = currentTime.plusMinutes(timeSlice);
+
+//                    System.out.println("Result added");
+                }
+
+            }
+        }
+
+        res.setValidFrom(nogoRequest.getStartDate());
+        res.setValidTo(nogoRequest.getEndDate());
+        // sliceResponse.setNoGoErrorCode(errorCode);
+        res.setNoGoMessage(Errorcodes.getErrorMessage(errorCode));
+
+        System.out.println("Returning " + res.getResponses().size() + " slices");
+
+        //
+
+        return res;
     }
 
 }

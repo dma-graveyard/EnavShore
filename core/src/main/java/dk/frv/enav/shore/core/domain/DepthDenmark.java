@@ -37,78 +37,91 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="depth_denmark100m")
+@Table(name = "depth_denmark100m")
 public class DepthDenmark implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int id;
-	private double lat;
-	private double lon;
-	private int n ;
-	private int m;
-	private Double depth;
+    private int id;
+    private double lat;
+    private double lon;
+    private int n;
+    private int m;
+    private Double depth;
 
     public DepthDenmark() {
     }
 
-	@Id
-	@Column(name="id", unique = true, nullable = false, insertable = true, updatable = false)
-	public int getId() {
-		return this.id;
-	}
+    public DepthDenmark clone() {
+        DepthDenmark cloneEntry = new DepthDenmark();
 
-	public void setId(int id) {
-		this.id = id;
-	}
-	
-	@Column(name="lat", unique = false, nullable = false, insertable = true, updatable = true)
-	public double getLat() {
-		return this.lat;
-	}
+        
+        cloneEntry.setId(id);
+        cloneEntry.setLat(lat);
+        cloneEntry.setLon(lon);
+        cloneEntry.setN(n);
+        cloneEntry.setM(m);
+        cloneEntry.setDepth(depth);
+        
+        return cloneEntry;
+    }
 
-	public void setLat(double lat) {
-		this.lat = lat;
-	}
+    @Id
+    @Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	@Column(name="lon", unique = false, nullable = false, insertable = true, updatable = true)
-	public double getLon() {
-		return this.lon;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setLon(double lon) {
-		this.lon = lon;
-	}	
-	
-	@Column(name="n", unique = false, nullable = false, insertable = true, updatable = true)
-	public int getN() {
-		return this.n;
-	}
+    @Column(name = "lat", unique = false, nullable = false, insertable = true, updatable = true)
+    public double getLat() {
+        return this.lat;
+    }
 
-	public void setN(int n) {
-		this.n = n;
-	}	
-	
-	@Column(name="m", unique = false, nullable = false, insertable = true, updatable = true)
-	public int getM() {
-		return this.m;
-	}
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
 
-	public void setM(int m) {
-		this.m = m;
-	}	
-			
-	@Column(name="depth", unique = false, nullable = true, insertable = true, updatable = true)
-	public Double getDepth() {
-		return this.depth;
-	}
+    @Column(name = "lon", unique = false, nullable = false, insertable = true, updatable = true)
+    public double getLon() {
+        return this.lon;
+    }
 
-	public void setDepth(Double depth) {
-		this.depth = depth;
-	}		
+    public void setLon(double lon) {
+        this.lon = lon;
+    }
 
-	@Override
-	public String toString(){
-		return "n: " + n + " m: " + m;
-	}
+    @Column(name = "n", unique = false, nullable = false, insertable = true, updatable = true)
+    public int getN() {
+        return this.n;
+    }
+
+    public void setN(int n) {
+        this.n = n;
+    }
+
+    @Column(name = "m", unique = false, nullable = false, insertable = true, updatable = true)
+    public int getM() {
+        return this.m;
+    }
+
+    public void setM(int m) {
+        this.m = m;
+    }
+
+    @Column(name = "depth", unique = false, nullable = true, insertable = true, updatable = true)
+    public Double getDepth() {
+        return this.depth;
+    }
+
+    public void setDepth(Double depth) {
+        this.depth = depth;
+    }
+
+    @Override
+    public String toString() {
+        return "n: " + n + " m: " + m;
+    }
 }
-	

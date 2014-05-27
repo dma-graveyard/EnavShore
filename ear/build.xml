@@ -35,6 +35,7 @@
 		<copy file="${extlib}/enav-model-0.2-SNAPSHOT.jar" todir="${build.ear.dir}/lib" />
     	<copy file="${extlib}/aislib-1.6.jar" todir="${build.ear.dir}/lib" />
     	<copy file="${extlib}/gson-1.7.1.jar" todir="${build.ear.dir}/lib" />
+		<copy file="${extlib}/joda-time-2.2.jar" todir="${build.ear.dir}/lib" />
     	<copy file="${src.main.resources.dir}/jboss-app.xml" todir="${build.ear.dir}/META-INF" />
     </target>
 
