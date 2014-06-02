@@ -296,8 +296,14 @@ public class NogoServiceBean implements NogoService {
                 && southEast.getLongitude() > -0.8661253027560037 && southEast.getLongitude() < 0.24236332125267657) {
             System.out.println("Valid Humber point");
 
-            latOffset = 0.00011247;
+//            latOffset = 0.00011247;
+//            latOffset = latOffset / 2.0;
+//            System.out.println("lat offset: " + latOffset);
+            latOffset = 0.00005624;
             lonOffset = 0.000554522;
+
+            // latOffset = 0;
+            // lonOffset = 0;
 
             type = DataType.HUMBER;
         }
@@ -451,7 +457,7 @@ public class NogoServiceBean implements NogoService {
                 }
             }
 
-//             System.out.println(result.get(i).getDepth());
+            // System.out.println(result.get(i).getDepth());
 
             if (result.get(i).getDepth() > 0) {
                 result.get(i).setDepth(result.get(i).getDepth() + list.get(closetGauge).getMinimumDepth());
@@ -650,31 +656,34 @@ public class NogoServiceBean implements NogoService {
 
                     List<NogoPolygon> neighbours = new ArrayList<NogoPolygon>();
 
-                    // It has a next line
-                    if (i != lineSection.size() - 1) {
-                        neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(i).get(j),
-                                lineSection.get(i + 1));
+                    // DISABLE FOR HUMBER
 
-                        allNeighboursLine.addAll(neighbours);
+                    if (this.type != DataType.HUMBER) {
 
-                        //
-                        // if (neighbours.size() != 0){
-                        // for (int k = 0; k < neighbours.size(); k++) {
-                        //
-                        // //Check for overlap, first between line + 1 and the triangles
-                        // if (!connectNeighbourLines.doesOverlap(neighbours.get(k), lineSection.get(i+1))){
-                        // res.add(neighbours.get(k));
-                        // }
-                        //
-                        // //Then for each triangle with the other triangles
-                        //
-                        // //If no overlap, add it
-                        //
-                        //
-                        // }
-                        // }
+                        // It has a next line
+                        if (i != lineSection.size() - 1) {
+                            neighbours = connectNeighbourLines.connectFindValidNeighbours(lineSection.get(i).get(j),
+                                    lineSection.get(i + 1));
+
+                            allNeighboursLine.addAll(neighbours);
+
+                            // if (neighbours.size() != 0){
+                            // for (int k = 0; k < neighbours.size(); k++) {
+                            //
+                            // //Check for overlap, first between line + 1 and the triangles
+                            // if (!connectNeighbourLines.doesOverlap(neighbours.get(k), lineSection.get(i+1))){
+                            // res.add(neighbours.get(k));
+                            // }
+                            //
+                            // //Then for each triangle with the other triangles
+                            //
+                            // //If no overlap, add it
+                            //
+                            //
+                            // }
+                            // }
+                        }
                     }
-
                 }
 
                 // System.out.println(allNeighboursLine.size());
@@ -1007,16 +1016,16 @@ public class NogoServiceBean implements NogoService {
                 DateTime nextTime = currentTime.plusMinutes(timeSlice);
 
                 List<DepthDenmark> depthResult = nogoWorkerDepthData.getDepthDatabaseResult();
-                
+
                 for (int i = 0; i < nogoRequest.getSlices(); i++) {
-                    
+
                     List<DepthDenmark> depthResultCopy = new ArrayList<DepthDenmark>();
-                    
+
                     for (DepthDenmark entry : depthResult) {
                         depthResultCopy.add(entry.clone());
                     }
-                    
-//                    System.out.println("Processing slice " + i + " from " + currentTime + " to " + nextTime);
+
+                    // System.out.println("Processing slice " + i + " from " + currentTime + " to " + nextTime);
                     // Setup tide worker
                     createTidalWorkers(northWest, southEast, new Date(currentTime.getMillis()), new Date(nextTime.getMillis()));
 
@@ -1037,7 +1046,7 @@ public class NogoServiceBean implements NogoService {
                     BoundingBoxPoint secondPosTide = nogoWorkerSecondPointTide.getPoint();
 
                     if (this.type != DataType.HUMBER) {
-//                        System.out.println("Not humber");
+                        // System.out.println("Not humber");
                         nogoWorkerTideData.setFirstPos(firstPosTide);
                         nogoWorkerTideData.setSecondPos(secondPosTide);
 
@@ -1057,7 +1066,7 @@ public class NogoServiceBean implements NogoService {
 
                     try {
                         nogoWorkerTideData.join();
-//                        System.out.println("Tide data thread joined");
+                        // System.out.println("Tide data thread joined");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -1067,7 +1076,7 @@ public class NogoServiceBean implements NogoService {
                     double depth = nogoRequest.getDraught();
 
                     if (this.type == DataType.HUMBER) {
-//                        System.out.println("Humber combining");
+                        // System.out.println("Humber combining");
                         depth = -depth;
                         depthResultCopy = combineWithHumberTide(depthResultCopy, nogoWorkerTideData.getHumberTidalPoints());
                     }
@@ -1095,7 +1104,7 @@ public class NogoServiceBean implements NogoService {
                     currentTime = nextTime;
                     nextTime = currentTime.plusMinutes(timeSlice);
 
-//                    System.out.println("Result added");
+                    // System.out.println("Result added");
                 }
 
             }
