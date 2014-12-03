@@ -22,6 +22,17 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 })
 public interface MsiService {
 
+    /**
+     * 
+     * @param arg0
+     * @return
+     *     returns dk.frv.enav.shore.core.services.msi.generated.MsiDtoArray
+     */
+    @WebMethod
+    @WebResult(partName = "return")
+    public MsiDtoArray getActiveWarningCountry(
+        @WebParam(name = "arg0", partName = "arg0")
+        String arg0);
 
     /**
      * 
